@@ -125,6 +125,23 @@ tailwind.config = {
     background: #fafbfc;
   }
 
+  /* ===== 底部联系状态栏 ===== */
+  .contact-mail {
+    color: #334155;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: rgba(51, 65, 85, .3);
+    text-underline-offset: 3px;
+    transition: color .2s, text-decoration-color .2s;
+  }
+  .contact-mail:hover { color: #0f172a; text-decoration-color: rgba(15, 23, 42, .6); }
+  .contact-mail:focus-visible {
+    outline: 2px solid #0f172a;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
   @keyframes rise {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: none; }
@@ -500,6 +517,21 @@ tailwind.config = {
       <p class="text-center font-mono text-[11px] tracking-[.14em] text-slate-400">
         独立开发软件清单 · 全部产品本地优先 · Windows 桌面端 · 2026
       </p>
+
+      <!-- 底部联系状态栏 -->
+      <div class="mt-5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 text-[12.5px] leading-none text-slate-500">
+        <span class="inline-flex items-center gap-1.5">
+          <svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>
+            <path d="m3.5 6.5 7.4 5.6a2 2 0 0 0 2.2 0l7.4-5.6"/>
+          </svg>
+          联系我们
+        </span>
+        <span class="text-slate-300" aria-hidden="true">·</span>
+        <span>发送邮件：</span>
+        <a class="contact-mail" href="mailto:contact@cd-ii.com" title="点击给 contact@cd-ii.com 发送邮件">contact@cd-ii.com</a>
+      </div>
     </div>
   </footer>
 
