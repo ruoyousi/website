@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>独立开发软件清单</title>
-<meta name="description" content="七款本地优先的独立开发软件：AI 工具、离线、语音处理、文档处理。数据不出设备，断网可用。">
+<meta name="description" content="本地优先的独立开发软件：AI 工具、离线、语音处理、文档处理。数据不出设备，断网可用。">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
 <script>
 tailwind.config = {
@@ -217,18 +217,18 @@ tailwind.config = {
       独立开发软件清单
     </h1>
     <p class="mt-5 max-w-2xl text-[15px] leading-relaxed text-slate-500 sm:text-base">
-      七款本地优先的成品软件，覆盖文档合稿、离线识别、语音处理与 AI 创作。
+      本地优先的成品软件，覆盖文档合稿、离线识别、语音处理与 AI 创作。
       推理在本机完成，数据不出设备，断网照常可用。
     </p>
 
     <div class="mt-9 flex flex-wrap items-center gap-x-9 gap-y-4">
       <div class="flex items-baseline gap-1.5">
-        <span class="text-2xl font-semibold tracking-tight text-slate-900">7</span>
+        <span id="stat-products" class="text-2xl font-semibold tracking-tight text-slate-900">7</span>
         <span class="text-[13px] text-slate-400">款产品</span>
       </div>
       <div class="h-8 w-px bg-slate-200/80" aria-hidden="true"></div>
       <div class="flex items-baseline gap-1.5">
-        <span class="text-2xl font-semibold tracking-tight text-slate-900">4</span>
+        <span id="stat-cats" class="text-2xl font-semibold tracking-tight text-slate-900">4</span>
         <span class="text-[13px] text-slate-400">个分类</span>
       </div>
       <div class="h-8 w-px bg-slate-200/80" aria-hidden="true"></div>
@@ -663,6 +663,12 @@ tailwind.config = {
   var countEl = document.getElementById('count');
   var emptyEl = document.getElementById('empty');
   var grid = document.getElementById('grid');
+
+  // 顶部统计：数量随产品增减自动更新，避免文案里写死款数
+  var statProducts = document.getElementById('stat-products');
+  var statCats = document.getElementById('stat-cats');
+  if (statProducts) statProducts.textContent = String(cards.length);
+  if (statCats) statCats.textContent = String(document.querySelectorAll('.filter-btn[data-filter]:not([data-filter="all"])').length);
 
   function apply(filter) {
     var n = 0;
