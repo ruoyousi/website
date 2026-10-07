@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>合稿易 DocMerger — 多人分工写，一键自动合</title>
+<meta name="description" content="合稿易 DocMerger 是面向保密、涉密环境分工协作编写正式文档的离线拆合稿工具。把一份完整标书拆成可管理章节，用模板和数据生成章节内容，最后按规则合并成格式统一、编号连续、目录完整的正式文档。">
+<style>
+/* ============================================================
+   合稿易 DocMerger · 产品落地页
+   设计取向：正式、克制、可信。全部资源内联，完全离线可用。
+   ============================================================ */
+
+:root{
+  --navy:#0f3a6b;
+  --navy-2:#15508f;
+  --navy-deep:#0a2540;
+  --navy-soft:#eef4fb;
+  --navy-soft-2:#e3edf9;
+  --gold:#a17d24;
+  --gold-soft:#fbf6e9;
+  --ok:#0f6b5f;
+  --ok-soft:#eaf6f3;
+
+  --ink:#0d1726;
+  --slate:#41536b;
+  --muted:#7a8b9f;
+  --line:#e3e9f1;
+  --line-soft:#eef2f8;
+
+  --bg:#ffffff;
+  --bg-2:#f7f9fc;
+  --bg-3:#f1f5fa;
+
+  --radius:14px;
+  --radius-sm:10px;
+  --sh-1:0 1px 2px rgba(13,37,64,.04), 0 8px 22px -10px rgba(13,37,64,.12);
+  --sh-2:0 2px 8px rgba(13,37,64,.05), 0 22px 50px -22px rgba(13,37,64,.22);
+
+  --wrap:1120px;
+  --font:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"Cascadia Mono","Consolas","JetBrains Mono","SFMono-Regular",Menlo,Monaco,"Courier New",monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--slate);
+  font-family:var(--font);
+  font-size:16px;
+  line-height:1.78;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+h1,h2,h3,h4{color:var(--ink);line-height:1.32;margin:0;font-weight:600;letter-spacing:-.01em}
+p{margin:0}
+a{color:var(--navy-2);text-decoration:none}
+a:hover{text-decoration:underline}
+svg{display:block}
+img{max-width:100%}
+
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+/* 网格/弹性子项默认 min-width:auto，会被 pre、长命令串等不可断行内容撑破视口，
+   导致整页横向溢出（手机上右侧被裁掉）。统一放开收缩限制。 */
+.feat,.tree,.scene,.chain-card,.bcol,.flow,.loop,
+.tb-item,.crash-item,.nomore-item,
+.sec-head,.rv,.feat-grid,.org-grid,
+.scene-grid,.chain,.bound,.pain-grid,.crash{min-width:0}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic-sm{width:17px;height:17px}
+
+/* ---------- 通用区块 ---------- */
+.section{padding:72px 0;border-top:1px solid var(--line-soft)}
+section[id]{scroll-margin-top:82px}
+.section--soft{background:var(--bg-2)}
+.sec-head{max-width:790px;margin-bottom:38px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:12.5px;font-weight:700;letter-spacing:.16em;
+  color:var(--navy-2);text-transform:uppercase;margin-bottom:12px;
+}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--navy-2);border-radius:2px}
+h2{font-size:33px;margin-bottom:13px}
+h2.h2-lg{font-size:38px}
+.lead{font-size:17.5px;color:var(--slate);line-height:1.78}
+.sec-head .lead{margin-top:0}
+.hl{color:var(--navy);font-weight:600}
+.hl-mark{
+  background:linear-gradient(180deg,transparent 62%,var(--navy-soft-2) 62%);
+  padding:0 2px;color:var(--ink);font-weight:600;
+}
+
+/* ---------- 顶部导航 ---------- */
+.nav{
+  position:sticky;top:0;z-index:60;
+  background:rgba(255,255,255,.86);
+  backdrop-filter:saturate(180%) blur(12px);
+  -webkit-backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--line-soft);
+  transition:box-shadow .2s ease,border-color .2s ease;
+}
+.nav.is-scrolled{box-shadow:0 6px 24px -16px rgba(13,37,64,.28);border-bottom-color:var(--line)}
+.nav-in{max-width:var(--wrap);margin:0 auto;padding:0 28px;height:66px;display:flex;align-items:center;gap:36px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;color:var(--ink);font-size:16.5px;letter-spacing:-.01em;white-space:nowrap}
+.brand:hover{text-decoration:none}
+.brand-mark{
+  width:34px;height:34px;border-radius:9px;flex:none;
+  background:linear-gradient(150deg,var(--navy-2),var(--navy-deep));
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  box-shadow:0 6px 14px -6px rgba(15,58,107,.55);
+}
+.brand-mark .ic{width:19px;height:19px;stroke-width:1.9}
+.brand-en{color:var(--muted);font-weight:500;font-size:13.5px;letter-spacing:.02em}
+.nav-links{display:flex;gap:30px;margin-left:auto;font-size:14.5px;font-weight:500}
+.nav-links a{color:var(--slate);position:relative;transition:color .18s ease}
+.nav-links a::after{
+  content:"";position:absolute;left:0;right:100%;bottom:-7px;height:2px;
+  border-radius:2px;background:var(--navy-2);
+  transition:right .28s cubic-bezier(.22,.65,.35,1);
+}
+.nav-links a:hover::after,.nav-links a.is-active::after{right:0}
+.nav-links a:hover,.nav-links a.is-active{color:var(--navy);text-decoration:none}
+.nav-progress{
+  position:absolute;top:0;left:0;height:2px;width:0;pointer-events:none;
+  background:linear-gradient(90deg,var(--navy-2),var(--navy));
+  border-radius:0 2px 2px 0;
+}
+.nav-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 17px;border-radius:9px;font-size:14px;font-weight:600;
+  background:var(--navy);color:#fff;white-space:nowrap;
+  transition:background .18s ease,transform .18s ease;
+}
+.nav-cta:hover{background:var(--navy-deep);text-decoration:none;transform:translateY(-1px)}
+
+/* ---------- 首屏 ---------- */
+.hero{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(1100px 520px at 78% -8%,#e8f1fb 0%,rgba(232,241,251,0) 62%),
+    radial-gradient(760px 420px at -6% 8%,#f2f6fb 0%,rgba(242,246,251,0) 60%),
+    var(--bg);
+  border-bottom:1px solid var(--line-soft);
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(rgba(15,58,107,.06) 1px,transparent 1px);
+  background-size:24px 24px;
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.55),transparent 68%);
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.55),transparent 68%);
+  opacity:.5;
+}
+.hero-in{
+  position:relative;z-index:1;
+  max-width:var(--wrap);margin:0 auto;padding:64px 28px 68px;
+  display:grid;grid-template-columns:1.06fr .94fr;gap:54px;align-items:center;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:7px 14px 7px 11px;border-radius:999px;
+  background:#fff;border:1px solid var(--line);
+  font-size:13px;font-weight:600;color:var(--navy);
+  box-shadow:var(--sh-1);margin-bottom:19px;
+}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
+h1{font-size:51px;letter-spacing:-.025em;line-height:1.2;margin-bottom:18px}
+h1 em{font-style:normal;color:var(--navy-2);position:relative;white-space:nowrap}
+h1 em::after{
+  content:"";position:absolute;left:0;right:0;bottom:.06em;height:.28em;
+  background:linear-gradient(90deg,rgba(21,80,143,.16),rgba(21,80,143,.05));
+  border-radius:3px;z-index:-1;
+}
+.hero-lead{font-size:17.5px;line-height:1.78;color:var(--slate);max-width:560px}
+.hero-lead strong{color:var(--navy);font-weight:600}
+.hero-actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:26px;align-items:center}
+/* 首屏加载序列：徽章 → 标题 → 引言 → 按钮，依次浮现 */
+.js .hero-badge,.js .hero h1,.js .hero-lead,.js .hero-actions{
+  animation:riseIn .7s cubic-bezier(.22,.65,.35,1) backwards;
+}
+.js .hero h1{animation-delay:.07s}
+.js .hero-lead{animation-delay:.15s}
+.js .hero-actions{animation-delay:.23s}
+.js h1 em::after{transform-origin:left;animation:emSweep .55s .55s cubic-bezier(.22,.65,.35,1) backwards}
+@keyframes riseIn{from{opacity:0;transform:translateY(16px)}}
+@keyframes emSweep{from{transform:scaleX(0)}}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 3px var(--ok-soft)}50%{box-shadow:0 0 0 6px var(--ok-soft)}}
+.hero-badge .dot{animation:dotPulse 2.8s ease-in-out infinite}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:13px 24px;border-radius:10px;font-size:15px;font-weight:600;
+  border:1px solid transparent;cursor:pointer;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease;
+}
+.btn:hover{text-decoration:none;transform:translateY(-1.5px)}
+.btn-primary{background:var(--navy);color:#fff;box-shadow:0 10px 24px -12px rgba(15,58,107,.7)}
+.btn-primary:hover{background:var(--navy-deep);box-shadow:0 14px 30px -12px rgba(15,58,107,.75)}
+.btn-ghost{background:#fff;color:var(--navy);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--navy-2);color:var(--navy-2)}
+
+/* ---------- 首屏流程图 ---------- */
+.flow{
+  background:#fff;border:1px solid var(--line);border-radius:20px;
+  padding:22px 22px 20px;box-shadow:var(--sh-2);
+}
+.flow-cap{
+  font-size:12.5px;font-weight:700;letter-spacing:.12em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:14px;text-align:center;
+}
+.flow-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.flow-card{
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:13px 12px;background:var(--bg-2);text-align:center;
+}
+.flow-card .fic{
+  width:36px;height:36px;border-radius:9px;margin:0 auto 8px;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;border:1px solid var(--line);color:var(--navy-2);
+}
+.flow-card .fic .ic{width:19px;height:19px}
+.flow-card b{display:block;font-size:13.5px;color:var(--ink);font-weight:600;margin-bottom:3px}
+.flow-card span{display:block;font-size:11.5px;color:var(--muted);line-height:1.6}
+.flow-arrows{width:100%;height:auto;margin:6px 0 2px}
+.flow-out{
+  border:1px solid var(--navy-soft-2);border-radius:var(--radius-sm);
+  padding:14px;background:linear-gradient(180deg,#fff,var(--navy-soft));
+  display:flex;align-items:center;gap:14px;
+}
+.flow-out .fic{
+  width:40px;height:40px;border-radius:10px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy);color:#fff;box-shadow:0 8px 18px -10px rgba(15,58,107,.8);
+}
+.flow-out .fic .ic{width:21px;height:21px}
+.flow-out b{display:block;font-size:14.5px;color:var(--ink);font-weight:700;margin-bottom:2px}
+.flow-out span{display:block;font-size:12px;color:var(--navy-2);font-weight:600;letter-spacing:.01em}
+
+/* ---------- 信任条 ---------- */
+.trustbar{border-bottom:1px solid var(--line-soft);background:var(--bg-2)}
+.trustbar-in{
+  max-width:var(--wrap);margin:0 auto;padding:21px 28px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.tb-item{display:flex;align-items:flex-start;gap:11px}
+.tb-item .ic{width:19px;height:19px;color:var(--navy-2);margin-top:3px}
+.tb-item b{display:block;font-size:13.5px;color:var(--ink);font-weight:600}
+.tb-item span{display:block;font-size:12px;color:var(--muted);line-height:1.6}
+
+/* ---------- 产品视频 ---------- */
+.video-shell{max-width:880px;margin:0 auto}
+.video-frame{
+  border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--line);box-shadow:var(--sh-2);
+  background:var(--navy-deep);
+}
+.video-frame video{display:block;width:100%;height:auto}
+.video-note{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
+
+/* ---------- 痛点 / 重复合稿 ---------- */
+.pain-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:48px;align-items:start}
+.loop{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--sh-1);overflow:hidden;
+}
+.loop-head{
+  display:flex;align-items:center;gap:12px;padding:13px 18px;
+  background:var(--bg-2);border-bottom:1px solid var(--line-soft);
+}
+.loop-head .spin{width:24px;height:24px;color:#b4452f;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loop-head b{font-size:14px;color:var(--ink)}
+.loop-head span{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600}
+.loop-list{list-style:none;margin:0;padding:6px 0}
+.loop-list li{
+  display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;
+  padding:9px 18px;border-bottom:1px dashed var(--line-soft);
+}
+.loop-list li:last-child{border-bottom:0}
+.loop-list li.is-hot{background:#fdf6f4}
+.loop-n{
+  width:26px;height:26px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;font-family:var(--mono);
+  background:var(--bg-3);color:var(--slate);
+}
+.loop-list li.is-hot .loop-n{background:#f7e2dd;color:#a13a26}
+.loop-txt{font-size:13.8px;color:var(--slate)}
+.loop-txt b{color:var(--ink);font-weight:600}
+.loop-res{
+  font-size:12px;font-weight:700;color:#a13a26;white-space:nowrap;
+  background:#f7e2dd;border-radius:6px;padding:3px 9px;
+}
+.loop-foot{
+  padding:12px 18px;background:var(--bg-2);border-top:1px solid var(--line-soft);
+  font-size:13px;color:var(--slate);display:flex;gap:9px;align-items:flex-start;
+}
+.loop-foot .ic{width:16px;height:16px;color:var(--navy-2);margin-top:3px}
+
+.crash{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.crash-item{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:14px 15px;display:flex;gap:11px;align-items:flex-start;
+}
+.crash-item .ic{width:18px;height:18px;color:#b4452f;margin-top:4px}
+.crash-item b{display:block;font-size:13.8px;color:var(--ink);font-weight:600;margin-bottom:3px}
+.crash-item span{display:block;font-size:12.6px;color:var(--muted);line-height:1.68}
+.pain-quote{
+  margin-top:22px;padding:17px 21px;border-left:3px solid var(--navy-2);
+  background:var(--navy-soft);border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-size:15.5px;color:var(--navy-deep);line-height:1.8;
+}
+.pain-quote b{color:var(--navy);font-weight:700}
+
+/* ---------- 核心链路 ---------- */
+.chain{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.chain-card{
+  position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px 22px 21px;box-shadow:var(--sh-1);
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.chain-card:hover{transform:translateY(-3px);box-shadow:var(--sh-2);border-color:var(--navy-soft-2)}
+.chain-step{
+  position:absolute;top:-1px;left:26px;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 12px;border-radius:0 0 8px 8px;
+  background:var(--navy);color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.09em;
+}
+.chain-card .cico{
+  width:46px;height:46px;border-radius:12px;margin:14px 0 13px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy-soft);color:var(--navy-2);
+}
+.chain-card .cico .ic{width:23px;height:23px}
+.chain-card h3{font-size:19px;margin-bottom:10px}
+.chain-card p{font-size:14px;line-height:1.82;color:var(--slate)}
+.chain-card ul{list-style:none;margin:12px 0 0;padding:0}
+.chain-card li{
+  display:flex;gap:9px;align-items:flex-start;
+  font-size:13.2px;color:var(--slate);padding:4px 0;line-height:1.7;
+}
+.chain-card li .ic{width:15px;height:15px;color:var(--ok);margin-top:4px}
+
+/* ---------- 不必再做 ---------- */
+.nomore{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:26px}
+.nomore-item{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:15px 15px;display:flex;gap:10px;align-items:flex-start;
+}
+.nomore-item .ic{width:17px;height:17px;color:var(--ok);margin-top:4px}
+.nomore-item b{font-size:13.6px;color:var(--ink);font-weight:600;line-height:1.55}
+.nomore--tight{margin-top:18px}
+.nomore-head{
+  grid-column:1/-1;display:flex;align-items:center;gap:8px;
+  font-size:13.4px;font-weight:600;color:var(--slate);
+}
+.nomore-head .ic{width:16px;height:16px;color:var(--ok)}
+
+/* ---------- 功能特性 ---------- */
+.feat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.feat{
+  grid-column:span 2;
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:21px 21px 19px;transition:transform .22s ease,box-shadow .22s ease;
+}
+.feat:hover{transform:translateY(-3px);box-shadow:var(--sh-1)}
+.feat-top{display:flex;align-items:center;gap:11px;margin-bottom:11px;flex-wrap:wrap}
+.feat-top .fic{
+  width:38px;height:38px;border-radius:10px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy-soft);color:var(--navy-2);
+}
+.feat-top .fic .ic{width:19px;height:19px}
+.feat-top h3{font-size:16.5px;margin:0}
+.cmd{
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  background:var(--navy);color:#fff;border-radius:5px;padding:2px 7px;margin-left:auto;
+}
+.feat p{font-size:13.4px;line-height:1.78;color:var(--slate)}
+.feat .syn{
+  margin-top:11px;padding-top:11px;border-top:1px solid var(--line-soft);
+  font-family:var(--mono);font-size:11.6px;line-height:1.85;color:var(--muted);
+  overflow-x:auto;white-space:pre;
+}
+.feat--lead{background:linear-gradient(180deg,#fff,var(--navy-soft));border-color:var(--navy-soft-2)}
+.feat--w3{grid-column:span 3}
+
+/* ---------- 四类模板指令 ---------- */
+.dir-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dir{
+  min-width:0;overflow:hidden;
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:21px 21px 19px;transition:transform .22s ease,box-shadow .22s ease;
+}
+.dir:hover{transform:translateY(-3px);box-shadow:var(--sh-1)}
+.dir-top{display:flex;align-items:center;gap:11px;margin-bottom:11px;flex-wrap:wrap}
+.dir-no{
+  width:36px;height:36px;border-radius:10px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy-soft);color:var(--navy-2);
+  font-family:var(--mono);font-size:13.5px;font-weight:700;
+}
+.dir-top h3{font-size:16.5px;margin:0}
+.dir p{font-size:13.4px;line-height:1.78;color:var(--slate)}
+.dir .syn{
+  margin-top:12px;padding:12px 14px;border-radius:var(--radius-sm);
+  background:var(--bg-3);border:1px solid var(--line-soft);
+  font-family:var(--mono);font-size:11.6px;line-height:1.85;color:#33475f;
+  overflow-x:auto;white-space:pre;
+}
+/* 覆盖 sec-head 引言区与卡片正文里的行内代码 */
+#directives code{
+  font-family:var(--mono);font-size:12px;white-space:nowrap;
+  background:var(--bg-3);border:1px solid var(--line-soft);
+  border-radius:5px;padding:1px 5px;color:#2b4a6f;
+}
+/* ---------- 场景 ---------- */
+.scene-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:17px}
+.scene{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 23px 21px;position:relative;overflow:hidden;
+}
+.scene::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--navy-2),var(--navy-soft-2));
+}
+.scene-head{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+.scene-head .sic{
+  width:40px;height:40px;border-radius:11px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy-soft);color:var(--navy-2);
+}
+.scene-head .sic .ic{width:20px;height:20px}
+.scene-head h3{font-size:17px;margin:0}
+.scene-head em{
+  font-style:normal;font-size:11.5px;font-weight:700;color:var(--gold);
+  background:var(--gold-soft);border-radius:5px;padding:2px 8px;margin-left:auto;
+  border:1px solid #f0e4c8;
+}
+.scene p{font-size:13.7px;line-height:1.82;color:var(--slate)}
+.scene .gain{
+  margin-top:13px;padding-top:12px;border-top:1px dashed var(--line);
+  display:flex;gap:9px;align-items:flex-start;
+  font-size:13px;color:var(--navy);font-weight:600;line-height:1.7;
+}
+.scene .gain .ic{width:16px;height:16px;color:var(--ok);margin-top:4px}
+
+/* ---------- 目录组织 ---------- */
+.org-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:start}
+.tree{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--sh-1);
+}
+.tree-head{
+  display:flex;align-items:center;gap:10px;padding:11px 18px;
+  background:var(--bg-2);border-bottom:1px solid var(--line-soft);
+  font-size:13px;font-weight:600;color:var(--ink);
+}
+.tree-head .ic{width:16px;height:16px;color:var(--navy-2)}
+.tree-head span{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted);font-weight:500}
+.tree-body{padding:15px 18px 18px;overflow-x:auto}
+.tree-row{
+  font-family:var(--mono);font-size:13px;line-height:1.85;
+  white-space:pre;color:var(--slate);letter-spacing:-.01em;
+}
+.tree-row .t-dir{color:var(--navy);font-weight:600}
+.tree-row .t-file{color:var(--ink)}
+.tree-row .t-key{color:var(--ok);font-weight:600}
+.tree-row .t-cmt{color:var(--muted);font-family:var(--font);font-size:12px;letter-spacing:0}
+
+.rules{list-style:none;margin:0;padding:0}
+.rules li{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:12px 0;border-bottom:1px solid var(--line-soft);
+}
+.rules li:last-child{border-bottom:0}
+.rules .rn{
+  width:22px;height:22px;border-radius:6px;flex:none;margin-top:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11.5px;font-weight:700;
+  background:var(--navy-soft);color:var(--navy-2);
+}
+.rules b{display:block;font-size:13.8px;color:var(--ink);font-weight:600;margin-bottom:3px}
+.rules span{display:block;font-size:12.8px;color:var(--muted);line-height:1.72}
+.rules code{
+  font-family:var(--mono);font-size:12px;background:var(--bg-3);
+  padding:1px 5px;border-radius:4px;color:var(--navy);
+}
+
+/* ---------- 边界 ---------- */
+.bound{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bcol{border-radius:var(--radius);padding:24px 24px 22px;border:1px solid}
+.bcol h3{font-size:18px;margin-bottom:15px;display:flex;align-items:center;gap:10px}
+.bcol h3 .ic{width:21px;height:21px}
+.bcol ul{list-style:none;margin:0;padding:0}
+.bcol li{display:flex;gap:11px;align-items:flex-start;padding:7px 0;font-size:14px;line-height:1.72}
+.bcol li .ic{width:16px;height:16px;margin-top:5px}
+.bcol--no{background:#fdfcfb;border-color:#eee6e3}
+.bcol--no h3{color:#8a4a3a}
+.bcol--no h3 .ic{color:#b4452f}
+.bcol--no li{color:var(--muted)}
+.bcol--no li .ic{color:#c98b7e}
+.bcol--yes{background:linear-gradient(180deg,#fff,var(--navy-soft));border-color:var(--navy-soft-2)}
+.bcol--yes h3{color:var(--navy)}
+.bcol--yes h3 .ic{color:var(--navy-2)}
+.bcol--yes li{color:var(--slate)}
+.bcol--yes li .ic{color:var(--ok)}
+
+/* ---------- 结尾 CTA ---------- */
+.cta{
+  background:linear-gradient(145deg,var(--navy-deep),#123a63 58%,#0f4468);
+  color:#dce8f5;position:relative;overflow:hidden;
+}
+.cta::after{
+  content:"";position:absolute;left:50%;bottom:-160px;transform:translateX(-50%);
+  width:760px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,rgba(120,180,240,.16),transparent 66%);
+}
+.cta-in{position:relative;z-index:1;max-width:840px;margin:0 auto;padding:70px 28px;text-align:center}
+.cta h2{color:#fff;font-size:34px;margin-bottom:13px}
+.cta p{font-size:16.5px;color:#b9d0e6;line-height:1.85;max-width:620px;margin:0 auto}
+.cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+.cta .btn-primary{background:#fff;color:var(--navy-deep)}
+.cta .btn-primary:hover{background:#eef4fb}
+.cta-note{margin-top:20px;font-size:13.2px;color:#8fb0cd}
+
+/* ---------- 页脚 ---------- */
+.foot{background:#081c30;color:#7f9ab3;padding:36px 0 32px;font-size:13.2px}
+.foot-in{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+.foot-top{display:flex;flex-wrap:wrap;gap:28px;align-items:center;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.09)}
+.foot-brand{display:flex;align-items:center;gap:11px;color:#fff;font-weight:600;font-size:15px}
+.foot-brand .brand-mark{background:rgba(255,255,255,.12);box-shadow:none}
+.foot-links{display:flex;flex-wrap:wrap;gap:24px;margin-left:auto}
+.foot-links a{color:#9db6cd;font-size:13.2px}
+.foot-links a:hover{color:#fff}
+.foot-bottom{padding-top:18px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;line-height:1.8;font-size:12.4px;color:#5f7b96}
+
+/* ---------- 入场动画 ----------
+   隐藏态只在 <html> 带 .js（说明脚本可用）时生效：
+   禁用 JS 的浏览者看到的是完整不透明的页面，而不是一片空白。
+   用 animation 而非 transition 做入场：动画结束后交还 transform，
+   不影响卡片自身的 hover 过渡时长。 */
+.js .rv{opacity:0}
+.js .rv.is-in{opacity:1;animation:rvIn .65s cubic-bezier(.22,.65,.35,1) backwards}
+@keyframes rvIn{from{opacity:0;transform:translateY(18px)}}
+/* 同屏出现的兄弟卡片由脚本按批次序 setTimeout 错峰触发 */
+/* 循环清单与崩溃点逐条浮现 */
+.js .rv.is-in .loop-list li{animation:riseIn .5s cubic-bezier(.22,.65,.35,1) backwards}
+.js .rv.is-in .loop-list li:nth-child(2){animation-delay:.07s}
+.js .rv.is-in .loop-list li:nth-child(3){animation-delay:.14s}
+.js .rv.is-in .loop-list li:nth-child(4){animation-delay:.21s}
+.js .rv.is-in .loop-list li:nth-child(5){animation-delay:.28s}
+.js .rv.is-in .crash>.crash-item{animation:riseIn .5s cubic-bezier(.22,.65,.35,1) backwards}
+.js .rv.is-in .crash>.crash-item:nth-child(2){animation-delay:.08s}
+.js .rv.is-in .crash>.crash-item:nth-child(3){animation-delay:.16s}
+.js .rv.is-in .crash>.crash-item:nth-child(4){animation-delay:.24s}
+
+/* ---------- 微交互反馈 ---------- */
+.btn:active,.nav-cta:active{transform:translateY(0) scale(.97)}
+.feat-top .fic,.sic,.dir-no,.flow-card .fic{transition:transform .25s ease}
+.feat:hover .feat-top .fic,.scene:hover .sic{transform:translateY(-2px)}
+.dir:hover .dir-no{transform:translateY(-2px) rotate(-3deg)}
+.flow-card:hover .fic{transform:translateY(-2px)}
+.tree-row{transition:background .16s ease;border-radius:6px}
+.tree-row:hover{background:rgba(15,58,107,.045)}
+/* 命令示例一键复制 */
+.feat .syn,.dir .syn{position:relative}
+.syn-copy{
+  position:absolute;top:7px;right:7px;width:28px;height:28px;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);border-radius:7px;cursor:pointer;
+  background:#fff;color:var(--muted);opacity:0;
+  transition:opacity .16s ease,background .16s ease,color .16s ease,border-color .16s ease,transform .16s ease;
+}
+.feat .syn .syn-copy{top:9px;right:0}
+.syn:hover .syn-copy,.syn-copy:focus-visible,.syn-copy.is-ok{opacity:1}
+.syn-copy:hover{color:var(--navy);border-color:var(--navy-2);transform:translateY(-1px)}
+.syn-copy:active{transform:scale(.92)}
+.syn-copy .ic{width:14px;height:14px;pointer-events:none}
+.syn-copy.is-ok{color:var(--ok);border-color:var(--ok-soft);background:var(--ok-soft)}
+.syn-copy:focus-visible{outline:2px solid var(--navy-2);outline-offset:1px}
+/* 触屏设备没有 hover，复制按钮常显 */
+@media (hover:none){
+  .syn-copy{opacity:1}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .rv{opacity:1;transform:none;transition:none}
+  .js .rv.is-in{animation:none}
+  .js .hero-badge,.js .hero h1,.js .hero-lead,.js .hero-actions,.js h1 em::after{animation:none}
+  .hero-badge .dot{animation:none}
+  .js .rv.is-in .loop-list li,.js .rv.is-in .crash>.crash-item{animation:none}
+  .syn-copy{transition:none}
+  .loop-head .spin{animation:none}
+  .btn:hover,.chain-card:hover,.feat:hover{transform:none}
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:1024px){
+  .hero-in{grid-template-columns:1fr;gap:38px}
+  h1{font-size:43px}
+  .hero-lead{max-width:none}
+  .pain-grid,.org-grid{grid-template-columns:1fr;gap:30px}
+  .chain{grid-template-columns:1fr}
+  .trustbar-in{grid-template-columns:repeat(3,1fr);gap:18px}
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .feat,.feat--w3{grid-column:span 1}
+  .scene-grid,.bound{grid-template-columns:1fr}
+  .nomore{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+}
+@media (max-width:680px){
+  .wrap,.hero-in,.nav-in,.trustbar-in,.foot-in{padding-left:20px;padding-right:20px}
+  .section{padding:52px 0}
+  /* 窄屏收起目录树里的行内注释，避免依赖横向滚动 */
+  .tree-row .t-cmt{display:none}
+  h1{font-size:33px}
+  h2{font-size:25px}
+  h2.h2-lg{font-size:28px}
+  .lead{font-size:16px}
+  .hero-in{padding-top:42px;padding-bottom:46px}
+  .trustbar-in{grid-template-columns:1fr 1fr}
+  .tb-item:last-child{grid-column:1/-1}
+  .crash{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .dir-grid{grid-template-columns:1fr}
+  .nomore{grid-template-columns:1fr}
+  .flow-row{grid-template-columns:1fr}
+  .flow-arrows{display:none}
+  .nav-cta{display:none}
+  .foot-links{margin-left:0}
+}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js');</script>
+
+<!-- ===== 图标精灵 ===== -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-merge" viewBox="0 0 24 24"><path d="M7 3v4.5a4.5 4.5 0 0 0 4.5 4.5h1A4.5 4.5 0 0 0 17 7.5V3"/><path d="M12 12v6"/><path d="m9 15.5 3 3 3-3"/></symbol>
+    <symbol id="i-split" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M12 12.5v7" stroke-dasharray="2 2.4"/></symbol>
+    <symbol id="i-braces" viewBox="0 0 24 24"><path d="M8.5 3.5h-.7a2 2 0 0 0-2 2v3.6a2 2 0 0 1-2 2 2 2 0 0 1 2 2v3.6a2 2 0 0 0 2 2h.7"/><path d="M15.5 3.5h.7a2 2 0 0 1 2 2v3.6a2 2 0 0 0 2 2 2 2 0 0 0-2 2v3.6a2 2 0 0 1-2 2h-.7"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
+    <symbol id="i-stack" viewBox="0 0 24 24"><path d="M12 3 2.5 8 12 13l9.5-5L12 3Z"/><path d="m3 12.5 9 4.7 9-4.7"/><path d="m3 16.6 9 4.7 9-4.7"/></symbol>
+    <symbol id="i-offline" viewBox="0 0 24 24"><path d="M3.5 3.5 20.5 20.5"/><path d="M8.6 5.6A5.4 5.4 0 0 1 18 8.4a4 4 0 0 1 2.6 7"/><path d="M16.6 16.6H7a4 4 0 0 1-.6-7.9"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4.5 12.5 5 5L20 7"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 1 1-2.8-6.3"/><path d="M20.5 4.5v5h-5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2.8 19.5h18.4L12 3.5Z"/><path d="M12 9.5v4M12 16.8v.05"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11.5" height="11.5" rx="2"/><path d="M5 15V5.5A2 2 0 0 1 7 3.5h8"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m12 3 8.6 4.7v8.6L12 21l-8.6-4.7V7.7Z"/><path d="m3.4 7.7 8.6 4.8 8.6-4.8M12 12.5V21"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.4 7 8.6 5.7L20.6 7"/></symbol>
+    <symbol id="i-tree" viewBox="0 0 24 24"><path d="M5 4v13a2 2 0 0 0 2 2h12"/><path d="M5 9h5M5 14.5h5"/><rect x="3.4" y="2.6" width="3.2" height="3.2" rx=".9"/><rect x="10" y="7.4" width="3.2" height="3.2" rx=".9"/><rect x="10" y="12.9" width="3.2" height="3.2" rx=".9"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3 2.8 7.8 12 12.6l9.2-4.8Z"/><path d="m3.4 12.4 8.6 4.5 8.6-4.5"/><path d="m3.4 16.4 8.6 4.5 8.6-4.5"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.2A2.2 2.2 0 0 1 6.2 3H20v15.6H6.2A2.2 2.2 0 0 0 4 20.8Z"/><path d="M4 20.8V5.2M8.5 7.5h7M8.5 11h5"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4.5" rx="1.4"/><path d="M4.8 8.5V19a1.6 1.6 0 0 0 1.6 1.6h11.2A1.6 1.6 0 0 0 19.2 19V8.5"/><path d="M10 12.5h4"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.7"/><path d="M8.8 8.8l6.4 6.4"/></symbol>
+  </defs>
+</svg>
+
+<!-- ===== 导航 ===== -->
+<header class="nav" id="nav">
+  <span class="nav-progress" id="navProgress" aria-hidden="true"></span>
+  <div class="nav-in">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><svg class="ic"><use href="#i-merge"/></svg></span>
+      合稿易 <span class="brand-en">DocMerger</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#pain">痛点</a>
+      <a href="#chain">核心链路</a>
+      <a href="#features">功能与指令</a>
+      <a href="#scenes">应用场景</a>
+      <a href="#org">落地方式</a>
+    </nav>
+    <a class="nav-cta" href="#contact">
+      <svg class="ic ic-sm"><use href="#i-mail"/></svg>联系我们
+    </a>
+  </div>
+</header>
+
+<!-- ===== 首屏 ===== -->
+<section class="hero" id="top">
+  <div class="hero-in">
+    <div>
+      <span class="hero-badge"><span class="dot"></span>结构化标书文档生成工具</span>
+      <h1>多人分工写，<br><em>一键自动合</em></h1>
+      <p class="hero-lead">
+        把一份完整的标书拆成可管理的章节，用<strong>模板</strong>与<strong>数据</strong>生成章节内容，
+        最后按规则合并成一份<strong>格式统一、编号连续、目录完整</strong>的正式文档。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#chain">
+          <svg class="ic ic-sm"><use href="#i-layers"/></svg>看核心链路
+        </a>
+        <a class="btn btn-ghost" href="#contact">
+          <svg class="ic ic-sm"><use href="#i-mail"/></svg>联系我们
+        </a>
+      </div>
+    </div>
+
+    <!-- 主文档 = 骨架 + 蓝图 -->
+    <div class="flow rv">
+      <div class="flow-cap">主文档 = 骨架 + 蓝图</div>
+      <div class="flow-row">
+        <div class="flow-card">
+          <span class="fic"><svg class="ic"><use href="#i-split"/></svg></span>
+          <b>主文档模板</b>
+          <span>章节骨架 · 合稿蓝图</span>
+        </div>
+        <div class="flow-card">
+          <span class="fic"><svg class="ic"><use href="#i-stack"/></svg></span>
+          <b>章节源文件</b>
+          <span>各人独立编写 · N 份</span>
+        </div>
+        <div class="flow-card">
+          <span class="fic"><svg class="ic"><use href="#i-grid"/></svg></span>
+          <b>数据表格</b>
+          <span>变量 · 循环数据集</span>
+        </div>
+      </div>
+      <svg class="flow-arrows" viewBox="0 0 520 58" fill="none" aria-hidden="true">
+        <path d="M86 2C86 28 246 26 256 44" stroke="#c3d5e8" stroke-width="1.6"/>
+        <path d="M260 2v42" stroke="#c3d5e8" stroke-width="1.6"/>
+        <path d="M434 2C434 28 274 26 264 44" stroke="#c3d5e8" stroke-width="1.6"/>
+        <path d="M252 40l8 14 8-14z" fill="#15508f"/>
+      </svg>
+      <div class="flow-out">
+        <span class="fic"><svg class="ic"><use href="#i-merge"/></svg></span>
+        <div>
+          <b>合稿输出</b>
+          <span>整册成品 · 可直接送审</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 信任条 ===== -->
+<section class="trustbar">
+  <div class="trustbar-in">
+    <div class="tb-item">
+      <svg class="ic"><use href="#i-offline"/></svg>
+      <div><b>完全离线</b><span>不出网，不依赖云端服务</span></div>
+    </div>
+    <div class="tb-item">
+      <svg class="ic"><use href="#i-box"/></svg>
+      <div><b>单文件分发</b><span>一个可执行文件即完整程序，免安装</span></div>
+    </div>
+    <div class="tb-item">
+      <svg class="ic"><use href="#i-layers"/></svg>
+      <div><b>原格式保留</b><span>样式编号图片原样搬入</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 产品视频 ===== -->
+<section class="section section--soft" id="video">
+  <div class="wrap">
+    <div class="video-shell rv">
+      <div class="video-frame">
+        <video controls preload="none" poster="images/video-poster.jpeg" width="1920" height="1080">
+          <source src="DocMerger-intro.mp4" type="video/mp4">
+          你的浏览器不支持视频播放，可直接 <a href="DocMerger-intro.mp4">下载观看</a>。
+        </video>
+      </div>
+      <p class="video-note">时长 18 秒 · 含背景音乐 · 功能细节见下方版块</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 痛点 ===== -->
+<section class="section" id="pain">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">痛点本质</span>
+      <h2>难的不是「合稿」，而是<span class="hl-mark">「重复合稿」</span></h2>
+      <p class="lead">
+        章节一旦分工，合稿就不再是一次性动作，而是一个反复循环。
+        每一次上游改动，都要在下游重来一遍。
+      </p>
+    </div>
+
+    <div class="pain-grid">
+      <div class="loop rv">
+        <div class="loop-head">
+          <svg class="ic spin"><use href="#i-refresh"/></svg>
+          <b>合稿循环</b>
+          <span>一个项目里真实发生的样子</span>
+        </div>
+        <ul class="loop-list">
+          <li><span class="loop-n">01</span><span class="loop-txt"><b>A</b> 改了第 3 章</span><span class="loop-res">合稿一次</span></li>
+          <li><span class="loop-n">02</span><span class="loop-txt"><b>B</b> 改了第 5 章</span><span class="loop-res">合稿一次</span></li>
+          <li><span class="loop-n">03</span><span class="loop-txt"><b>C</b> 又改了第 3 章</span><span class="loop-res">再合稿一次</span></li>
+          <li><span class="loop-n">04</span><span class="loop-txt">甲方临时换了项目名称 → <b>全文替换</b></span><span class="loop-res">合稿一次</span></li>
+          <li class="is-hot"><span class="loop-n">05</span><span class="loop-txt">截标前一天，<b>所有人同时改</b></span><span class="loop-res">疯狂合稿</span></li>
+        </ul>
+        <div class="loop-foot">
+          <svg class="ic"><use href="#i-alert"/></svg>
+          <span>合稿次数与项目后期的工作量<strong>正相关</strong>——越接近截止，越频繁、越紧急、越容易出错。</span>
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="crash">
+          <div class="crash-item">
+            <svg class="ic"><use href="#i-alert"/></svg>
+            <div><b>改一处，牵一发</b><span>编号乱了、目录错了、页眉页脚不对，改一个小标题可能全线返工。</span></div>
+          </div>
+          <div class="crash-item">
+            <svg class="ic"><use href="#i-eye"/></svg>
+            <div><b>不知道谁改了什么</b><span>没有变更记录，只能靠肉眼逐段对比。</span></div>
+          </div>
+          <div class="crash-item">
+            <svg class="ic"><use href="#i-layers"/></svg>
+            <div><b>格式越合越乱</b><span>多人各写各的样式，合到一起就炸。</span></div>
+          </div>
+          <div class="crash-item">
+            <svg class="ic"><use href="#i-stop"/></svg>
+            <div><b>出错成本高</b><span>合错版本、漏合章节、覆盖别人内容。</span></div>
+          </div>
+        </div>
+        <div class="pain-quote">
+          合稿人本质上变成了<b>人肉文档合并器</b>——<b>多人改、反复合、格式统一</b>，
+          这三件事叠加在一起，没有哪种手工方式能真正解决。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 核心链路 ===== -->
+<section class="section section--soft" id="chain">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">核心链路</span>
+      <h2 class="h2-lg">拆分章节 → 内容模板化 → 生成合稿</h2>
+      <p class="lead">
+        把「合稿」从一次性手工动作，变成<strong>可重复执行的流水线</strong>——
+        同一批章节源文件可以反复重新生成，格式、编号、目录每次都从主文档重新推导。
+      </p>
+    </div>
+
+    <div class="chain">
+      <article class="chain-card rv">
+        <span class="chain-step">STEP 1</span>
+        <span class="cico"><svg class="ic"><use href="#i-split"/></svg></span>
+        <h3>拆分章节</h3>
+        <p>
+          一个项目一份主文档，定义章节的<strong>层级、顺序与数据来源</strong>，再由它拆出各章节源文件，
+          分给不同人并行编写——每个人仍在 Word 里写，习惯不变。
+        </p>
+        <ul>
+          <li><svg class="ic"><use href="#i-check"/></svg>主文档是唯一的合稿入口</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>章节各自独立，互不覆盖</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>标题层级由主文档统一决定</li>
+        </ul>
+      </article>
+
+      <article class="chain-card rv">
+        <span class="chain-step">STEP 2</span>
+        <span class="cico"><svg class="ic"><use href="#i-braces"/></svg></span>
+        <h3>内容模板化</h3>
+        <p>
+          把重复结构写成指令，把变化部分交给数据。四类语法覆盖绝大多数正式文档的骨架形态，
+          并可任意层嵌套。
+        </p>
+        <ul>
+          <li><svg class="ic"><use href="#i-check"/></svg>占位符取变量，全局常量随处引用</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>循环 / 表格指令按数据展开</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>插入指令搬运已有文档</li>
+        </ul>
+      </article>
+
+      <article class="chain-card rv">
+        <span class="chain-step">STEP 3</span>
+        <span class="cico"><svg class="ic"><use href="#i-merge"/></svg></span>
+        <h3>生成合稿</h3>
+        <p>
+          汇总章节文件，按主文档骨架自动生成整册。编号、目录、样式全部重新推导，
+          图片与内嵌对象随内容一并搬运。
+        </p>
+        <ul>
+          <li><svg class="ic"><use href="#i-check"/></svg>编号连续、目录完整</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>改一处只需重新生成</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>同一批源文件可反复出稿</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="nomore nomore--tight rv">
+      <div class="nomore-head">
+        <svg class="ic"><use href="#i-check"/></svg>于是这五件事，都不用再做了
+      </div>
+      <div class="nomore-item"><svg class="ic"><use href="#i-check"/></svg><b>不用从零写整份标书</b></div>
+      <div class="nomore-item"><svg class="ic"><use href="#i-check"/></svg><b>不用手动拼章节</b></div>
+      <div class="nomore-item"><svg class="ic"><use href="#i-check"/></svg><b>不用反复调格式</b></div>
+      <div class="nomore-item"><svg class="ic"><use href="#i-check"/></svg><b>不用人工合并编号和目录</b></div>
+      <div class="nomore-item"><svg class="ic"><use href="#i-check"/></svg><b>不用来回复制粘贴历史内容</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 功能特性 ===== -->
+<section class="section" id="features">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">功能与指令</span>
+      <h2 class="h2-lg">五条命令，覆盖合稿全链条</h2>
+      <p class="lead">
+        从拆稿、生成到合稿输出，五条命令覆盖全流程；桌面界面上每个菜单就是其中一条，按需选择即可。
+      </p>
+    </div>
+
+    <div class="feat-grid">
+      <article class="feat feat--lead feat--w3 rv">
+        <div class="feat-top">
+          <span class="fic"><svg class="ic"><use href="#i-braces"/></svg></span>
+          <h3>模板生成</h3>
+          <span class="cmd">gen</span>
+        </div>
+        <p>
+          完整的模板引擎：<strong>占位符</strong>取变量、<strong>循环</strong>按数据重复整段、
+          <strong>表格</strong>逐行展开、<strong>插入</strong>并入已有文档，四类语法可任意嵌套组合。
+          生成后模板里的样式、编号、图片与内嵌对象<strong>原样保留</strong>，不是普通的文本替换。
+        </p>
+        <div class="syn">doc-merger gen -t 模板.docx --data 数据.xlsx -o 合稿.docx</div>
+      </article>
+
+      <article class="feat feat--lead feat--w3 rv">
+        <div class="feat-top">
+          <span class="fic"><svg class="ic"><use href="#i-merge"/></svg></span>
+          <h3>文档合并</h3>
+          <span class="cmd">merge</span>
+        </div>
+        <p>
+          以第一个文档为基础，依次追加后续文档正文。图片与内嵌图表随内容一并搬运，
+          不会丢失或错位。
+        </p>
+        <div class="syn">doc-merger merge 章节1.docx 章节2.docx 合稿.docx</div>
+      </article>
+
+      <article class="feat rv">
+        <div class="feat-top">
+          <span class="fic"><svg class="ic"><use href="#i-copy"/></svg></span>
+          <h3>批量替换</h3>
+          <span class="cmd">replace</span>
+        </div>
+        <p>一份模板 + Excel 逐行数据 → 一批结构相同、内容不同的文档。适合成套产出的场合。</p>
+      </article>
+
+      <article class="feat rv">
+        <div class="feat-top">
+          <span class="fic"><svg class="ic"><use href="#i-tree"/></svg></span>
+          <h3>目录抽取</h3>
+          <span class="cmd">toc</span>
+        </div>
+        <p>按标题样式或大纲级别识别层级，抽成带缩进的纯文本目录，用于核对章节是否齐全。</p>
+      </article>
+
+      <article class="feat rv">
+        <div class="feat-top">
+          <span class="fic"><svg class="ic"><use href="#i-archive"/></svg></span>
+          <h3>图片提取</h3>
+          <span class="cmd">images</span>
+        </div>
+        <p>把文档内的图片按序抽成独立文件，便于素材盘点、复用与归档。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 四类模板指令 ===== -->
+<section class="section section--soft" id="directives">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">模板能力</span>
+      <h2 class="h2-lg">四类指令，把「写内容」变成「填数据」</h2>
+      <p class="lead">
+        模板正文里用双花括号写指令，运行时按数据自动展开。四类语法可任意嵌套组合，
+        模板原有的样式、编号、图片与内嵌对象<strong>原样落到结果里</strong>。
+      </p>
+    </div>
+
+    <div class="dir-grid">
+      <article class="dir rv">
+        <div class="dir-top">
+          <span class="dir-no">01</span>
+          <h3>文本占位符</h3>
+          <span class="cmd">replace · gen</span>
+        </div>
+        <p>
+          把变量填进正文。写 <code>{{列名}}</code> 取当前行数据，写 <code>{{表名.列名}}</code> 引用指定表
+          ——项目名称、编制单位这类全局常量，在任何章节、任何层级都能直接引用。
+        </p>
+        <div class="syn">项目：{{项目名称}} · {{客户名称}}
+单位：{{系统.系统名称}} · {{模块.名称}}</div>
+      </article>
+
+      <article class="dir rv">
+        <div class="dir-top">
+          <span class="dir-no">02</span>
+          <h3>循环指令</h3>
+          <span class="cmd">gen</span>
+        </div>
+        <p>
+          数据表里有几行，<code>{{#循环开始}}</code> 与 <code>{{#循环结束}}</code> 之间的<strong>整段内容就复制几份</strong>，
+          可按父行条件展开子表——章节结构随数据自动生长。
+        </p>
+        <div class="syn">{{#循环开始 数据表=模块}}
+  模块：{{模块.名称}}
+  {{#循环开始 数据表=部件 筛选列=模块 筛选值=模块.名称}}
+    部件：{{部件.名称}}
+  {{#循环结束}}
+{{#循环结束}}</div>
+      </article>
+
+      <article class="dir rv">
+        <div class="dir-top">
+          <span class="dir-no">03</span>
+          <h3>表格指令</h3>
+          <span class="cmd">gen</span>
+        </div>
+        <p>
+          在指令之间按数据<strong>逐行展开</strong>一张表：以 <code>模板行</code> 指定的那一行为模板复制，
+          表头保持不动，数据有几行就生成几行。
+        </p>
+        <div class="syn">{{#表格开始 数据表=模块 模板行=1}}
+  │ {{模块.名称}} │ {{模块.标识}} │
+{{#表格结束}}</div>
+      </article>
+
+      <article class="dir rv">
+        <div class="dir-top">
+          <span class="dir-no">04</span>
+          <h3>插入文档指令</h3>
+          <span class="cmd">gen</span>
+        </div>
+        <p>
+          把已有文档<strong>并到当前位置</strong>，随文图片与内嵌对象一并搬运，图表不会错位。
+          插入哪一份文档可以按章节动态决定。
+        </p>
+        <div class="syn">{{#插入开始}}章节/技术方案_v2.docx{{#插入结束}}</div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 场景与价值 ===== -->
+<section class="section" id="scenes">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">应用场景</span>
+      <h2>在这些场合，它替你省掉全部「合并」动作</h2>
+      <p class="lead">
+        共同特征只有一个：<strong>多人分工、结构同构、需要反复出稿</strong>。
+      </p>
+    </div>
+
+    <div class="scene-grid">
+      <article class="scene rv">
+        <div class="scene-head">
+          <span class="sic"><svg class="ic"><use href="#i-book"/></svg></span>
+          <h3>商务标书 · 分工编写</h3>
+          <em>离线 / 涉密</em>
+        </div>
+        <p>
+          技术方案、服务方案、实施组织、案例章节分别交给不同人。项目经理只维护一份主文档，
+          收齐各章节即可一键出稿，不必再逐段复制、逐项核编号。
+        </p>
+        <div class="gain">
+          <svg class="ic"><use href="#i-check"/></svg>
+          <span>截标前的每一次修改，都只是重新生成一次</span>
+        </div>
+      </article>
+
+      <article class="scene rv">
+        <div class="scene-head">
+          <span class="sic"><svg class="ic"><use href="#i-split"/></svg></span>
+          <h3>学术科研文档 · 长文拆章</h3>
+          <em>长文协作</em>
+        </div>
+        <p>
+          学位论文、研究报告这类上百页的长文档，按章拆成独立文件后，每一章都能单独编写、单独送审、
+          单独替换版本；合回去编号与目录自动连续，不必通篇重排。
+        </p>
+        <div class="gain">
+          <svg class="ic"><use href="#i-merge"/></svg>
+          <span>章节各改各的，合稿只做一次</span>
+        </div>
+      </article>
+
+      <article class="scene rv">
+        <div class="scene-head">
+          <span class="sic"><svg class="ic"><use href="#i-file"/></svg></span>
+          <h3>成套项目文档批量产出</h3>
+          <em>批量</em>
+        </div>
+        <p>
+          需求规格、部件说明、接口文档这类「结构一致、内容各异」的材料，
+          一份模板配一张表即可成套产出，避免同一份文档被手工改写十几遍。
+        </p>
+        <div class="gain">
+          <svg class="ic"><use href="#i-copy"/></svg>
+          <span>把「重复劳动」换成「填一张表」</span>
+        </div>
+      </article>
+
+      <article class="scene rv">
+        <div class="scene-head">
+          <span class="sic"><svg class="ic"><use href="#i-archive"/></svg></span>
+          <h3>历史素材复用与盘点</h3>
+          <em>沉淀</em>
+        </div>
+        <p>
+          旧项目文档可以抽目录、抽图片，快速看清「里面有什么」，
+          把散落的历史文档重新变成可复用的标书资产。
+        </p>
+        <div class="gain">
+          <svg class="ic"><use href="#i-refresh"/></svg>
+          <span>上一份标书的结构与数据，下一个项目直接用</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 落地方式 ===== -->
+<section class="section section--soft" id="org">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">落地方式</span>
+      <h2>一套固定目录，团队里谁都看得懂</h2>
+      <p class="lead">
+        一个项目一个目录，只放三类东西：<strong>主文档模板</strong>、<strong>数据表格</strong>、<strong>章节与合稿</strong>。
+        结构清晰到可以被任何人接手。
+      </p>
+    </div>
+
+    <div class="org-grid">
+      <div class="tree rv">
+        <div class="tree-head">
+          <svg class="ic"><use href="#i-tree"/></svg>
+          推荐目录结构
+          <span>一个项目一个目录</span>
+        </div>
+        <div class="tree-body">
+<div class="tree-row"><span class="t-dir">&lt;XXX项目&gt;/</span></div>
+<div class="tree-row">├── <span class="t-key">&lt;XXX项目&gt;模板.docx</span>      <span class="t-cmt">← 主文档：章节骨架 + 合稿蓝图</span></div>
+<div class="tree-row">├── <span class="t-key">数据表格.xlsx</span>           <span class="t-cmt">← 项目数据与各章节数据（一 Sheet 一张表）</span></div>
+<div class="tree-row">├── <span class="t-dir">章节/</span>                   <span class="t-cmt">← 拆分后交给各人编写的源文件</span></div>
+<div class="tree-row">│   ├── <span class="t-file">&lt;XXX项目&gt;_技术方案_20261001_v1.docx</span></div>
+<div class="tree-row">│   ├── <span class="t-file">&lt;XXX项目&gt;_技术方案_20261006_v2.docx</span></div>
+<div class="tree-row">│   └── <span class="t-file">&lt;XXX项目&gt;_技术方案_20261010_v2.docx</span></div>
+<div class="tree-row">└── <span class="t-dir">合并稿/</span>                 <span class="t-cmt">← 产物：可直接送审的整册文档</span></div>
+<div class="tree-row">    └── <span class="t-key">&lt;XXX项目&gt;_v1.docx</span></div>
+        </div>
+      </div>
+
+      <div class="rv">
+        <ul class="rules">
+          <li>
+            <span class="rn">1</span>
+            <div><b>主文档模板只有一个</b><span>合稿的唯一入口。章节顺序、标题层级、样式基准全部由它决定。</span></div>
+          </li>
+          <li>
+            <span class="rn">2</span>
+            <div><b>数据集中在数据表格</b><span>表名即指令里的数据表名，首行即列名。</span></div>
+          </li>
+          <li>
+            <span class="rn">3</span>
+            <div><b>章节文件带日期与版本</b><span>文件名里带日期与版本号，谁在什么时候改的，一眼可见。</span></div>
+          </li>
+          <li>
+            <span class="rn">4</span>
+            <div><b>合稿产物单独放</b><span>统一落到 <code>合并稿/</code>，永远不覆盖 <code>章节/</code> 里的源文件——源文件是资产，产物是可再生的。</span></div>
+          </li>
+          <li>
+            <span class="rn">5</span>
+            <div><b>改内容改源头</b><span>要改哪一章，就改对应源文件或数据表，然后重新生成。不直接手改合稿。</span></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 产品边界 ===== -->
+<section class="section" id="boundary">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">产品边界</span>
+      <h2 class="h2-lg">边界清楚，才敢放进正式流程</h2>
+      <p class="lead">
+        只做结构化标书文档生成这一件事。不做通用办公软件，也不试图替代 Word
+        ——你的既有习惯与既有文档，都原样保留。
+      </p>
+    </div>
+
+    <div class="bound">
+      <div class="bcol bcol--no rv">
+        <h3><svg class="ic"><use href="#i-x"/></svg>不做</h3>
+        <ul>
+          <li><svg class="ic"><use href="#i-x"/></svg>不做通用文字处理软件</li>
+          <li><svg class="ic"><use href="#i-x"/></svg>不做替代 Word 的编辑器</li>
+          <li><svg class="ic"><use href="#i-x"/></svg>不做复杂排版设计工具</li>
+          <li><svg class="ic"><use href="#i-x"/></svg>不做通用协同办公平台</li>
+        </ul>
+      </div>
+      <div class="bcol bcol--yes rv">
+        <h3><svg class="ic"><use href="#i-check"/></svg>只做</h3>
+        <ul>
+          <li><svg class="ic"><use href="#i-check"/></svg>结构化章节管理</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>模板化内容生成</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>数据驱动文档生成</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>标准化合稿输出</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>可复用标书资产沉淀</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 结尾 CTA ===== -->
+<section class="cta" id="contact">
+  <div class="cta-in">
+    <h2>把「重复合稿」这件事，从流程里删掉</h2>
+    <p>
+      如果你们的标书、设计方案、成套项目文档正处在「多人分工写、反复手工合」的状态，
+      欢迎联系我们做一次场景对接与试用。
+    </p>
+    <div class="cta-actions">
+      <a class="btn btn-primary" href="mailto:contact@cd-ii.com?subject=%E5%90%88%E7%A8%BF%E6%98%93%20DocMerger%20%C2%B7%20%E8%AF%95%E7%94%A8%E4%B8%8E%E5%9C%BA%E6%99%AF%E5%AF%B9%E6%8E%A5">
+        <svg class="ic ic-sm"><use href="#i-mail"/></svg>contact@cd-ii.com
+      </a>
+    </div>
+    <p class="cta-note">支持离线环境部署 · 可按你们现有的目录结构试点</p>
+  </div>
+</section>
+
+<!-- ===== 页脚 ===== -->
+<footer class="foot">
+  <div class="foot-in">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <span class="brand-mark"><svg class="ic"><use href="#i-merge"/></svg></span>
+        合稿易 DocMerger
+      </div>
+      <nav class="foot-links">
+        <a href="#pain">痛点</a>
+        <a href="#chain">核心链路</a>
+        <a href="#features">功能与指令</a>
+        <a href="#scenes">应用场景</a>
+        <a href="#org">落地方式</a>
+      </nav>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 合稿易 DocMerger · 结构化标书文档生成工具</span>
+      <span>contact@cd-ii.com</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- 导航：滚动阴影 + 阅读进度 + 当前章节高亮 ---------- */
+  var nav = document.getElementById('nav');
+  var bar = document.getElementById('navProgress');
+  var spyLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
+  var spyMap = spyLinks.map(function (a) {
+    var id = (a.getAttribute('href') || '').slice(1);
+    return { a: a, sec: document.getElementById(id) };
+  }).filter(function (x) { return !!x.sec; });
+  var ticking = false;
+  function onScroll() {
+    ticking = false;
+    var y = window.scrollY;
+    nav.classList.toggle('is-scrolled', y > 8);
+    if (bar) {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (max > 0 ? Math.min(y / max, 1) * 100 : 0) + '%';
+    }
+    var probe = y + 120, cur = null;
+    for (var i = 0; i < spyMap.length; i++) {
+      if (spyMap[i].sec.offsetTop <= probe) { cur = spyMap[i]; }
+    }
+    for (var j = 0; j < spyLinks.length; j++) {
+      spyLinks[j].classList.toggle('is-active', !!cur && spyLinks[j] === cur.a);
+    }
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  onScroll();
+
+  /* ---------- 入场动画：同屏的兄弟卡片错峰出现 ---------- */
+  var nodes = document.querySelectorAll('.rv');
+  if (reduce || !('IntersectionObserver' in window)) {
+    for (var i = 0; i < nodes.length; i++) { nodes[i].classList.add('is-in'); }
+  } else {
+    var STAGGER = 90;
+    var io = new IntersectionObserver(function (entries) {
+      var groups = [];
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) { return; }
+        io.unobserve(e.target);
+        var p = e.target.parentElement, g = null;
+        for (var k = 0; k < groups.length; k++) { if (groups[k].p === p) { g = groups[k]; } }
+        if (!g) { g = { p: p, list: [] }; groups.push(g); }
+        g.list.push(e.target);
+      });
+      groups.forEach(function (g) {
+        g.list.sort(function (a, b) {
+          return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+        });
+        g.list.forEach(function (el, idx) {
+          setTimeout(function () {
+            el.style.setProperty('--d', '0s');
+            el.classList.add('is-in');
+          }, idx * STAGGER);
+        });
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    for (var j = 0; j < nodes.length; j++) { io.observe(nodes[j]); }
+  }
+
+  /* ---------- 命令示例一键复制 ---------- */
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    done(ok);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.syn'), function (s) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'syn-copy';
+    btn.title = '复制';
+    btn.setAttribute('aria-label', '复制内容');
+    btn.innerHTML = '<svg class="ic"><use href="#i-copy"/></svg>';
+    btn.addEventListener('click', function () {
+      var text = s.textContent.replace(/\s+$/, '');
+      var use = btn.querySelector('use');
+      function done(ok) {
+        btn.classList.toggle('is-ok', ok);
+        btn.title = ok ? '已复制' : '复制失败';
+        use.setAttribute('href', ok ? '#i-check' : '#i-x');
+        setTimeout(function () {
+          btn.classList.remove('is-ok');
+          btn.title = '复制';
+          use.setAttribute('href', '#i-copy');
+        }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); },
+          function () { fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+    s.appendChild(btn);
+  });
+})();
+</script>
+</body>
+</html>

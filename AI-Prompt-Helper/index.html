@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>画语 - AI绘图提示词辅助工具 — 快速构建高质量提示词</title>
+<meta name="description" content="画语 - AI绘图提示词辅助工具，一款基于 Tauri + Vue 的桌面端提示词辅助工具，帮助用户快速构建高质量 Prompt，适用于 Stable Diffusion、Midjourney 等平台。">
+<link rel="icon" href="images/icon.ico" sizes="any">
+<link rel="icon" href="images/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="images/128x128.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060913;
+    --bg-soft: #0b1120;
+    --card: rgba(255,255,255,.04);
+    --card-border: rgba(255,255,255,.08);
+    --text: #e6edf7;
+    --muted: #8b97ab;
+    --cyan: #22d3ee;
+    --violet: #8b5cf6;
+    --pink: #ec4899;
+    --grad: linear-gradient(135deg, #22d3ee, #8b5cf6 55%, #ec4899);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---- background effects ---- */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 75%);
+  }
+  .bg-glow {
+    position: fixed; z-index: 0; pointer-events: none;
+    width: 720px; height: 720px; border-radius: 50%;
+    filter: blur(160px); opacity: .16;
+  }
+  .glow-1 { top: -260px; left: -180px; background: var(--cyan); }
+  .glow-2 { top: -320px; right: -220px; background: var(--violet); }
+  .glow-3 { bottom: -400px; left: 35%; background: var(--pink); opacity: .1; }
+
+  .wrap { position: relative; z-index: 1; max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---- nav ---- */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(16px);
+    background: rgba(6,9,19,.72);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: .3px; text-decoration: none; color: var(--text); }
+  .logo-mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    display: block; object-fit: contain;
+    box-shadow: 0 0 22px rgba(139,92,246,.5);
+  }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14.5px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 24px; border-radius: 10px;
+    font-weight: 600; font-size: 15px; text-decoration: none;
+    transition: transform .18s, box-shadow .18s, background .18s;
+    cursor: pointer; border: none;
+  }
+  .btn-primary { background: var(--grad); color: #060913; box-shadow: 0 6px 28px rgba(139,92,246,.4); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 34px rgba(139,92,246,.55); }
+  .btn-ghost { background: rgba(255,255,255,.06); color: var(--text); border: 1px solid rgba(255,255,255,.12); }
+  .btn-ghost:hover { background: rgba(255,255,255,.1); transform: translateY(-2px); }
+  .nav-cta { display: flex; gap: 12px; }
+  @media (max-width: 720px) { .nav-links, .nav-cta .btn-ghost { display: none; } }
+
+  /* ---- hero ---- */
+  .hero { padding: 96px 0 72px; text-align: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 16px; border-radius: 99px;
+    background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.35);
+    color: #c4b5fd; font-size: 13px; font-weight: 600; letter-spacing: .4px;
+    margin-bottom: 28px;
+  }
+  .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: .4; } }
+  h1 {
+    font-size: clamp(38px, 6vw, 62px);
+    font-weight: 800; line-height: 1.12; letter-spacing: -1.5px;
+    margin-bottom: 22px;
+  }
+  .grad-text {
+    background: var(--grad);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .hero p { max-width: 640px; margin: 0 auto 36px; color: var(--muted); font-size: 18px; line-height: 1.75; }
+  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  /* ---- screenshot ---- */
+  .shot-wrap { margin: 72px auto 0; max-width: 1060px; position: relative; }
+  .shot-wrap::before {
+    content: ""; position: absolute; inset: -2px;
+    border-radius: 18px; background: var(--grad);
+    filter: blur(40px); opacity: .3; z-index: -1;
+  }
+  .shot {
+    width: 100%; border-radius: 14px; display: block;
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+  }
+
+  /* ---- sections ---- */
+  section { padding: 96px 0; }
+  .sec-label {
+    display: inline-block; font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--cyan); margin-bottom: 16px;
+  }
+  h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -.8px; line-height: 1.2; margin-bottom: 16px; }
+  .sec-sub { color: var(--muted); font-size: 17px; line-height: 1.7; max-width: 620px; }
+  .sec-head { text-align: center; margin-bottom: 56px; }
+  .sec-head .sec-sub { margin: 0 auto; }
+
+  /* ---- value cards ---- */
+  .value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+  .v-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 16px; padding: 34px 28px;
+    transition: transform .25s, border-color .25s, background .25s;
+    position: relative; overflow: hidden;
+  }
+  .v-card::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--grad); opacity: 0; transition: opacity .25s;
+  }
+  .v-card:hover { transform: translateY(-6px); border-color: rgba(139,92,246,.4); background: rgba(255,255,255,.06); }
+  .v-card:hover::after { opacity: 1; }
+  .v-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: grid; place-items: center; font-size: 22px;
+    margin-bottom: 20px;
+  }
+  .ic-1 { background: rgba(34,211,238,.14); }
+  .ic-2 { background: rgba(139,92,246,.14); }
+  .ic-3 { background: rgba(236,72,153,.14); }
+  .ic-4 { background: rgba(52,211,153,.14); }
+  .ic-5 { background: rgba(251,191,36,.14); }
+  .ic-6 { background: rgba(96,165,250,.14); }
+  .v-card h3 { font-size: 19px; font-weight: 700; margin-bottom: 10px; }
+  .v-card p { color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+  /* ---- feature split ---- */
+  .feature-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 56px; align-items: center; margin-bottom: 88px;
+  }
+  .feature-row:last-child { margin-bottom: 0; }
+  .feature-row.rev .f-text { order: 2; }
+  .f-tag {
+    display: inline-block; font-family: "JetBrains Mono", monospace;
+    font-size: 11.5px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--violet); background: rgba(139,92,246,.12);
+    border: 1px solid rgba(139,92,246,.3);
+    padding: 5px 13px; border-radius: 99px; margin-bottom: 16px;
+  }
+  .f-text h3 { font-size: clamp(24px, 3vw, 32px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 14px; line-height: 1.25; }
+  .f-text p { color: var(--muted); font-size: 16.5px; line-height: 1.8; margin-bottom: 22px; }
+  .f-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .f-list li { display: flex; gap: 11px; align-items: flex-start; font-size: 15.5px; color: var(--text); line-height: 1.6; }
+  .f-list .check {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(52,211,153,.16); color: #34d399;
+    display: grid; place-items: center; font-size: 11px; font-weight: 800;
+    margin-top: 2px;
+  }
+  .f-visual {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 18px; padding: 30px; position: relative; overflow: hidden;
+  }
+  .f-visual::before {
+    content: ""; position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: var(--violet); filter: blur(70px); opacity: .18;
+  }
+
+  /* ---- tag cloud demo ---- */
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 9px; position: relative; }
+  .tag {
+    padding: 7px 15px; border-radius: 8px; font-size: 13.5px; font-weight: 500;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+    color: var(--text); transition: all .2s;
+  }
+  .tag:hover { background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.5); color: #c4b5fd; transform: translateY(-2px); }
+  .tag.on { background: linear-gradient(135deg, rgba(34,211,238,.2), rgba(139,92,246,.2)); border-color: var(--cyan); color: #67e8f9; }
+  .tag.neg { background: rgba(236,72,153,.1); border-color: rgba(236,72,153,.35); color: #f9a8d4; }
+
+  /* ---- code preview ---- */
+  .code-block {
+    background: #070c1a; border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px; overflow: hidden; font-family: "JetBrains Mono", monospace;
+  }
+  .code-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,.03);
+  }
+  .code-head .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+  .code-head span { margin-left: 8px; font-size: 12.5px; color: var(--muted); }
+  .code-body { padding: 20px; font-size: 13.5px; line-height: 1.85; overflow-x: auto; }
+  .code-body .lbl { color: var(--cyan); }
+  .code-body .pos { color: #34d399; }
+  .code-body .neg { color: #f87171; }
+  .code-body .cm { color: #4b5a74; }
+
+  /* ---- pain points + formula ---- */
+  .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 56px; }
+  .pain-card {
+    background: rgba(244,63,94,.05);
+    border: 1px solid rgba(244,63,94,.18);
+    border-radius: 16px; padding: 28px 24px;
+    transition: transform .25s, border-color .25s, background .25s;
+  }
+  .pain-card:hover { transform: translateY(-5px); border-color: rgba(244,63,94,.45); background: rgba(244,63,94,.08); }
+  .pain-num {
+    font-family: "JetBrains Mono", monospace; font-size: 13px; font-weight: 600;
+    color: #fb7185; background: rgba(244,63,94,.14);
+    border: 1px solid rgba(244,63,94,.3);
+    width: 40px; height: 40px; border-radius: 10px;
+    display: grid; place-items: center; margin-bottom: 16px;
+  }
+  .pain-card h4 { font-size: 17px; font-weight: 700; margin-bottom: 9px; }
+  .pain-card p { color: var(--muted); font-size: 14.5px; line-height: 1.7; }
+
+  .formula-box {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 22px; padding: 44px 40px; position: relative; overflow: hidden;
+  }
+  .formula-box::before {
+    content: ""; position: absolute; top: -120px; right: -100px;
+    width: 320px; height: 320px; border-radius: 50%;
+    background: var(--cyan); filter: blur(130px); opacity: .12;
+  }
+  .formula-head { position: relative; max-width: 720px; margin-bottom: 34px; }
+  .formula-head h3 { font-size: clamp(24px, 3vw, 32px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
+  .formula-head p { color: var(--muted); font-size: 16.5px; line-height: 1.75; }
+  .formula-head b { color: var(--cyan); font-weight: 700; }
+
+  .formula {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+    gap: 12px; margin-bottom: 40px; position: relative;
+    padding: 30px 24px; border-radius: 16px;
+    background: rgba(0,0,0,.35); border: 1px dashed rgba(255,255,255,.14);
+  }
+  .layer {
+    padding: 13px 26px; border-radius: 10px;
+    font-size: 17px; font-weight: 700; letter-spacing: .5px;
+    border: 1px solid transparent; position: relative;
+    animation: layerIn .5s both;
+  }
+  .layer.l1 { background: rgba(34,211,238,.16); border-color: rgba(34,211,238,.5); color: #67e8f9; }
+  .layer.l2 { background: rgba(52,211,153,.14); border-color: rgba(52,211,153,.45); color: #6ee7b7; }
+  .layer.l3 { background: rgba(139,92,246,.16); border-color: rgba(139,92,246,.5); color: #c4b5fd; }
+  .layer.l4 { background: rgba(251,191,36,.14); border-color: rgba(251,191,36,.45); color: #fcd34d; }
+  .layer.l5 { background: rgba(244,63,94,.14); border-color: rgba(244,63,94,.45); color: #fda4af; }
+  .plus { color: rgba(255,255,255,.3); font-size: 22px; font-weight: 700; }
+  .layer .hint {
+    position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-weight: 500; color: var(--muted); white-space: nowrap;
+    letter-spacing: .5px;
+  }
+  @keyframes layerIn { from { opacity: 0; transform: translateY(10px); } }
+  .layer.l1 { animation-delay: 0s; } .layer.l2 { animation-delay: .08s; }
+  .layer.l3 { animation-delay: .16s; } .layer.l4 { animation-delay: .24s; }
+  .layer.l5 { animation-delay: .32s; }
+
+  .layer-list { display: flex; flex-direction: column; gap: 16px; position: relative; margin-bottom: 32px; }
+  .layer-item {
+    display: flex; gap: 15px; align-items: flex-start;
+    background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
+    border-radius: 13px; padding: 17px 20px;
+    font-size: 15.5px; line-height: 1.65; color: var(--text);
+    transition: border-color .2s, background .2s;
+  }
+  .layer-item:hover { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.05); }
+  .layer-item b { font-weight: 700; }
+  .layer-item .eg {
+    font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+    color: var(--muted); background: rgba(0,0,0,.4);
+    border: 1px solid rgba(255,255,255,.07);
+    padding: 5px 11px; border-radius: 6px; margin-top: 8px;
+    display: inline-block;
+  }
+  .dot-l { flex-shrink: 0; width: 13px; height: 13px; border-radius: 4px; margin-top: 6px; }
+  .dot-l.l1 { background: var(--cyan); box-shadow: 0 0 10px rgba(34,211,238,.6); }
+  .dot-l.l2 { background: #34d399; box-shadow: 0 0 10px rgba(52,211,153,.6); }
+  .dot-l.l3 { background: var(--violet); box-shadow: 0 0 10px rgba(139,92,246,.6); }
+  .dot-l.l4 { background: #fbbf24; box-shadow: 0 0 10px rgba(251,191,36,.6); }
+  .dot-l.l5 { background: #fb7185; box-shadow: 0 0 10px rgba(244,63,94,.6); }
+
+  .order-note {
+    display: flex; gap: 15px; align-items: flex-start;
+    background: rgba(34,211,238,.07); border: 1px solid rgba(34,211,238,.3);
+    border-radius: 14px; padding: 20px 22px;
+    font-size: 15px; line-height: 1.75; color: #a5f3fc; position: relative;
+  }
+  .order-note b { color: var(--cyan); font-weight: 700; }
+  .order-icon {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+    background: rgba(34,211,238,.16); display: grid; place-items: center;
+    font-size: 15px; color: var(--cyan);
+  }
+  @media (max-width: 640px) {
+    .formula-box { padding: 32px 22px; }
+    .layer { padding: 11px 18px; font-size: 15.5px; }
+    .plus { font-size: 18px; }
+  }
+
+  /* ---- stats ---- */
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+  }
+  .stat {
+    text-align: center; padding: 34px 18px;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 16px;
+  }
+  .stat .num { font-size: clamp(34px, 4vw, 46px); font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat .lbl { color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+
+  /* ---- why ---- */
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; }
+  .why-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 16px; padding: 30px 26px; transition: border-color .25s, transform .25s;
+  }
+  .why-card:hover { border-color: rgba(34,211,238,.4); transform: translateY(-4px); }
+  .why-card .icon { font-size: 30px; margin-bottom: 16px; }
+  .why-card h4 { font-size: 17.5px; font-weight: 700; margin-bottom: 9px; }
+  .why-card p { color: var(--muted); font-size: 14.5px; line-height: 1.7; }
+
+  /* ---- CTA ---- */
+  .cta-box {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(34,211,238,.08), rgba(139,92,246,.12), rgba(236,72,153,.08));
+    border: 1px solid rgba(139,92,246,.3);
+    border-radius: 24px; padding: 72px 36px;
+    position: relative; overflow: hidden;
+  }
+  .cta-box::before {
+    content: ""; position: absolute; top: -140px; left: 50%; transform: translateX(-50%);
+    width: 520px; height: 520px; border-radius: 50%;
+    background: var(--violet); filter: blur(140px); opacity: .2;
+  }
+  .cta-box h2 { position: relative; }
+  .cta-box p { color: var(--muted); font-size: 17px; max-width: 520px; margin: 0 auto 34px; position: relative; line-height: 1.7; }
+  .cta-box .hero-cta { position: relative; }
+  .size-tag {
+    background: rgba(6,9,19,.28); border: 1px solid rgba(6,9,19,.25);
+    padding: 2px 9px; border-radius: 99px;
+    font-size: 12.5px; font-weight: 700; font-family: "JetBrains Mono", monospace;
+  }
+  .dl-note {
+    position: relative; margin-top: 20px;
+    color: var(--muted); font-size: 14px; letter-spacing: .3px;
+  }
+
+  /* ---- footer ---- */
+  footer {
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 36px 0; margin-top: 40px;
+    color: var(--muted); font-size: 14px;
+  }
+  .foot-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+
+  /* ---- reveal animation ---- */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.vis { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+<div class="bg-glow glow-3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap nav-inner">
+    <a class="logo" href="#">
+      <img class="logo-mark" src="images/icon.svg" alt="画语 - AI绘图提示词辅助工具图标" width="30" height="30">
+      画语 - AI绘图提示词辅助工具
+    </a>
+    <div class="nav-links">
+      <a href="#problem">常见问题</a>
+      <a href="#features">核心功能</a>
+      <a href="#labels">维度标签</a>
+      <a href="#why">产品价值</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-ghost" href="#features">了解更多</a>
+      <a class="btn btn-primary" href="#download">立即下载</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="badge"><span class="dot"></span> 桌面端应用 · Windows · 离线可用</div>
+    <h1>把灵感变成<br><span class="grad-text">专业级绘画提示词</span></h1>
+    <p>
+      一款专为 AI 绘画打造的提示词构建工具，通过指导原则、参考词库与可视化维度标签，
+      帮助你快速生成结构清晰、命中率高的正向与负向提示词。
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#download">免费下载桌面版 →</a>
+      <a class="btn btn-ghost" href="#features">查看核心功能</a>
+    </div>
+
+    <div class="shot-wrap reveal">
+      <img class="shot" src="images/screenshot.png" alt="画语 - AI绘图提示词辅助工具 主界面截图" loading="eager">
+    </div>
+  </div>
+</header>
+
+<!-- VALUE -->
+<section id="value">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Product Value</span>
+      <h2>不止是拼接文字，<span class="grad-text">而是系统化地构建提示词</span></h2>
+      <p class="sec-sub">
+        面向 Stable Diffusion、Midjourney 等 AI 绘画平台，将提示词工程的隐性知识转化为可视化、可复用的工作流。
+      </p>
+    </div>
+    <div class="value-grid">
+      <div class="v-card reveal">
+        <div class="v-icon ic-1">📐</div>
+        <h3>专业编写规范</h3>
+        <p>内置提示词编写指导原则，讲清权重控制、语序策略、正面陈述等核心概念，让每一次生成都有章可循。</p>
+      </div>
+      <div class="v-card reveal">
+        <div class="v-icon ic-2">📚</div>
+        <h3>精选参考词库</h3>
+        <p>8 大类、40+ 条高质量参考提示词，覆盖写实人像、古风、3D国漫、二次元、玄幻修仙、广告设计、场景环境等主流风格。</p>
+      </div>
+      <div class="v-card reveal">
+        <div class="v-icon ic-3">🏷️</div>
+        <h3>可视化标签组合</h3>
+        <p>通过维度标签点选即可组合提示词，正向 / 负向自动分类，告别从零手写长句的低效与遗漏。</p>
+      </div>
+      <div class="v-card reveal">
+        <div class="v-icon ic-4">⚡</div>
+        <h3>实时预览与复制</h3>
+        <p>标签选择即刻反映在右侧输出面板，正负向提示词实时生成，一键复制到剪贴板直接投喂到绘画工具。</p>
+      </div>
+      <div class="v-card reveal">
+        <div class="v-icon ic-5">🌍</div>
+        <h3>中英文双语</h3>
+        <p>提示词支持中英双语切换，兼顾国内平台的中文描述习惯与国际模型的英文提示词习惯。</p>
+      </div>
+      <div class="v-card reveal">
+        <div class="v-icon ic-6">🔒</div>
+        <h3>本地离线运行</h3>
+        <p>基于 Tauri 构建的桌面应用，数据存于本地，无需联网、不上传任何内容，隐私与可用性兼得。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section style="padding-top:0;">
+  <div class="wrap">
+    <div class="stats reveal">
+      <div class="stat"><div class="num">8</div><div class="lbl">大类参考风格</div></div>
+      <div class="stat"><div class="num">40+</div><div class="lbl">精选参考提示词</div></div>
+      <div class="stat"><div class="num">6</div><div class="lbl">大维度标签体系</div></div>
+      <div class="stat"><div class="num">100%</div><div class="lbl">离线可用 · 数据不出本地</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN POINTS + STRUCTURED FORMULA -->
+<section id="problem" style="padding-bottom:72px;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Pain Points</span>
+      <h2>为什么你写的提示词<br><span class="grad-text">总是出不到想要的图</span></h2>
+      <p class="sec-sub">大多数用户卡在"写词"这一步，而不是模型不够好。</p>
+    </div>
+
+    <div class="pain-grid">
+      <div class="pain-card reveal">
+        <div class="pain-num">01</div>
+        <h4>描述模糊、主观化</h4>
+        <p>"画得好看一点""氛围唯美一些" —— 这类主观词汇无法被模型量化，出图结果全靠运气。</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-num">02</div>
+        <h4>描述不够完整</h4>
+        <p>只写了主体，遗漏环境、镜头、光线与画质描述，模型只能自行脑补，画面失控。</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-num">03</div>
+        <h4>用词不准确</h4>
+        <p>中英混杂、术语用错、权重失控，想表达"特写"却写成"近景"，画面尺度偏离预期。</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-num">04</div>
+        <h4>关键词大量重复</h4>
+        <p>反复堆砌同义词，既浪费 token，又打乱语序，把真正重要的词挤到注意力末尾。</p>
+      </div>
+    </div>
+
+    <div class="formula-box reveal">
+      <div class="formula-head">
+        <span class="f-tag">Structured Prompt</span>
+        <h3>结构化表达：分层公式</h3>
+        <p>把提示词拆成 5 层，每层各司其职，缺一不可 —— 并且<b>核心词前置</b>，让模型优先读取关键信息。</p>
+      </div>
+
+      <div class="formula">
+        <span class="layer l1">主体</span>
+        <span class="plus">+</span>
+        <span class="layer l2">环境</span>
+        <span class="plus">+</span>
+        <span class="layer l3">风格</span>
+        <span class="plus">+</span>
+        <span class="layer l4">画质</span>
+        <span class="plus">+</span>
+        <span class="layer l5">负面词</span>
+      </div>
+
+      <div class="layer-list">
+        <div class="layer-item">
+          <span class="dot-l l1"></span>
+          <div><b>主体</b> — 谁 / 什么，最核心的信息，永远写在最前面<div class="eg">a warrior, long silver hair, red armor</div></div>
+        </div>
+        <div class="layer-item">
+          <span class="dot-l l2"></span>
+          <div><b>环境</b> — 在哪里、什么时间、什么光线<div class="eg">ancient temple, sunset, volumetric light</div></div>
+        </div>
+        <div class="layer-item">
+          <span class="dot-l l3"></span>
+          <div><b>风格</b> — 画面属于什么流派与质感<div class="eg">cinematic photography, film grain, 35mm</div></div>
+        </div>
+        <div class="layer-item">
+          <span class="dot-l l4"></span>
+          <div><b>画质</b> — 分辨率与质量词，放在末尾兜底<div class="eg">masterpiece, best quality, 8k uhd, detailed</div></div>
+        </div>
+        <div class="layer-item">
+          <span class="dot-l l5"></span>
+          <div><b>负面词</b> — 单独一栏，排除低质与畸形<div class="eg">lowres, bad anatomy, watermark, extra fingers</div></div>
+        </div>
+      </div>
+
+      <div class="order-note">
+        <span class="order-icon">⚠</span>
+        <div><b>核心词前置原则</b>：模型对提示词开头的注意力最强，因此「主体」必须最先出现，「画质词」收尾，「负面词」交给独立的负向输入框，不要混进正向提示词里。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CORE FEATURES -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Core Features</span>
+      <h2>三大核心能力</h2>
+      <p class="sec-sub">从学习规范，到借用范例，再到自由组合 —— 覆盖提示词创作的完整链路。</p>
+    </div>
+
+    <div class="feature-row reveal">
+      <div class="f-text">
+        <span class="f-tag">Guidelines</span>
+        <h3>提示词编写指导原则</h3>
+        <p>新手面对空白输入框无从下手，老手也常忽略权重与语序细节。内置的指导原则用结构化文档讲清提示词工程的关键方法。</p>
+        <ul class="f-list">
+          <li><span class="check">✓</span> 权重语法与控制技巧</li>
+          <li><span class="check">✓</span> 语序策略：重要概念前置</li>
+          <li><span class="check">✓</span> 正面陈述代替否定描述</li>
+          <li><span class="check">✓</span> 正向 / 负向提示词的分工</li>
+        </ul>
+      </div>
+      <div class="f-visual">
+        <div class="code-block">
+          <div class="code-head">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span>guidelines.md</span>
+          </div>
+          <div class="code-body">
+            <div class="cm"># 提示词编写指导原则</div><br>
+            <div><span class="lbl">1. 权重控制</span> — 使用 (word:1.2) 强调关键概念</div>
+            <div><span class="lbl">2. 语序策略</span> — 主体、风格、质量依次排列</div>
+            <div><span class="lbl">3. 正面陈述</span> — <span class="pos">"清晰的面部"</span> 而非 <span class="neg">"模糊的脸"</span></div>
+            <div><span class="lbl">4. 负向提示</span> — <span class="neg">lowres, bad anatomy, watermark</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-row rev reveal">
+      <div class="f-text">
+        <span class="f-tag">Label Selector</span>
+        <h3>维度标签选择器</h3>
+        <p>将提示词拆解为 6 大维度 —— 基础与风格、构图与镜头、人物特征、环境与光影、渲染与特效、负向提示，点选标签即可组合。</p>
+        <ul class="f-list">
+          <li><span class="check">✓</span> 基础与风格：画质增强、艺术风格、渲染引擎</li>
+          <li><span class="check">✓</span> 构图与镜头：景别、焦距、视角、布局法则</li>
+          <li><span class="check">✓</span> 人物与环境：外貌、服饰、光影、色彩氛围</li>
+          <li><span class="check">✓</span> 负向提示：常见负向词汇一键纳入</li>
+        </ul>
+      </div>
+      <div class="f-visual">
+        <div class="tag-cloud">
+          <span class="tag on">masterpiece</span>
+          <span class="tag on">best quality</span>
+          <span class="tag">8k uhd</span>
+          <span class="tag on">cinematic lighting</span>
+          <span class="tag">depth of field</span>
+          <span class="tag on">中国风</span>
+          <span class="tag">特写镜头</span>
+          <span class="tag on">汉服</span>
+          <span class="tag">黄昏逆光</span>
+          <span class="tag">对称构图</span>
+          <span class="tag neg">lowres</span>
+          <span class="tag neg">bad anatomy</span>
+          <span class="tag neg">watermark</span>
+          <span class="tag neg">extra fingers</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-row reveal">
+      <div class="f-text">
+        <span class="f-tag">Prompt Library</span>
+        <h3>参考提示词库</h3>
+        <p>不知道如何下笔时，从 40+ 条精心调校的范例开始。每条均包含正向、负向提示词与使用要点说明，可直接复制或二次编辑。</p>
+        <ul class="f-list">
+          <li><span class="check">✓</span> 覆盖写实人像、古风、3D国漫、二次元等风格</li>
+          <li><span class="check">✓</span> 每条附带中文说明与使用要点</li>
+          <li><span class="check">✓</span> 单条复制或整类复制</li>
+          <li><span class="check">✓</span> 点击即可就地编辑，自动保存</li>
+        </ul>
+      </div>
+      <div class="f-visual">
+        <div class="code-block">
+          <div class="code-head">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span>prompt-library</span>
+          </div>
+          <div class="code-body">
+            <div><span class="lbl">[写实人像]</span> <span class="pos">8k uhd, detailed skin, soft rim light...</span></div>
+            <div><span class="neg">  ↳ negative: lowres, bad eyes, deformed...</span></div>
+            <div class="cm">  使用要点：适合半身特写，注意光比</div><br>
+            <div><span class="lbl">[古风]</span> <span class="pos">traditional chinese painting style...</span></div>
+            <div><span class="neg">  ↳ negative: modern clothes, watermark</span></div>
+            <div class="cm">  使用要点：可叠加水墨质感 LoRA</div><br>
+            <div><span class="lbl">[二次元]</span> <span class="pos">anime style, cel shading, vivid color...</span></div>
+            <div><span class="neg">  ↳ negative: realistic, photo, 3d render</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LABEL DOMAINS -->
+<section id="labels" style="background: rgba(255,255,255,.02); border-top:1px solid rgba(255,255,255,.05); border-bottom:1px solid rgba(255,255,255,.05);">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Label Domains</span>
+      <h2>六大维度，覆盖画面的每个角落</h2>
+      <p class="sec-sub">从整体画质到人物发丝，从镜头语言到后期调色 —— 全部以标签形式呈现。</p>
+    </div>
+    <div class="value-grid">
+      <div class="v-card reveal"><div class="v-icon ic-1">🎨</div><h3>基础与风格</h3><p>画质增强、艺术风格、渲染引擎等画面基底设定。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-2">🎥</div><h3>构图与镜头</h3><p>景别、焦距、视角、布局法则，掌控镜头语言。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-3">🧑</div><h3>人物特征</h3><p>性别、年龄、面部、发型、表情、气质、身材、服饰。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-4">🌄</div><h3>环境与光影</h3><p>场景背景、时间、天气、光影类型、布光与色彩氛围。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-5">✨</div><h3>渲染与特效</h3><p>物理特效与后期调色，补齐画面最后的质感。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-6">🚫</div><h3>负向提示</h3><p>常见负向词汇集合，快速排除低质、变形与水印。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Why This Product</span>
+      <h2>为什么需要它</h2>
+      <p class="sec-sub">提示词质量直接决定出图效果，而绝大多数用户卡在「不知道怎么写」。</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <div class="icon">🧭</div>
+        <h4>降低入门门槛</h4>
+        <p>新手不再面对空白输入框发呆，跟随指导原则与范例，几分钟产出可用提示词。</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="icon">🎯</div>
+        <h4>提高出图命中率</h4>
+        <p>结构化的提示词让模型更准确地理解意图，减少反复抽卡的时间成本。</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="icon">🔁</div>
+        <h4>沉淀可复用资产</h4>
+        <p>参考词库与自定义修改自动保存在本地，形成属于你自己的提示词资产库。</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="icon">⏱️</div>
+        <h4>大幅提升效率</h4>
+        <p>点选标签 + 一键复制，把写提示词的时间从几分钟压缩到几秒钟。</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="icon">🌐</div>
+        <h4>跨平台通用</h4>
+        <p>生成的正负向提示词可直接用于 Stable Diffusion、Midjourney 等主流平台。</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="icon">🛡️</div>
+        <h4>隐私安全</h4>
+        <p>桌面端离线运行，数据全部保存在本地，无账号、无上传、无追踪。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONVENIENCE -->
+<section id="library" style="padding-top:0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Convenience</span>
+      <h2>为日常使用打磨的细节</h2>
+    </div>
+    <div class="value-grid">
+      <div class="v-card reveal"><div class="v-icon ic-1">⌨️</div><h3>键盘快捷键</h3><p>支持 <code style="font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.08);padding:2px 7px;border-radius:5px;font-size:13px;">Ctrl+S</code> 手动保存，编辑流畅不断档。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-2">✏️</div><h3>就地编辑</h3><p>点击提示词即可直接修改，改完自动保存到本地存储。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-3">📋</div><h3>分类复制</h3><p>支持复制单条提示词，或一次复制整个分类的全部内容。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-4">🗂️</div><h3>本地存储</h3><p>所有修改自动保存到浏览器 / 应用本地存储，下次打开即恢复。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="download" style="padding-top:0;">
+  <div class="wrap">
+    <div class="cta-box reveal">
+      <span class="sec-label">Get Started</span>
+      <h2>让每一张图，<span class="grad-text">从好提示词开始</span></h2>
+      <p>下载桌面版应用，离线使用，无需注册，安装即用。</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="AI%20%E7%BB%98%E7%94%BB%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%94%9F%E6%88%90%E5%8A%A9%E6%89%8B.zip" download>⬇ 下载 Windows 版 <span class="size-tag">3.3 MB</span></a>
+        <a class="btn btn-ghost" href="#features">查看功能详情</a>
+      </div>
+      <div class="dl-note">ZIP 压缩包 · 解压即用 · 无需安装 · 离线运行</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-inner">
+    <div class="logo" style="font-size:15px;">
+      <img class="logo-mark" src="images/icon.svg" alt="画语 - AI绘图提示词辅助工具图标" width="24" height="24" style="border-radius:7px;">
+      画语 - AI绘图提示词辅助工具
+    </div>
+    <div>© 2026 画语 - AI绘图提示词辅助工具 · 本工具与 OpenAI、Stable Diffusion 等无关联</div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } });
+  }, { threshold: .12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

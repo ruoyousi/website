@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>多语言互译-Transly · 数据主权在握</title>
+<meta name="description" content="面向涉密与敏感行业、离线与内网工作场景的本地多语言翻译工具：断网可用、数据不出本地，内置术语库、翻译记忆、润色与 AI 质量评估，提供命令行、HTTP API、桌面应用三种服务，支持 38 种语言约 1056 个互译方向。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='42' font-size='30' text-anchor='middle' fill='white' font-family='sans-serif'%3E译%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --bg-soft: #eef1f6;
+    --card: #ffffff;
+    --line: #e3e6ea;
+    --text: #1f2328;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --accent-soft: #eff4ff;
+    --green: #0f9d58;
+    --green-soft: #e9f7ef;
+    --shadow: 0 1px 2px rgba(31,35,40,.05), 0 8px 24px rgba(31,35,40,.06);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 16px/1.7 "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-dark); }
+  code, pre {
+    font-family: ui-monospace, "SF Mono", Consolas, "Courier New", monospace;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 72px 0; }
+
+  /* ===== 顶部导航 ===== */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text); }
+  .brand svg { flex: none; }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a { color: var(--muted); font-size: 14px; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ===== Hero ===== */
+  .hero { padding: 72px 0 64px; background: linear-gradient(180deg, #fff 0%, var(--bg) 100%); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 44px; align-items: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--accent); font-weight: 500;
+    padding: 5px 12px; border-radius: 999px; background: var(--accent-soft);
+  }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+  .hero h1 { font-size: 40px; line-height: 1.25; margin: 18px 0 16px; font-weight: 900; letter-spacing: -0.5px; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero p.lead { color: var(--muted); font-size: 17px; max-width: 46ch; margin: 0 0 26px; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 16px; box-shadow: var(--shadow);
+  }
+  .stat b { display: block; font-size: 20px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .stat span { font-size: 12.5px; color: var(--muted); }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font: 500 15px/1 "Noto Sans SC", sans-serif;
+    border-radius: 10px; padding: 12px 20px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  .btn:hover { border-color: #c9ced6; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+
+  /* 浏览器框 */
+  .browser {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(31,35,40,.14); overflow: hidden;
+  }
+  .browser-bar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    border-bottom: 1px solid var(--line); background: #fafbfc;
+  }
+  .browser-bar i { width: 11px; height: 11px; border-radius: 50%; }
+  .browser-bar i:nth-child(1) { background: #f66151; }
+  .browser-bar i:nth-child(2) { background: #f5c211; }
+  .browser-bar i:nth-child(3) { background: #3fb950; }
+  .browser-addr { margin-left: 10px; flex: 1; background: var(--bg-soft); border-radius: 8px; padding: 3px 12px; font-size: 12.5px; color: var(--muted); }
+  .browser img { display: block; width: 100%; height: auto; }
+
+  /* ===== 区块通用 ===== */
+  .sec-head { max-width: 640px; margin: 0 auto 44px; text-align: center; }
+  .sec-head h2 { font-size: 30px; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.3px; }
+  .sec-head p { color: var(--muted); margin: 0; font-size: 16px; }
+  .kicker {
+    display: inline-block; font-size: 13px; font-weight: 600; color: var(--accent);
+    letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase;
+  }
+
+  /* ===== 产品视频 ===== */
+  #video { background: var(--bg); border-bottom: 1px solid var(--line); padding: 44px 0; }
+  .video-shell { max-width: 920px; margin: 0 auto; }
+  .video-frame {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(31,35,40,.14); overflow: hidden;
+  }
+  .video-frame video { display: block; width: 100%; height: auto; background: #f5f6f8; }
+  .video-note { text-align: center; color: var(--muted); font-size: 14px; margin-top: 16px; }
+
+  /* ===== 数据主权 ===== */
+  #privacy { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .privacy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .privacy-points { display: flex; flex-direction: column; gap: 22px; }
+  .point { display: flex; gap: 16px; }
+  .point-icon {
+    flex: none; width: 42px; height: 42px; border-radius: 11px;
+    background: var(--green-soft); display: flex; align-items: center; justify-content: center; color: var(--green);
+  }
+  .point h3 { margin: 0 0 4px; font-size: 17px; font-weight: 700; }
+  .point p { margin: 0; color: var(--muted); font-size: 14.5px; }
+
+  /* 架构图（内联 SVG） */
+  .diagram {
+    background: linear-gradient(180deg, #f7f9fc, var(--bg));
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 24px;
+  }
+  .diagram svg { display: block; width: 100%; height: auto; }
+
+  /* ===== 翻译流程 ===== */
+  #flow { background: var(--bg); border-bottom: 1px solid var(--line); }
+  .flow-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .flow-step {
+    position: relative; background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 22px 20px 18px; box-shadow: var(--shadow);
+  }
+  .flow-step .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 15px; margin-bottom: 12px;
+  }
+  .flow-step h4 { margin: 0 0 6px; font-size: 16.5px; font-weight: 700; }
+  .flow-step p { margin: 0; color: var(--muted); font-size: 14px; }
+  .flow-note {
+    margin-top: 22px; background: var(--accent-soft); border: 1px solid #d6e2ff;
+    border-radius: 12px; padding: 14px 18px; text-align: center;
+    color: var(--accent-dark); font-size: 14.5px;
+  }
+
+  /* ===== 核心能力 ===== */
+  #features { background: var(--card); border-bottom: 1px solid var(--line); }
+  .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .feature-card {
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 22px 20px;
+  }
+  .feature-card .point-icon { background: var(--accent-soft); color: var(--accent); margin-bottom: 12px; }
+  .feature-card h4 { margin: 0 0 6px; font-size: 16.5px; font-weight: 700; }
+  .feature-card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+  /* ===== 三种服务 ===== */
+  #services { background: var(--bg); }
+  .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
+  .tab {
+    font: 500 15px/1 "Noto Sans SC", sans-serif; cursor: pointer;
+    padding: 10px 22px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--card); color: var(--muted);
+  }
+  .tab:hover { border-color: #c9ced6; color: var(--text); }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: center; }
+  .panel-text h3 { font-size: 22px; font-weight: 700; margin: 0 0 10px; }
+  .panel-text p { color: var(--muted); margin: 0 0 16px; }
+  .panel-text ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14.5px; display: grid; gap: 6px; }
+  .code-block {
+    background: #0f1420; color: #d7e2f4; border-radius: 12px; overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .code-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px; background: #18202f; border-bottom: 1px solid #232c3f;
+  }
+  .code-head span { font-size: 12px; color: #8ba0bf; }
+  .code-block pre { margin: 0; padding: 16px; font-size: 13.5px; line-height: 1.6; overflow-x: auto; }
+  .code-block pre .cm { color: #5f7bb0; }
+  .copy-btn {
+    font: 12px/1 "Noto Sans SC", sans-serif; cursor: pointer; color: #c5d3ea;
+    background: #26324a; border: 1px solid #34405c; border-radius: 6px; padding: 4px 10px;
+  }
+  .copy-btn:hover { background: #2f3d5a; color: #fff; }
+  .panel-thumb .browser img { border-radius: 10px; }
+
+  /* ===== 多语言互译 ===== */
+  #languages { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .lang-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 760px; margin: 0 auto 40px; }
+  .lang-stat {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 14px;
+    text-align: center; padding: 22px 12px;
+  }
+  .lang-stat b { display: block; font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1.15; }
+  .lang-stat span { font-size: 13.5px; color: var(--muted); }
+  .lang-groups { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 860px; margin: 0 auto; }
+  .lang-group h4 { font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--bg-soft); border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 13px; font-size: 13.5px; color: var(--text);
+  }
+  .chip.ethnic { background: var(--green-soft); border-color: #b9e5cd; color: #0c6b3d; }
+
+  /* ===== 技能 ===== */
+  #skill { background: var(--bg); border-top: 1px solid var(--line); }
+  .skill-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+  .skill-text h3 { font-size: 26px; font-weight: 800; margin: 6px 0 14px; letter-spacing: -0.3px; }
+  .skill-text > p { color: var(--muted); margin: 0 0 22px; }
+  .skill-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .skill-feature {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 16px 14px;
+  }
+  .skill-feature svg { color: var(--accent); display: block; margin-bottom: 10px; }
+  .skill-feature h4 { margin: 0 0 4px; font-size: 15px; font-weight: 700; }
+  .skill-feature p { margin: 0; font-size: 13.5px; color: var(--muted); }
+  #skill .code-block pre { font-size: 13px; }
+  #skill .code-block pre .dim { color: #8ba0bf; }
+
+  /* ===== 联系我们 ===== */
+  #contact { background: var(--bg-soft); border-top: 1px solid var(--line); }
+  .contact { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 40px 44px; display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: center; }
+  .contact h3 { font-size: 20px; margin: 0 0 8px; }
+  .contact p { color: var(--muted); font-size: 14px; margin: 0; }
+  .contact-mail { display: inline-block; margin-top: 16px; color: var(--accent); font-size: 16px; font-weight: 500; border-bottom: 1px dashed var(--accent); padding-bottom: 2px; text-decoration: none; }
+  .contact-mail:hover { opacity: .85; }
+  .contact-qr { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .qr-box { background: #fff; border: 1px solid var(--line); padding: 10px; border-radius: 12px; line-height: 0; }
+  .qr-box img { width: 132px; height: auto; display: block; }
+  .contact-qr span { font-size: 12.5px; color: var(--muted); }
+
+  /* ===== Footer ===== */
+  footer { background: #0f1420; color: #9fb0c8; padding: 40px 0 30px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+  footer .brand { color: #fff; }
+  footer p { margin: 0; font-size: 13px; }
+  footer a { color: #c5d3ea; }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .privacy-grid, .tab-panel.active { grid-template-columns: 1fr; }
+    .lang-stats { grid-template-columns: 1fr; }
+    .skill-grid { grid-template-columns: 1fr; }
+    .flow-steps, .feature-grid { grid-template-columns: 1fr; }
+    .contact { grid-template-columns: 1fr; padding: 28px 24px; text-align: center; justify-items: center; }
+    .contact-mail { margin-top: 12px; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 560px) {
+    .hero h1 { font-size: 30px; }
+    section { padding: 48px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部导航 ===== -->
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="返回顶部">
+      <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#2563eb"/><text x="32" y="44" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">译</text></svg>
+      多语言互译-Transly
+    </a>
+    <div class="nav-links">
+      <a href="#privacy">数据主权</a>
+      <a href="#flow">翻译流程</a>
+      <a href="#features">核心能力</a>
+      <a href="#services">三种服务</a>
+      <a href="#languages">多语言互译</a>
+      <a href="#skill">技能</a>
+      <a href="#contact">联系我们</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>涉密行业 · 离线办公 · 数据主权</span>
+      <h1>多语言互译，<br><span class="accent">数据主权在握</span></h1>
+      <p class="lead">面向涉密与敏感行业、离线与内网工作环境的本地翻译工具：模型在你的设备上运行，无需联网、无需上传，文本永不离开本地，数据完全由你掌控。</p>
+      <div class="hero-stats">
+        <div class="stat"><b>38</b><span>种语言及方言</span></div>
+        <div class="stat"><b>1056</b><span>个互译方向</span></div>
+        <div class="stat"><b>1.9GB</b><span>Q8_0 量化模型</span></div>
+        <div class="stat"><b>离线</b><span>内网 / 断网可用</span></div>
+      </div>
+      <div class="hero-cta">
+        <button class="btn primary" data-scroll="#services">三种服务，立刻体验</button>
+        <button class="btn" data-scroll="#flow">看完整翻译流程</button>
+      </div>
+    </div>
+    <div class="browser" role="img" aria-label="多语言互译桌面应用截图">
+      <div class="browser-bar">
+        <i></i><i></i><i></i>
+        <span class="browser-addr">transly-ui.exe</span>
+      </div>
+      <img src="images/web-ui.png" alt="多语言互译桌面应用截图">
+    </div>
+  </div>
+</header>
+
+<!-- ===== 产品视频 ===== -->
+<section id="video">
+  <div class="wrap">
+    <div class="video-shell">
+      <div class="video-frame">
+        <video controls preload="none" poster="images/video-poster.jpeg" width="1920" height="1080">
+          <source src="transly-intro.mp4" type="video/mp4">
+          你的浏览器不支持视频播放，可直接 <a href="transly-intro.mp4">下载观看</a>。
+        </video>
+      </div>
+      <p class="video-note">时长 18 秒 · 含背景音乐 · 各项能力详见下方版块介绍</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 数据主权 ===== -->
+<section id="privacy">
+  <div class="wrap">
+    <div class="privacy-grid">
+      <div class="privacy-points">
+        <span class="kicker">Data Sovereignty</span>
+        <div class="point">
+          <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+          <div>
+            <h3>数据主权，完全自主可控</h3>
+            <p>翻译在本机完成，文本不出设备、不上云，数据归你所有、由你掌控，无第三方留存。</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <div>
+            <h3>断网可用，适配离线工作</h3>
+            <p>推理全程离线，内网隔离、断网或野外环境均可运行，不依赖任何外部 API 与账号。</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M12 9v6M9 12h6"/></svg></div>
+          <div>
+            <h3>纯 CPU 推理，可部署于内网</h3>
+            <p>仅需 CPU 即可运行，适合内网、边缘与对数据主权有严格要求的部署环境。</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div>
+            <h3>面向涉密与敏感行业</h3>
+            <p>政务、军工、金融、司法、海关等行业的涉密与敏感文本，可在不接触外网的前提下完成翻译。</p>
+          </div>
+        </div>
+      </div>
+      <div class="diagram" role="img" aria-label="端侧离线翻译流程示意图">
+        <svg viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans SC',sans-serif">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2563eb"/></marker>
+          </defs>
+          <!-- 左：用户文本 -->
+          <rect x="18" y="120" width="110" height="84" rx="12" fill="#ffffff" stroke="#e3e6ea" stroke-width="1.5"/>
+          <text x="73" y="152" text-anchor="middle" font-size="14" fill="#1f2328" font-weight="600">你的文本</text>
+          <text x="73" y="174" text-anchor="middle" font-size="12" fill="#64748b">合同 / 邮件 / 资料</text>
+          <text x="73" y="190" text-anchor="middle" font-size="12" fill="#0f9d58">私密数据</text>
+          <!-- 箭头 -->
+          <line x1="130" y1="162" x2="170" y2="162" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+          <!-- 中：本地模型 -->
+          <rect x="172" y="96" width="126" height="132" rx="14" fill="#eff4ff" stroke="#2563eb" stroke-width="2"/>
+          <text x="235" y="130" text-anchor="middle" font-size="14" fill="#1d4ed8" font-weight="700">本地翻译引擎</text>
+          <text x="235" y="152" text-anchor="middle" font-size="12" fill="#2563eb">HY-MT1.5-1.8B</text>
+          <text x="235" y="172" text-anchor="middle" font-size="12" fill="#64748b">CPU 推理</text>
+          <text x="235" y="188" text-anchor="middle" font-size="12" fill="#64748b">Q8_0 量化</text>
+          <text x="235" y="212" text-anchor="middle" font-size="11" fill="#0f9d58" font-weight="600">不出本地</text>
+          <!-- 箭头 -->
+          <line x1="300" y1="162" x2="340" y2="162" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+          <!-- 右：译文 -->
+          <rect x="342" y="120" width="104" height="84" rx="12" fill="#ffffff" stroke="#e3e6ea" stroke-width="1.5"/>
+          <text x="394" y="152" text-anchor="middle" font-size="14" fill="#1f2328" font-weight="600">译文输出</text>
+          <text x="394" y="174" text-anchor="middle" font-size="12" fill="#64748b">38 种语言</text>
+          <text x="394" y="190" text-anchor="middle" font-size="12" fill="#64748b">方向可选</text>
+          <!-- 云端阻断 -->
+          <rect x="150" y="252" width="162" height="40" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+          <line x1="160" y1="264" x2="302" y2="280" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="231" y="246" text-anchor="middle" font-size="11.5" fill="#dc2626" font-weight="600">数据主权在握</text>
+          <text x="231" y="280" text-anchor="middle" font-size="11" fill="#dc2626">无外网 · 无上传</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 翻译流程 ===== -->
+<section id="flow">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">How It Works</span>
+      <h2>一次翻译的完整流程</h2>
+      <p>从输入到沉淀，六个步骤全部在你的设备上完成 —— 术语、记忆、历史与评分数据同样不出本地。</p>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <span class="num">1</span>
+        <h4>输入原文</h4>
+        <p>键入或粘贴文本，也可打开 / 拖入 <code>.txt</code>、<code>.md</code> 文件；选择目标语言，或交给系统自动判断方向（38 种语言、约 1056 个互译方向）。</p>
+      </div>
+      <div class="flow-step">
+        <span class="num">2</span>
+        <h4>术语约束</h4>
+        <p>从本地术语库召回命中的行业术语：同义词一并识别，禁用译法随提示词下发，保证全文译法统一。</p>
+      </div>
+      <div class="flow-step">
+        <span class="num">3</span>
+        <h4>记忆预翻译</h4>
+        <p>原文按句段与本地翻译记忆比对：相似度 ≥95% 直接复用历史译文，85%~95% 作为参考，其余交给模型。</p>
+      </div>
+      <div class="flow-step">
+        <span class="num">4</span>
+        <h4>本地模型翻译</h4>
+        <p>HY-MT1.5-1.8B 在你的 CPU 上生成译文；高相似句段自动回填，确保复用结果不被改写。记忆全命中时 0 次模型调用，秒级出结果。</p>
+      </div>
+      <div class="flow-step">
+        <span class="num">5</span>
+        <h4>AI 质量评估</h4>
+        <p>准确性、术语一致性、流畅性、风格四个维度打分（1~5 分），输出错误清单与改进建议，平均分保留一位小数。</p>
+      </div>
+      <div class="flow-step">
+        <span class="num">6</span>
+        <h4>沉淀与复用</h4>
+        <p>结果写入本地历史：← 一键载入再编辑、★ 收藏进记忆库供下次复用；译文还可以一键「润色」去翻译腔。</p>
+      </div>
+    </div>
+    <div class="flow-note">每一步的产出（术语、记忆、历史、评分）都保存在本地数据库；批量与集成场景可关闭质量评估，换取最快响应。</div>
+  </div>
+</section>
+
+<!-- ===== 核心能力 ===== -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Capabilities</span>
+      <h2>不止翻译，而是译得准、译得快、译得可控</h2>
+      <p>术语、记忆、评分、润色四个抓手，把一次性翻译变成可持续积累的本地语言资产。</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2"/><path d="M12 5v14"/><path d="M9 19h6"/></svg></div>
+        <h4>术语库：译法始终统一</h4>
+        <p>维护「源术语 → 推荐译法」，同义词自动识别、禁用译法随提示词下发，杜绝“容器 / 集装箱”式错译。</p>
+      </div>
+      <div class="feature-card">
+        <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg></div>
+        <h4>翻译记忆：越用越快</h4>
+        <p>相似句段秒级复用历史译文；全部命中时无需调用模型，直接出结果，重复内容几乎零等待。</p>
+      </div>
+      <div class="feature-card">
+        <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 8.7l5.4-.8z"/></svg></div>
+        <h4>AI 质量评估：译文可度量</h4>
+        <p>每次翻译与润色都做四维打分，列出错误与改进建议；历史里平均分一眼可见，质量不再凭感觉。</p>
+      </div>
+      <div class="feature-card">
+        <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><path d="m6.3 6.3 2.6 2.6M15.1 15.1l2.6 2.6M17.7 6.3l-2.6 2.6M8.9 15.1l-2.6 2.6"/></svg></div>
+        <h4>一键润色：去翻译腔</h4>
+        <p>结合术语约束与翻译记忆重写译文，事实与术语不跑偏；初译与润色稿都留档，随时对比回看。</p>
+      </div>
+      <div class="feature-card">
+        <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg></div>
+        <h4>资产留在本地：越用越准</h4>
+        <p>历史一键 ★ 收藏成翻译记忆，术语、记忆、历史与评分全部沉淀在本机数据库，不上传、不流失。</p>
+      </div>
+      <div class="feature-card">
+        <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+        <h4>三端接入 + 灵活部署</h4>
+        <p>桌面应用、命令行、HTTP API 共用同一个本地服务；服务可单独部署在内网另一台设备，客户端地址可配置。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 三种服务 ===== -->
+<section id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Three Interfaces</span>
+      <h2>三种服务，按需选择</h2>
+      <p>同一个本地模型，三种接入方式：命令行、HTTP API、桌面应用，覆盖脚本批处理、程序集成与人工使用。</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="三种服务">
+      <button class="tab active" data-tab="cli" role="tab" aria-selected="true">命令行</button>
+      <button class="tab" data-tab="api" role="tab" aria-selected="false">HTTP API</button>
+      <button class="tab" data-tab="web" role="tab" aria-selected="false">桌面应用</button>
+    </div>
+
+    <!-- 命令行 -->
+    <div class="tab-panel active" id="panel-cli" role="tabpanel">
+      <div class="panel-text">
+        <h3>命令行交互</h3>
+        <p>三种模式：管道模式从标准输入读文本、译文写标准输出；<code>it</code> 进入连续会话逐句翻译；<code>serve</code> 启动 HTTP 服务。默认中英互译自动判断方向，也可用 <code>--target</code> 指定任意目标语言。</p>
+        <ul>
+          <li>管道模式：stdout 只有译文，诊断信息走 stderr，适合脚本与批量处理</li>
+          <li><code>it</code> 连续会话：逐行输入回车即译，<code>/exit</code> 退出</li>
+          <li>方向自动检测；<code>--target &lt;语言代码&gt;</code> 指定目标语言</li>
+        </ul>
+      </div>
+      <div class="code-block">
+        <div class="code-head"><span>Terminal</span><button class="copy-btn" data-copy="cli">复制</button></div>
+        <pre><code><span class="cm"># 管道模式：stdin 输入，stdout 输出译文</span>
+echo "你好！" | transly-cli --target ja
+こんにちは！
+
+<span class="cm"># 文件批量翻译并重定向</span>
+transly-cli --target en &lt; notes.txt &gt; out.txt
+
+<span class="cm"># it 连续会话模式</span>
+transly-cli it
+&gt; 你好，世界
+Hello, world.
+[中文 -&gt; 英语 | 1.02s]
+&gt; /exit</code></pre>
+      </div>
+    </div>
+
+    <!-- HTTP API -->
+    <div class="tab-panel" id="panel-api" role="tabpanel">
+      <div class="panel-text">
+        <h3>HTTP API</h3>
+        <p>启动服务后调用 REST 接口，JSON 请求 / 响应，便于集成进你自己的程序或业务系统。</p>
+        <ul>
+          <li><code>POST /api/v1/translate</code> 翻译：自动带术语约束与记忆预翻译，返回四维评分</li>
+          <li><code>POST /api/v1/polish</code> 润色：对初译去翻译腔，结果同样入库</li>
+          <li><code>GET / DELETE /api/v1/history</code> 历史记录（含评分、错误与建议）</li>
+          <li><code>terms</code> / <code>memory</code> 术语库与翻译记忆的增删改查、召回</li>
+          <li>返回译文、token、耗时、预翻译统计；支持跨域（CORS）</li>
+        </ul>
+      </div>
+      <div class="code-block">
+        <div class="code-head"><span>HTTP</span><button class="copy-btn" data-copy="api">复制</button></div>
+        <pre><code>curl -X POST http://127.0.0.1:8080/api/v1/translate \
+  -H "Content-Type: application/json" \
+  -d '{"text":"你好，世界","target":"ja"}'
+
+<span class="cm">// 响应</span>
+{"code":0,"data":{"translatedText":"こんにちは、世界",
+  "tokenCount":7,"inferenceTimeMs":668}}</code></pre>
+      </div>
+    </div>
+
+    <!-- 桌面应用 -->
+    <div class="tab-panel" id="panel-web" role="tabpanel">
+      <div class="panel-text">
+        <h3>桌面应用</h3>
+        <p>双击打开即用，无需额外安装运行时。左侧原文 / 译文上下排列，右侧「历史记录 / 术语库 / 记忆库」三个 Tab，翻译、润色、评分、沉淀在一个窗口完成。</p>
+        <ul>
+          <li>译文非空时出现「润色」按钮，下方独立面板展示润色结果</li>
+          <li>历史行：← 载入翻译框、★ 一键收藏成记忆、评分徽章与错误建议</li>
+          <li>术语库 / 记忆库可视化维护，保存后下一次翻译立即生效</li>
+          <li>下拉框一键切换目标语言，Ctrl+Enter 快捷翻译</li>
+          <li>显示推理耗时、token 与记忆命中（预翻译）统计</li>
+        </ul>
+      </div>
+      <div class="panel-thumb browser">
+        <div class="browser-bar"><i></i><i></i><i></i><span class="browser-addr">transly-ui.exe</span></div>
+        <img src="images/web-ui.png" alt="多语言互译桌面应用界面">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 多语言互译 ===== -->
+<section id="languages">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Multilingual</span>
+      <h2>多种语言互译</h2>
+      <p>33 种主流语言 + 5 种民族语言 / 方言变体，共 38 种语言，覆盖约 1056 个互译方向。</p>
+    </div>
+    <div class="lang-stats">
+      <div class="lang-stat"><b>38</b><span>种语言及方言</span></div>
+      <div class="lang-stat"><b>1056</b><span>个互译方向</span></div>
+      <div class="lang-stat"><b>5</b><span>种民族语言 / 方言变体</span></div>
+    </div>
+    <div class="lang-groups">
+      <div class="lang-group">
+        <h4>主流语言（33）</h4>
+        <div class="chips">
+          <span class="chip">中文</span><span class="chip">繁体中文</span><span class="chip">英语</span><span class="chip">法语</span><span class="chip">葡萄牙语</span><span class="chip">西班牙语</span><span class="chip">日语</span><span class="chip">土耳其语</span><span class="chip">俄语</span><span class="chip">阿拉伯语</span><span class="chip">韩语</span><span class="chip">泰语</span><span class="chip">意大利语</span><span class="chip">德语</span><span class="chip">越南语</span><span class="chip">马来语</span><span class="chip">印度尼西亚语</span><span class="chip">菲律宾语</span><span class="chip">印地语</span><span class="chip">波兰语</span><span class="chip">捷克语</span><span class="chip">荷兰语</span><span class="chip">高棉语</span><span class="chip">缅甸语</span><span class="chip">波斯语</span><span class="chip">古吉拉特语</span><span class="chip">乌尔都语</span><span class="chip">泰卢固语</span><span class="chip">马拉地语</span><span class="chip">希伯来语</span><span class="chip">孟加拉语</span><span class="chip">泰米尔语</span><span class="chip">乌克兰语</span>
+        </div>
+      </div>
+      <div class="lang-group">
+        <h4>民族语言 / 方言变体（5）</h4>
+        <div class="chips">
+          <span class="chip ethnic">藏语</span>
+          <span class="chip ethnic">哈萨克语</span>
+          <span class="chip ethnic">蒙古语</span>
+          <span class="chip ethnic">维吾尔语</span>
+          <span class="chip ethnic">粤语</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 技能 ===== -->
+<section id="skill">
+  <div class="wrap skill-grid">
+    <div class="skill-text">
+      <span class="kicker">Reusable Skill</span>
+      <h3>可复用的「技能」能力</h3>
+        <p>除了命令行、API、桌面应用三种接入方式，项目还附带一个预置技能：把本地翻译 API 封装成语义化调用，让 AI 助手也能直接翻译，无需重新接线。</p>
+      <div class="skill-features">
+        <div class="skill-feature">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6M15 2v6M7 8h10v4a5 5 0 0 1-5 5h0a5 5 0 0 1-5-5V8zM12 17v5"/></svg>
+          <h4>即插即用</h4>
+          <p>装进智能体即可翻译，一句指令完成中英或多语言互译。</p>
+        </div>
+        <div class="skill-feature">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <h4>与本地服务同源</h4>
+          <p>调用的是同一个本地 API，离线运行、数据不出本地。</p>
+        </div>
+        <div class="skill-feature">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+          <h4>覆盖 38 种语言</h4>
+          <p>支持 <code>--target</code> 指定任意目标语言，缺省中英互译。</p>
+        </div>
+        <div class="skill-feature">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <h4>内置错误处理</h4>
+          <p>服务未启动、参数非法或翻译失败时给出明确提示。</p>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-head"><span>lang-translator-skill/</span><button class="copy-btn" data-copy="skill">复制</button></div>
+      <pre><code>lang-translator-skill/
+├── SKILL.md             <span class="dim"># 能力说明与触发条件</span>
+└── scripts/
+    └── translate.py     <span class="dim"># 调用本地翻译 API</span>
+
+<span class="cm"># 使用</span>
+python scripts/translate.py --text "你好，世界"
+python scripts/translate.py --text "你好，世界" --target ja</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 联系我们 ===== -->
+<section id="contact">
+  <div class="wrap">
+    <div class="contact">
+      <div>
+        <h3>联系我们</h3>
+        <p>扫码直接打开邮件 App 写信，或点击邮箱地址发起邮件；也可以在应用内使用「反馈意见」。</p>
+        <a class="contact-mail" href="mailto:contact@cd-ii.com">contact@cd-ii.com</a>
+      </div>
+      <div class="contact-qr">
+        <div class="qr-box">
+          <img src="images/contact-mailto.png" alt="联系我们：扫码发送邮件至 contact@cd-ii.com" />
+        </div>
+        <span>扫码发邮件</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="返回顶部">
+      <svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#2563eb"/><text x="32" y="44" font-size="32" text-anchor="middle" fill="#fff" font-family="sans-serif">译</text></svg>
+      多语言互译-Transly
+    </a>
+    <p>面向涉密与敏感行业的离线翻译 · 数据主权在握</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // 平滑滚动按钮
+  document.querySelectorAll('[data-scroll]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.querySelector(btn.getAttribute('data-scroll'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // 三种服务标签切换
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+      document.querySelectorAll('.tab-panel').forEach(function (p) {
+        p.classList.toggle('active', p.id === 'panel-' + tab.getAttribute('data-tab'));
+      });
+    });
+  });
+
+  // 复制按钮
+  function copyText(text, btn) {
+    function done(ok) {
+      btn.textContent = ok ? '已复制' : '复制失败';
+      setTimeout(function () { btn.textContent = '复制'; }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(true); } catch (e) { done(false); }
+      document.body.removeChild(ta);
+    }
+  }
+  var snippets = {
+    cli: 'echo "你好！" | transly-cli --target ja\ntransly-cli --target en < notes.txt > out.txt\n# 连续会话\ntransly-cli it',
+    api: 'curl -X POST http://127.0.0.1:8080/api/v1/translate \\\n  -H "Content-Type: application/json" \\\n  -d \'{"text":"你好，世界","target":"ja"}\'',
+    skill: 'python scripts/translate.py --text "你好，世界"\npython scripts/translate.py --text "你好，世界" --target ja'
+  };
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { copyText(snippets[btn.getAttribute('data-copy')] || '', btn); });
+  });
+})();
+</script>
+</body>
+</html>

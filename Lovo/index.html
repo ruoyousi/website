@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lovo · 本地语音工具 | 全离线 TTS · CLI · API · 桌面 UI</title>
+<meta name="description" content="Lovo 是基于 Qwen3-TTS 的语音处理工具包：全程本地推理、文本不出设备，提供 CLI、OpenAI 兼容 HTTP API 与桌面 UI 三种形态，支持声音克隆、预设音色、多语言与长文本分段。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232E3440'/%3E%3Cpath d='M6 16h3l2-7 3 14 3-11 2 6 2-3h4' fill='none' stroke='%2388C0D0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --nord0:#2E3440; --nord1:#3B4252; --nord2:#434C5E; --nord3:#4C566A;
+  --nord4:#D8DEE9; --nord5:#E5E9F0; --nord6:#ECEFF4;
+  --nord7:#8FBCBB; --nord8:#88C0D0; --nord9:#81A1C1; --nord10:#5E81AC;
+  --nord11:#BF616A; --nord12:#D08770; --nord13:#EBCB8B; --nord14:#A3BE8C; --nord15:#B48EAD;
+  --bg:#242933; --panel:rgba(59,66,82,.55); --panel-solid:#3B4252;
+  --border:rgba(136,192,208,.16); --border-strong:rgba(136,192,208,.38);
+  --text:#D8DEE9; --text-dim:#9aa5b8; --accent:#88C0D0; --accent2:#81A1C1;
+  --grad:linear-gradient(120deg,#8FBCBB 0%,#88C0D0 38%,#81A1C1 72%,#5E81AC 100%);
+  --mono:"Cascadia Code","JetBrains Mono",Consolas,"Sarasa Mono SC",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.7;overflow-x:hidden}
+::selection{background:rgba(129,161,193,.35)}
+
+/* ===== 背景装饰 ===== */
+.bg-deco{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+   radial-gradient(900px 600px at 85% -10%, rgba(94,129,172,.25), transparent 60%),
+   radial-gradient(700px 500px at -10% 30%, rgba(143,188,187,.14), transparent 60%),
+   radial-gradient(800px 700px at 60% 110%, rgba(180,142,173,.12), transparent 60%);}
+.bg-grid{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(136,192,208,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(136,192,208,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 30%,#000 40%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 30%,#000 40%,transparent 100%);}
+
+/* ===== 导航 ===== */
+header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:rgba(36,41,51,.72);border-bottom:1px solid var(--border)}
+.nav{max-width:1160px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:28px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:.3px;color:var(--nord6);text-decoration:none;white-space:nowrap}
+.logo svg{flex:none}
+.nav-links{display:flex;gap:6px;margin-left:auto;align-items:center}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:14.5px;padding:7px 13px;border-radius:8px;transition:.2s}
+.nav-links a:hover{color:var(--nord6);background:rgba(136,192,208,.1)}
+.nav-cta{background:var(--grad);color:#1d222b !important;font-weight:600 !important;padding:8px 18px !important;border-radius:9px !important}
+.nav-cta:hover{filter:brightness(1.1);background:var(--grad) !important;color:#1d222b !important}
+
+/* ===== 通用 ===== */
+main{max-width:1160px;margin:0 auto;padding:0 24px}
+section{padding:88px 0 24px}
+.kicker{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12.5px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
+.kicker::before{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--accent))}
+h2{font-size:clamp(26px,3.6vw,38px);line-height:1.25;letter-spacing:.5px;margin-bottom:14px}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.sub{color:var(--text-dim);font-size:16.5px;max-width:760px}
+.mono{font-family:var(--mono)}
+
+[data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.22,.8,.3,1),transform .7s cubic-bezier(.22,.8,.3,1)}
+[data-reveal].visible{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1;transform:none;transition:none}}
+
+/* ===== Hero ===== */
+.hero{padding:96px 0 40px;position:relative}
+.badge{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-family:var(--mono);color:var(--nord8);
+  background:rgba(136,192,208,.08);border:1px solid var(--border-strong);padding:6px 14px;border-radius:999px;margin-bottom:26px}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--nord14);box-shadow:0 0 8px var(--nord14);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-size:clamp(38px,6vw,64px);line-height:1.1;letter-spacing:1px;font-weight:800}
+.hero h1 .sub-title{display:block;font-size:clamp(17px,2.4vw,24px);font-weight:600;color:var(--text-dim);letter-spacing:2px;margin-top:14px}
+.hero p.lead{margin-top:22px;font-size:17px;color:var(--text-dim);max-width:660px}
+.hero p.lead strong{color:var(--nord8);font-weight:600}
+.cta-row{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:11px;font-size:15.5px;font-weight:600;text-decoration:none;transition:.25s;cursor:pointer;border:none;font-family:var(--sans)}
+.btn-primary{background:var(--grad);color:#1d222b;box-shadow:0 8px 28px -8px rgba(129,161,193,.55)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(129,161,193,.7)}
+.btn-ghost{background:rgba(136,192,208,.07);color:var(--nord8);border:1px solid var(--border-strong)}
+.btn-ghost:hover{background:rgba(136,192,208,.14);transform:translateY(-2px)}
+
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+
+/* ===== 卖点 ===== */
+.value-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:44px}
+.card{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:30px 26px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:.3s;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0;border-radius:16px;padding:1px;
+  background:linear-gradient(135deg,rgba(136,192,208,.5),transparent 40%,transparent 60%,rgba(129,161,193,.4));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:.3s}
+.card:hover{transform:translateY(-6px);background:rgba(59,66,82,.78)}
+.card:hover::before{opacity:1}
+.card .icon{width:52px;height:52px;border-radius:13px;display:grid;place-items:center;margin-bottom:20px;
+  background:linear-gradient(135deg,rgba(136,192,208,.18),rgba(129,161,193,.1));border:1px solid var(--border-strong)}
+.card h3{font-size:19px;margin-bottom:10px;letter-spacing:.5px}
+.card p{color:var(--text-dim);font-size:14.8px}
+.card p strong{color:var(--nord7);font-weight:600}
+.card .tag{display:inline-block;margin-top:16px;font-family:var(--mono);font-size:11.5px;letter-spacing:1.5px;color:var(--accent2);
+  background:rgba(129,161,193,.1);border:1px solid rgba(129,161,193,.3);padding:3px 10px;border-radius:999px}
+
+/* ===== 对比表 ===== */
+.compare{margin-top:56px;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:rgba(46,52,64,.6)}
+.compare table{width:100%;border-collapse:collapse;font-size:14.8px}
+.compare th,.compare td{padding:15px 22px;text-align:left;border-bottom:1px solid var(--border)}
+.compare tr:last-child td{border-bottom:none}
+.compare th{background:rgba(136,192,208,.07);font-weight:600;font-size:14px;letter-spacing:.5px;color:var(--nord8)}
+.compare td:first-child{color:var(--text-dim);width:130px}
+.compare .online{color:var(--nord12)}
+.compare .ours{color:var(--nord14);font-weight:600}
+
+/* ===== 功能网格 ===== */
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:44px}
+.feat{background:rgba(59,66,82,.45);border:1px solid var(--border);border-radius:14px;padding:24px 20px;transition:.3s}
+.feat:hover{border-color:var(--border-strong);background:rgba(59,66,82,.75);transform:translateY(-4px)}
+.feat .f-icon{font-size:22px;margin-bottom:12px;display:block}
+.feat h4{font-size:15.5px;margin-bottom:7px;letter-spacing:.3px}
+.feat p{font-size:13.6px;color:var(--text-dim);line-height:1.65}
+.feat .kbd{font-family:var(--mono);font-size:12px;color:var(--nord8);background:rgba(46,52,64,.8);
+  border:1px solid var(--border);border-radius:5px;padding:1px 7px;margin-top:10px;display:inline-block}
+
+/* ===== 布局 / 代码块 / 截图卡片 ===== */
+.entry-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;margin-top:44px;align-items:start}
+.entry-desc{color:var(--text-dim);font-size:15px;margin-bottom:16px}
+.entry-desc b{color:var(--nord7)}
+.copy-btn{position:absolute;right:12px;top:10px;font-family:var(--mono);font-size:11.5px;color:var(--text-dim);
+  background:rgba(59,66,82,.9);border:1px solid var(--border);border-radius:7px;padding:5px 12px;cursor:pointer;transition:.2s}
+.copy-btn:hover{color:var(--nord8);border-color:var(--border-strong)}
+.copy-btn.ok{color:var(--nord14);border-color:var(--nord14)}
+.codebox{position:relative;background:rgba(30,34,43,.92);border:1px solid var(--border);border-radius:14px;margin-bottom:16px}
+.codebox .code-title{font-family:var(--mono);font-size:11.5px;letter-spacing:1.5px;color:var(--text-dim);padding:12px 18px 0;text-transform:uppercase}
+.codebox pre{padding:14px 18px 18px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.75;white-space:pre;min-height:40px}
+.shot{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:rgba(30,34,43,.9);
+  box-shadow:0 26px 54px -22px rgba(0,0,0,.65);transition:.3s}
+.shot:hover{transform:translateY(-5px);border-color:var(--border-strong)}
+.shot img{width:100%;display:block}
+.shot .cap{padding:13px 18px;font-size:13.5px;color:var(--text-dim);border-top:1px solid var(--border);background:rgba(46,52,64,.6)}
+.shot .cap b{color:var(--nord8)}
+
+/* ===== 产品视频 ===== */
+.video-shell{max-width:920px;margin:48px auto 0}
+.video-frame{border:1px solid var(--border-strong);border-radius:16px;overflow:hidden;
+  background:rgba(30,34,43,.92);box-shadow:0 30px 60px -20px rgba(0,0,0,.65)}
+.video-frame video{display:block;width:100%;height:auto;background:#1e222b}
+.video-note{text-align:center;color:var(--text-dim);font-size:13.5px;margin-top:14px}
+
+/* ===== CTA ===== */
+.final-cta{margin-top:90px;text-align:center;padding:64px 32px;border-radius:22px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(59,66,82,.85),rgba(46,52,64,.9));border:1px solid var(--border-strong)}
+.final-cta::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 180deg at 50% 50%,transparent 0 70%,rgba(136,192,208,.12) 85%,transparent 100%);animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.final-cta>*{position:relative}
+.final-cta h2{margin-bottom:12px}
+.final-cta p{color:var(--text-dim);margin-bottom:30px}
+
+/* ===== Footer ===== */
+footer{margin-top:90px;border-top:1px solid var(--border);padding:36px 24px 44px}
+.foot{max-width:1160px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;
+  color:var(--text-dim);font-size:13.5px}
+.foot a{color:var(--nord8);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.foot .links{display:flex;gap:20px;flex-wrap:wrap}
+.foot .mono{opacity:.7}
+
+@media (max-width:960px){
+  .hero-grid,.entry-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .value-grid{grid-template-columns:1fr}
+  .nav-links a:not(.nav-cta){display:none}
+  section{padding-top:64px}
+}
+@media (max-width:560px){
+  .feat-grid{grid-template-columns:1fr}
+  .compare table{font-size:13px}.compare th,.compare td{padding:11px 12px}
+}
+</style>
+<noscript><style>[data-reveal]{opacity:1 !important;transform:none !important}</style></noscript>
+</head>
+<body>
+<div class="bg-deco"></div>
+<div class="bg-grid"></div>
+
+<header>
+  <nav class="nav">
+    <a class="logo" href="#top">
+      <svg width="26" height="26" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#2E3440"/><path d="M6 16h3l2-7 3 14 3-11 2 6 2-3h4" fill="none" stroke="#88C0D0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Lovo 本地语音工具
+    </a>
+    <div class="nav-links">
+      <a href="#value">离线工作</a>
+      <a href="#features">功能特性</a>
+      <a href="#skill">AI 技能</a>
+      <a class="nav-cta" href="#features">开始使用</a>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- ================= Hero ================= -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div data-reveal>
+        <span class="badge"><span class="dot"></span>本地推理 · 文本不出设备 · 授权使用</span>
+        <h1>Lovo
+          <span class="sub-title grad-text">语音处理工具包 · 全离线 TTS/ASR</span>
+        </h1>
+        <p class="lead">基于 <strong>Qwen3-TTS / Qwen3-ASR</strong> 与 Rust 打造的一站式语音方案：<strong>命令行 / HTTP API / 桌面 UI</strong> 三形态任意接入。语音合成、声音克隆、音色设计、语音识别全程本地运行——医疗文档、金融材料、未公开内容，<strong>一个字节都不上云</strong>。</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#features">查看功能 →</a>
+          <a class="btn btn-ghost" href="#skill">AI 技能包</a>
+        </div>
+      </div>
+      <div data-reveal style="transition-delay:.15s">
+        <div class="shot">
+          <img src="images/voice-ui.png" alt="Lovo 桌面界面 —— 声音角色 / 语音合成 / 语音识别" loading="lazy">
+          <div class="cap"><b>Lovo</b> · 桌面端：声音角色 / 语音合成 / 语音识别 / 许可证管理，本地推理一键操作。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 价值 ================= -->
+  <section id="value">
+<span class="kicker" data-reveal>离线工作</span>
+<h2 data-reveal>为什么选择<span class="grad-text">离线语音合成</span></h2>
+<p class="sub" data-reveal>在线 TTS 把文本发到云端才能开口；Lovo 反过来——模型住在你的机器上，随叫随到。</p>
+
+    <div class="value-grid">
+      <div class="card" data-reveal>
+        <div class="icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#88C0D0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3>隐私与数据安全</h3>
+        <p>在线 TTS 需要把文本发到云端，<strong>医疗、金融、企业内部文档、未公开内容</strong>就不太适合上传。离线 TTS 全程本地推理，<strong>文本不出设备</strong>，更适合敏感场景。</p>
+        <span class="tag">ZERO CLOUD UPLOAD</span>
+      </div>
+      <div class="card" data-reveal style="transition-delay:.1s">
+        <div class="icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EBCB8B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.2c0-1.2 1.1-2.2 2.5-2.2s2.5 1 2.5 2.2-1.1 2-2.5 2-2.5.9-2.5 2.1 1.1 2.2 2.5 2.2 2.5-1 2.5-2.2"/></svg>
+        </div>
+        <h3>成本可控</h3>
+        <p>云端 TTS 多按字符、时长或调用次数计费，批量配音、长期高频使用时成本会累积。离线 TTS 模型<strong>一次性部署</strong>后，后续使用基本<strong>没有持续调用费</strong>。</p>
+        <span class="tag">ONE-TIME DEPLOY</span>
+      </div>
+      <div class="card" data-reveal style="transition-delay:.2s">
+        <div class="icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#A3BE8C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6M13 4l-2 16"/></svg>
+        </div>
+        <h3>可集成、可自动化</h3>
+        <p>提供 <strong>CLI、HTTP API、桌面 UI</strong>，方便接入视频配音、批量生成、工作流自动化。比如批量生成旁白、<strong>为 ComfyUI 工作流提供音频输出</strong>，或做成内部配音服务。</p>
+        <span class="tag">CLI · API · GUI</span>
+      </div>
+    </div>
+
+    <div class="compare" data-reveal>
+      <table>
+        <tr><th></th><th>在线 TTS 服务</th><th>Lovo（离线）</th></tr>
+        <tr><td>数据流向</td><td class="online">文本上传云端，依赖供应商合规</td><td class="ours">文本与音频全程本地，不出设备</td></tr>
+        <tr><td>计费方式</td><td class="online">按字符 / 时长 / 调用次数持续计费</td><td class="ours">一次部署，无限次调用零费用</td></tr>
+        <tr><td>集成方式</td><td class="online">网络 SDK，受网络与限流约束</td><td class="ours">CLI / 本地 HTTP API / 桌面 UI，进程内零延迟</td></tr>
+        <tr><td>断网可用</td><td class="online">依赖网络连通性</td><td class="ours">完全可用，内网/隔离环境同样部署</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= 功能 ================= -->
+  <section id="features">
+    <span class="kicker" data-reveal>Features</span>
+    <h2 data-reveal>主要<span class="grad-text">功能特性</span></h2>
+    <p class="sub" data-reveal>一个工具箱覆盖从"念稿子"到"克隆你的声音"再到"开放成服务"的完整链路。</p>
+
+    <div class="feat-grid">
+      <div class="feat" data-reveal><span class="f-icon">🎙️</span><h4>声音克隆</h4><p>一段参考音频提取声纹，驱动任意新文本；支持 ICL 参考文本与 x-vector 两种模式。</p><span class="kbd">clone --reference</span></div>
+      <div class="feat" data-reveal style="transition-delay:.05s"><span class="f-icon">🎭</span><h4>9 个预设音色</h4><p>CustomVoice 内置男女声与中英韩日风格：vivian、ryan、serena、sohee……一行参数切换。</p><span class="kbd">--speaker vivian</span></div>
+      <div class="feat" data-reveal style="transition-delay:.1s"><span class="f-icon">✨</span><h4>音色设计</h4><p>VoiceDesign 模型用一句话文字描述，即生成全新的目标音色，无需任何参考音频；也可用 CLI 的 design 子命令驱动。</p><span class="kbd">design --instruct</span></div>
+      <div class="feat" data-reveal style="transition-delay:.15s"><span class="f-icon">🌐</span><h4>多语言</h4><p>中文、英文多语言输出，并提供日韩特色说话人（sohee / ono_anna），适配出海内容与多语种旁白需求。</p><span class="kbd">--language</span></div>
+      <div class="feat" data-reveal><span class="f-icon">📄</span><h4>长文本自动分段</h4><p>超过 max-chars 的文本智能切分逐段合成再拼接，小说级长文、整章旁白直接喂入。</p><span class="kbd">--max-chars 200</span></div>
+      <div class="feat" data-reveal style="transition-delay:.05s"><span class="f-icon">⚡</span><h4>设备自动选择</h4><p>单一二进制，运行时优先 CUDA、不可用自动回退 CPU，无需区分构建版本。</p><span class="kbd">CUDA → CPU</span></div>
+      <div class="feat" data-reveal style="transition-delay:.1s"><span class="f-icon">🔌</span><h4>OpenAI 兼容 API</h4><p>POST /v1/audio/speech 请求体与官方一致，现有集成改个 base_url 即可指向本地。</p><span class="kbd">:8000/v1/audio/speech</span></div>
+      <div class="feat" data-reveal style="transition-delay:.15s"><span class="f-icon">🎛️</span><h4>采样与输出可控</h4><p>贪心 / temperature 采样调节，WAV 输出；API 支持 8–96 kHz 采样率重采样。</p><span class="kbd">--greedy / --temperature</span></div>
+      <div class="feat" data-reveal><span class="f-icon">🎧</span><h4>语音识别 (ASR)</h4><p>Qwen3-ASR 将音频转写为文本，自动检测语言，也可强制指定语言与自定义最大 token。</p><span class="kbd">asr --audio</span></div>
+      <div class="feat" data-reveal style="transition-delay:.05s"><span class="f-icon">🖥️</span><h4>轻量部署</h4><p>Rust 单二进制，无需安装 Python 环境；最低 8GB 显存 NVIDIA 显卡（CUDA）即可流畅运行，CPU 模式同样支持。</p><span class="kbd">8GB VRAM · CPU</span></div>
+    </div>
+  </section>
+
+  <!-- ================= 产品视频 ================= -->
+  <section id="video">
+    <span class="kicker" data-reveal>Product Video</span>
+    <h2 data-reveal>18 秒看懂 <span class="grad-text">Lovo</span></h2>
+    <p class="sub" data-reveal>产品速览：本地推理、声音克隆、音色设计与桌面端一键出声。</p>
+
+    <div class="video-shell" data-reveal>
+      <div class="video-frame">
+        <video controls preload="none" poster="images/video-poster.jpeg" width="1920" height="1080">
+          <source src="Lovo-intro.mp4" type="video/mp4">
+          你的浏览器不支持视频播放，可直接 <a href="Lovo-intro.mp4">下载观看</a>。
+        </video>
+      </div>
+      <p class="video-note">时长 18 秒 · 含背景音乐 · 各项能力详见上方版块介绍</p>
+    </div>
+  </section>
+
+  <!-- ================= AI 技能包 ================= -->
+  <section id="skill">
+    <span class="kicker" data-reveal>AI Integration</span>
+    <h2 data-reveal>给 AI 助手的<span class="grad-text">语音技能包</span></h2>
+    <p class="sub" data-reveal>Lovo-skill 把 voice-cli 封装成技能包：在 Doubao 等 AI 助手的对话里，一句话就能触发语音合成、声音克隆、音色设计与语音识别，文本全程不出设备。</p>
+
+    <div class="entry-grid">
+      <div data-reveal>
+        <div class="codebox"><span class="code-title">lovo-skill · 能力映射</span><button class="copy-btn">复制</button><pre>voice-cli（AI 助手可调用）
+  ├─ synth   语音合成   --model-path &lt;TTS&gt; --text ... --speaker vivian
+  ├─ clone   声音克隆   --reference ref.wav --text ... [--ref-text ref.txt]
+  ├─ design  音色设计   --instruct "年轻女性，甜美温柔" --text ...
+  └─ asr     语音识别   --audio input.wav [--language chinese]
+
+全局：--model-path 必填；--max-chars 分段（默认 200）
+许可：启动先校验 license.dat，未授权不执行
+输出：合成/克隆/设计 WAV（24kHz），识别 TXT</pre></div>
+        <p class="entry-desc"><b>用法示意</b> —— 对 AI 助手说"用 vivian 的声音朗读这段文案"，助手即调用 <span class="mono">synth</span>，返回 <span class="mono">output.wav</span>。</p>
+      </div>
+      <div data-reveal style="transition-delay:.15s">
+        <div class="codebox"><span class="code-title">环境约定 · %LOVO_HOME%</span><button class="copy-btn">复制</button><pre>bin/       voice-cli.exe · license.dat
+models/    Qwen3-TTS-12Hz-1.7B-{Base,CustomVoice,VoiceDesign}
+           Qwen3-ASR-&lt;size&gt;（含 tokenizer.json）
+voices/    &lt;voice-name&gt;/voice-ref.wav + voice-ref.txt</pre></div>
+        <p class="entry-desc"><b>9 个预设音色</b>（CustomVoice）—— vivian、ryan、dylan、aiden、serena、eric、uncle_fu、sohee（韩）、ono_anna（日）。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 收尾 CTA ================= -->
+  <div class="final-cta" data-reveal>
+    <h2>把语音能力<span class="grad-text">装进自己的机器</span></h2>
+    <p>隐私不出设备，成本一次到位，集成随你所欲。</p>
+    <a class="btn btn-primary" href="#top">回到顶部，立即开始 →</a>
+  </div>
+
+</main>
+
+<footer>
+  <div class="foot">
+    <div>Lovo · 本地语音工具 —— 基于 <span class="mono">Qwen3-TTS</span>，本地推理</div>
+    <div class="links">
+      <a href="#value">离线工作</a>
+      <a href="#features">功能特性</a>
+      <a href="#video">产品视频</a>
+      <a href="#skill">AI 技能</a>
+    </div>
+    <div class="mono">本页零外部请求 · 完全离线可打开</div>
+  </div>
+</footer>
+
+<script>
+// 滚动渐显
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+}), { threshold: 0.12 });
+document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+
+// 代码复制
+document.querySelectorAll('.copy-btn').forEach(btn => btn.addEventListener('click', async () => {
+  const text = btn.parentElement.querySelector('pre').innerText;
+  try { await navigator.clipboard.writeText(text); } catch {
+    const ta = document.createElement('textarea'); ta.value = text;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  }
+  btn.textContent = '已复制 ✓'; btn.classList.add('ok');
+  setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('ok'); }, 1800);
+}));
+</script>
+</body>
+</html>

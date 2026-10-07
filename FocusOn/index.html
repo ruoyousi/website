@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FocusOn — 个人专注工作台</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='%237c8aa5' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%237c8aa5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://miaoda.feishu.cn" crossorigin />
+<link href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ===== token ===== */
+:root{
+  --bg:#10131a; --bg-2:#161a22; --panel:#1b2029; --panel-2:#222838;
+  --border:#262d39; --border-soft:#1f2530;
+  --text:#cdd6e3; --text-dim:#8b93a3; --text-faint:#5f6878;
+  --accent:#7c8aa5; --accent-strong:#8d9ab5; --accent-dim:#46526b;
+  --warm:#c9a86a; --blue:#8aa2c9; --red:#c25757;
+  --radius:12px;
+  --maxw:1120px;
+  --font:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+a{color:var(--accent-strong);text-decoration:none}
+a:hover{color:var(--accent)}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{padding:88px 0}
+.section-head{max-width:720px;margin-bottom:48px}
+.section-eyebrow{color:var(--accent);font-size:13px;letter-spacing:.12em;font-weight:600;margin-bottom:12px}
+.section-title{font-size:clamp(26px,4vw,38px);font-weight:700;line-height:1.25;letter-spacing:-.01em}
+.section-sub{color:var(--text-dim);font-size:16px;margin-top:14px;max-width:640px}
+
+/* ===== 顶部导航 ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(16,19,26,.72);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-soft)}
+.nav-inner{max-width:var(--maxw);margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;gap:28px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;color:var(--text);letter-spacing:.01em}
+.brand svg{color:var(--accent)}
+.nav-links{display:flex;gap:26px;margin-left:auto}
+.nav-links a{color:var(--text-dim);font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{font-size:14px;font-weight:600;color:#e7edf7;background:var(--accent);padding:8px 16px;border-radius:8px;transition:background .2s}
+.nav-cta:hover{background:var(--accent-strong);color:#eef2f9}
+
+/* ===== hero ===== */
+.hero{padding:150px 0 72px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
+.hero-title{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.15;letter-spacing:-.015em}
+.hero-title .hl{color:var(--accent-strong)}
+.hero-sub{color:var(--text-dim);font-size:17px;margin-top:22px;max-width:520px}
+.hero-feats{display:flex;flex-wrap:wrap;gap:18px;margin-top:28px}
+.hero-feats span{display:flex;align-items:center;gap:7px;color:var(--text-dim);font-size:14px}
+.hero-feats svg{color:var(--accent)}
+.hero-cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:9px;font-size:15px;font-weight:600;transition:transform .15s,background .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{color:#eef2f9;background:var(--accent);box-shadow:0 6px 22px rgba(124,138,165,.25)}
+.btn-primary:hover{background:var(--accent-strong)}
+.btn-ghost{color:var(--text);border:1px solid var(--border);background:var(--bg-2)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent-strong)}
+.hero-shot{position:relative}
+.shot-wrap{border-radius:14px;border:1px solid var(--border);overflow:hidden;background:var(--panel);box-shadow:0 30px 70px -20px rgba(0,0,0,.55)}
+.shot-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--border-soft);background:var(--panel-2)}
+.shot-bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+.shot-bar .r{background:#e0655f}.shot-bar .y{background:#d9a552}.shot-bar .g{background:#67b06a}
+.shot-bar span{margin-left:8px;color:var(--text-faint);font-size:12px}
+.shot-wrap img{display:block;width:100%;height:auto}
+.shot-glow{position:absolute;inset:-20%;background:radial-gradient(closest-side,rgba(124,138,165,.22),transparent 70%);z-index:-1}
+
+/* ===== 功能模块 ===== */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.fcard{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:26px 24px;transition:border-color .25s,transform .25s;position:relative;overflow:hidden}
+.fcard:hover{border-color:var(--accent-dim);transform:translateY(-3px)}
+.fcard .f-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);border:1px solid var(--border);color:var(--accent);margin-bottom:18px}
+.fcard h3{font-size:17px;font-weight:600;margin-bottom:8px}
+.fcard p{color:var(--text-dim);font-size:14px;margin-bottom:14px;min-height:44px}
+.fcard ul{list-style:none;display:grid;gap:8px}
+.fcard li{display:flex;gap:8px;color:var(--text-dim);font-size:13px}
+.fcard li svg{color:var(--accent);flex-shrink:0;margin-top:2px}
+.fcard .num{position:absolute;top:20px;right:22px;color:var(--text-faint);font-size:13px;font-weight:600}
+
+/* ===== 特性对比/横幅 ===== */
+.banner{background:linear-gradient(135deg,#1c2230,#161a22);border:1px solid var(--border);border-radius:16px;padding:52px 48px;display:flex;align-items:center;gap:40px;flex-wrap:wrap}
+.banner h2{font-size:clamp(24px,3.5vw,34px);font-weight:700;line-height:1.3}
+.banner p{color:var(--text-dim);margin-top:12px;font-size:15px;max-width:520px}
+.banner .btn{margin-top:8px}
+
+/* ===== footer ===== */
+footer{border-top:1px solid var(--border-soft);padding:44px 0;background:var(--bg)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.foot .brand{color:var(--text-dim)}
+.foot small{color:var(--text-faint);font-size:13px}
+
+/* ===== 滚动揭示 ===== */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+
+/* ===== 响应式 ===== */
+@media(max-width:960px){
+  .hero-grid{grid-template-columns:1fr;gap:44px}
+  .features-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .nav-links{display:none}
+  .features-grid{grid-template-columns:1fr}
+  section{padding:64px 0}
+  .banner{padding:36px 26px}
+  .hero-title{font-size:32px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部导航 ===== -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top" aria-label="FocusOn 首页">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>
+      FocusOn
+    </a>
+    <nav class="nav-links">
+      <a href="#features">功能</a>
+    </nav>
+    <a class="nav-cta" href="#download">开始使用</a>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="top">
+  <div class="container hero-grid">
+    <div class="rv">
+      <h1 class="hero-title">记录你如何做事，<br/>沉淀成<span class="hl">你的方法论</span></h1>
+      <p class="hero-sub">FocusOn 不是知识库，而是个体工作方法论工具：四象限待办、记账、日历、习惯打卡、番茄专注、每日喝水与 AI 对话，记录你做事的真实数据，用来积累与 AI复盘，打磨出只属于你的工作节奏。</p>
+      <div class="hero-feats">
+        <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>行为数据自动积累</span>
+        <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>周 / 月 AI复盘 · 自我认知</span>
+        <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>本地大模型 · AI复盘</span>
+        <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>数据不离开本机 · 离线可用</span>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#download">下载桌面版</a>
+        <a class="btn btn-ghost" href="#features">了解功能</a>
+      </div>
+    </div>
+    <div class="hero-shot rv">
+      <div class="shot-glow"></div>
+      <div class="shot-wrap">
+        <div class="shot-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>FocusOn · 总览</span></div>
+        <img src="assets/focuson-home.png" alt="FocusOn 应用总览界面截图" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 功能模块 ===== -->
+<section id="features">
+  <div class="container">
+    <div class="section-head rv">
+      <div class="section-eyebrow">RECORD · ACCUMULATE · REVIEW</div>
+      <h2 class="section-title">不存内容，只记你如何做事</h2>
+      <p class="section-sub">专注时长、习惯坚持、收支去向、待办完成、日程与饮水——这些是你自己运转的真实数据。日积月累，就能用 AI复盘出适合自己的方法。</p>
+    </div>
+    <div class="features-grid">
+      <!-- 待办 -->
+      <div class="fcard rv">
+        <span class="num">01</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+        <h3>四象限待办</h3>
+        <p>重要与紧急的二维矩阵，让优先级一目了然。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>拖拽任务到不同象限</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>按截止日期自动排序</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>完成 / 未完成随手切换</li>
+        </ul>
+      </div>
+      <!-- 记账 -->
+      <div class="fcard rv">
+        <span class="num">02</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h5"/><path d="M3 12h4"/></svg></div>
+        <h3>个人记账</h3>
+        <p>收支流水清晰记录，月度统计一眼掌握。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>收入 / 支出分类记账</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>按月聚合收支与结余</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>金额以分为单位精确存储</li>
+        </ul>
+      </div>
+      <!-- 日历提醒 -->
+      <div class="fcard rv">
+        <span class="num">03</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></div>
+        <h3>日历与提醒</h3>
+        <p>安排日程，到点自动弹桌面通知。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>事件增删改查</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>后台轮询 + 系统通知提醒</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>自定义提前提醒时间</li>
+        </ul>
+      </div>
+      <!-- 笔记 -->
+      <div class="fcard rv">
+        <span class="num">04</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></div>
+        <h3>快速笔记</h3>
+        <p>Markdown 随手记，标签归档。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Markdown 编辑与预览</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>标签 JSON 归档</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>自动记录更新时间</li>
+        </ul>
+      </div>
+      <!-- 习惯打卡 -->
+      <div class="fcard rv">
+        <span class="num">05</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18"/><path d="M12 6c-3 0-5 1.5-5 4s2 4 5 4 5-1.5 5-4-2-4-5-4z"/><path d="M12 14c3 0 5 1.5 5 4s-2 4-5 4"/></svg></div>
+        <h3>习惯打卡</h3>
+        <p>每日打卡，看连续坚持的天数。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>按日期记录打卡状态</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>连续打卡天数自动统计</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>近 30 天热力格一览</li>
+        </ul>
+      </div>
+      <!-- 番茄专注 -->
+      <div class="fcard rv">
+        <span class="num">06</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M12 2v2M7 4l1 1.5M17 4l-1 1.5"/></svg></div>
+        <h3>番茄专注</h3>
+        <p>专注 / 休息节奏化计时，把注意力交给一件事。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>专注/短休/长休，可暂停跳过</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>任务绑定 + 内部/外部中断记录</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>今日统计 · 热力图 · 专注趋势</li>
+        </ul>
+      </div>
+      <!-- 每日喝水 -->
+      <div class="fcard rv">
+        <span class="num">07</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2.7C8.7 6.3 6 9.3 6 12.5a6 6 0 0 0 12 0c0-3.2-2.7-6.2-6-9.8z"/></svg></div>
+        <h3>每日喝水</h3>
+        <p>按目标打卡，到点提醒你补一杯水。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>每日目标（ml / 杯），快捷档打卡</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>定时 + 间隔提醒，零点自动重置</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>环形进度 · 日/周/月饮水趋势</li>
+        </ul>
+      </div>
+      <!-- AI 对话 -->
+      <div class="fcard rv">
+        <span class="num">08</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>AI 对话</h3>
+        <p>用自然语言直接办事，本地大模型驱动。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>意图解析：新增待办 / 记账 / 加日历</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>对话历史入库，可删除问答对</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>连接本地 Ollama，离线可用</li>
+        </ul>
+      </div>
+      <!-- CTA 占位卡片 -->
+      <div class="fcard rv" style="display:flex;flex-direction:column;justify-content:center;gap:12px;background:linear-gradient(150deg,#1c2230,#161a22)">
+        <h3 style="font-size:19px">从今天开始积累</h3>
+        <p style="min-height:0;margin:0">八个模块会记下你如何做事，数据积累后用 AI复盘，形成你自己的方法。</p>
+        <a class="btn btn-primary" style="align-self:flex-start;margin-top:6px" href="#download">获取 FocusOn</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 下载 CTA ===== -->
+<section id="download">
+  <div class="container">
+    <div class="banner rv">
+      <div>
+        <h2>从积累，走向 AI复盘</h2>
+        <p>让 FocusOn 记录你如何做事，用这些数据打磨出更适合自己的工作方法。数据只留在本机。</p>
+      </div>
+      <a class="btn btn-primary" href="#">获取 Windows 版</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== footer ===== -->
+<footer>
+  <div class="container foot">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>
+      FocusOn
+    </a>
+    <small>记录 · 积累 · AI复盘 —— 个体工作方法论工具，数据只留在本机</small>
+  </div>
+</footer>
+
+<script>
+// 滚动揭示
+(function(){
+  var els=document.querySelectorAll('.rv');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return;}
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});
+  },{threshold:0.15});
+  els.forEach(function(e){io.observe(e);});
+})();
+// CTA 反馈（避免僵尸按钮）
+document.querySelectorAll('a.btn').forEach(function(a){
+  if(a.getAttribute('href')==='#'){a.addEventListener('click',function(e){e.preventDefault();a.textContent='正在准备下载…';setTimeout(function(){a.textContent='获取 Windows 版';},1800);});}
+});
+</script>
+</body>
+</html>

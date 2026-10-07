@@ -96,6 +96,47 @@ tailwind.config = {
   .icon-box > svg, .icon-box > img { width: 100%; height: 100%; display: block; }
   .product:hover .icon-box { transform: scale(1.06); }
 
+  /* ===== 整卡可点：标题链接的伪元素铺满卡片（stretched link） ===== */
+  .card-link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .card-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+  }
+  .product:hover .card-link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    text-underline-offset: 3px;
+  }
+  /* 键盘聚焦时整卡描边，焦点始终可见 */
+  .product:has(.card-link:focus-visible) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, #fff);
+  }
+  .card-link:focus-visible { outline: none; }
+
+  /* 右上角进入箭头 */
+  .card-go {
+    position: absolute;
+    top: 1.25rem; right: 1.25rem;
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 999px;
+    color: #cbd5e1;
+    transition: color .25s, background-color .25s, transform .3s cubic-bezier(.16,1,.3,1);
+  }
+  .card-go svg { width: 13px; height: 13px; }
+  .product:hover .card-go {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 9%, #fff);
+    transform: translate(2px, -2px);
+  }
+
   .chip {
     display: inline-flex; align-items: center;
     padding: .18rem .6rem;
@@ -106,6 +147,9 @@ tailwind.config = {
     line-height: 1.6;
     color: #78859a;
     cursor: pointer;
+    /* 浮在整卡链接覆盖层之上，点标签仍是筛选而不是跳转 */
+    position: relative;
+    z-index: 2;
     transition: color .2s, border-color .2s, background-color .2s;
   }
   .chip:hover {
@@ -215,6 +259,13 @@ tailwind.config = {
 
       <!-- 01 合稿易 DocMerger -->
       <article class="product" data-tags="doc,offline" style="--accent:#15508f; --d:.02s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
         <div class="flex items-start gap-4">
           <div class="icon-box" title="合稿易 DocMerger">
             <!-- 取自 DocMerger 落地页导航品牌标识：navy 渐变块 + 白色合流图形 -->
@@ -232,8 +283,8 @@ tailwind.config = {
             </svg>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">合稿易</h3>
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="DocMerger/index.html">合稿易</a></h3>
               <span class="font-mono text-[11px] tracking-wide text-slate-400">DocMerger</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
@@ -262,14 +313,21 @@ tailwind.config = {
 
       <!-- 02 心流写作 FlowWrite -->
       <article class="product" data-tags="ai,offline" style="--accent:#c08a2e; --d:.06s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
         <div class="flex items-start gap-4">
           <div class="icon-box" title="心流写作 FlowWrite">
             <!-- 取自 FlowWrite 落地页 assets/logo.png（内联） -->
             <img src="data:image/png;base64,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" alt="FlowWrite 产品图标">
           </div>
           <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">心流写作</h3>
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="FlowWrite/index.html">心流写作</a></h3>
               <span class="font-mono text-[11px] tracking-wide text-slate-400">FlowWrite</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
@@ -298,6 +356,13 @@ tailwind.config = {
 
       <!-- 03 OffOCR -->
       <article class="product" data-tags="doc,offline" style="--accent:#2563eb; --d:.1s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
         <div class="flex items-start gap-4">
           <div class="icon-box" title="OffOCR">
             <!-- 取自 OffOCR 落地页 favicon / 导航品牌标识 -->
@@ -308,8 +373,8 @@ tailwind.config = {
             </svg>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">OffOCR</h3>
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="OffOCR/index.html">OffOCR</a></h3>
               <span class="font-mono text-[11px] tracking-wide text-slate-400">离线文档解析</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
@@ -338,6 +403,13 @@ tailwind.config = {
 
       <!-- 04 Lovo -->
       <article class="product" data-tags="voice,ai,offline" style="--accent:#5E81AC; --d:.14s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
         <div class="flex items-start gap-4">
           <div class="icon-box" title="Lovo">
             <!-- 取自 Lovo 落地页导航品牌标识：Nord 深灰块 + 冰蓝声波 -->
@@ -347,8 +419,8 @@ tailwind.config = {
             </svg>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">Lovo</h3>
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="Lovo/index.html">Lovo</a></h3>
               <span class="font-mono text-[11px] tracking-wide text-slate-400">Voice Toolbox</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
@@ -378,6 +450,13 @@ tailwind.config = {
 
       <!-- 05 Transly -->
       <article class="product" data-tags="ai,offline" style="--accent:#4f46e5; --d:.18s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
         <div class="flex items-start gap-4">
           <div class="icon-box" title="Transly">
             <!-- 取自 Transly 落地页导航品牌标识：蓝底白「译」字 -->
@@ -387,8 +466,8 @@ tailwind.config = {
             </svg>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">Transly</h3>
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="Transly/index.html">Transly</a></h3>
               <span class="font-mono text-[11px] tracking-wide text-slate-400">lang-translator</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
@@ -417,6 +496,13 @@ tailwind.config = {
 
       <!-- 06 FocusOn -->
       <article class="product" data-tags="ai,offline" style="--accent:#64748b; --d:.22s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
         <div class="flex items-start gap-4">
           <div class="icon-box" title="FocusOn">
             <!-- 取自 FocusOn 落地页 favicon：聚焦圆环 + 中心点（品牌底白图形） -->
@@ -427,8 +513,8 @@ tailwind.config = {
             </svg>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">FocusOn</h3>
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="FocusOn/index.html">FocusOn</a></h3>
               <span class="font-mono text-[11px] tracking-wide text-slate-400">个人工作台</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
@@ -457,6 +543,13 @@ tailwind.config = {
 
       <!-- 07 画语 -->
       <article class="product" data-tags="ai" style="--accent:#8b5cf6; --d:.26s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
         <div class="flex items-start gap-4">
           <div class="icon-box" title="画语 AI Prompt Helper">
             <!-- 取自画语落地页 images/icon.svg：紫渐变底 + 白色画笔 + AI 电路 + 色点 -->
@@ -479,8 +572,8 @@ tailwind.config = {
             </svg>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">画语</h3>
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="AI-Prompt-Helper/index.html">画语</a></h3>
               <span class="font-mono text-[11px] tracking-wide text-slate-400">AI Prompt Helper</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">

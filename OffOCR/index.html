@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OffOCR · 离线文档解析工具 — 离线 OCR，隐私无忧</title>
+<meta name="description" content="面向涉密与敏感行业、离线与内网工作场景的本地文档解析工具：提供 CLI 与桌面应用两种客户端，图片与 PDF 断网可用、数据不出本地，输出带层级、表格、公式、图片的 Markdown / Word，数据完全由你掌控。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M20 16h18l8 8v26a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4z' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M27 34h16M27 41h11' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --bg-soft: #eef1f6;
+    --card: #ffffff;
+    --line: #e3e6ea;
+    --text: #1f2328;
+    --muted: #64748b;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --accent-soft: #eff4ff;
+    --green: #0f9d58;
+    --green-soft: #e9f7ef;
+    --shadow: 0 1px 2px rgba(31,35,40,.05), 0 8px 24px rgba(31,35,40,.06);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 16px/1.7 "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-dark); }
+  code, pre { font-family: ui-monospace, "SF Mono", Consolas, "Courier New", monospace; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 72px 0; }
+
+  /* ===== 顶部导航 ===== */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text); }
+  .brand svg { flex: none; }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a { color: var(--muted); font-size: 14px; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ===== Hero ===== */
+  .hero { padding: 72px 0 64px; background: linear-gradient(180deg, #fff 0%, var(--bg) 100%); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 44px; align-items: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--accent); font-weight: 500;
+    padding: 5px 12px; border-radius: 999px; background: var(--accent-soft);
+  }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+  .hero h1 { font-size: 40px; line-height: 1.25; margin: 18px 0 16px; font-weight: 900; letter-spacing: -0.5px; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero p.lead { color: var(--muted); font-size: 17px; max-width: 46ch; margin: 0 0 26px; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 16px; box-shadow: var(--shadow);
+  }
+  .stat b { display: block; font-size: 20px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .stat span { font-size: 12.5px; color: var(--muted); }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font: 500 15px/1 "Noto Sans SC", sans-serif;
+    border-radius: 10px; padding: 12px 20px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  .btn:hover { border-color: #c9ced6; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+
+  /* 浏览器框 */
+  .browser {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(31,35,40,.14); overflow: hidden;
+  }
+  .browser-bar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    border-bottom: 1px solid var(--line); background: #fafbfc;
+  }
+  .browser-bar i { width: 11px; height: 11px; border-radius: 50%; }
+  .browser-bar i:nth-child(1) { background: #f66151; }
+  .browser-bar i:nth-child(2) { background: #f5c211; }
+  .browser-bar i:nth-child(3) { background: #3fb950; }
+  .browser-addr { margin-left: 10px; flex: 1; background: var(--bg-soft); border-radius: 8px; padding: 3px 12px; font-size: 12.5px; color: var(--muted); }
+  .browser img { display: block; width: 100%; height: auto; }
+
+  /* ===== 区块通用 ===== */
+  .sec-head { max-width: 640px; margin: 0 auto 44px; text-align: center; }
+  .sec-head h2 { font-size: 30px; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.3px; }
+  .sec-head p { color: var(--muted); margin: 0; font-size: 16px; }
+  .kicker {
+    display: inline-block; font-size: 13px; font-weight: 600; color: var(--accent);
+    letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase;
+  }
+
+  /* ===== 产品视频 ===== */
+  #video { background: var(--bg); border-bottom: 1px solid var(--line); padding: 44px 0; }
+  .video-shell { max-width: 920px; margin: 0 auto; }
+  .video-frame {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(31,35,40,.14); overflow: hidden;
+  }
+  .video-frame video { display: block; width: 100%; height: auto; background: #f5f6f8; }
+  .video-note { text-align: center; color: var(--muted); font-size: 14px; margin-top: 16px; }
+
+  /* ===== 数据主权 ===== */
+  #privacy { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .privacy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .privacy-points { display: flex; flex-direction: column; gap: 22px; }
+  .point { display: flex; gap: 16px; }
+  .point-icon {
+    flex: none; width: 42px; height: 42px; border-radius: 11px;
+    background: var(--green-soft); display: flex; align-items: center; justify-content: center; color: var(--green);
+  }
+  .point h3 { margin: 0 0 4px; font-size: 17px; font-weight: 700; }
+  .point p { margin: 0; color: var(--muted); font-size: 14.5px; }
+
+  /* 架构图（内联 SVG） */
+  .diagram {
+    background: linear-gradient(180deg, #f7f9fc, var(--bg));
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 24px;
+  }
+  .diagram svg { display: block; width: 100%; height: auto; }
+
+  /* ===== 核心能力 ===== */
+  .cap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .cap {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px; box-shadow: var(--shadow);
+  }
+  .cap svg { color: var(--accent); display: block; margin-bottom: 12px; }
+  .cap h3 { margin: 0 0 6px; font-size: 16.5px; font-weight: 700; }
+  .cap p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  /* ===== 识别示例 ===== */
+  .ex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .ex {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .ex .ex-frame { background: linear-gradient(180deg, #eef1f6, #e2e6ee); padding: 14px; }
+  .ex img { width: 100%; height: auto; border-radius: 8px; box-shadow: 0 8px 20px rgba(31,35,40,.16); background: #fff; display: block; }
+  .ex-cap { padding: 16px 18px; }
+  .ex-cap h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+  .ex-cap p { margin: 0; font-size: 13.5px; color: var(--muted); }
+  /* 桌面应用截图（单张居中，按原始尺寸显示避免放大模糊） */
+  .app-shot { width: 100%; max-width: 560px; margin: 0 auto; }
+  .app-shot .ex img { width: auto; max-width: 100%; margin: 0 auto; }
+
+  /* ===== 部署 ===== */
+  #deploy { background: var(--bg); }
+  .dep-steps { max-width: 840px; margin: 0 auto; counter-reset: dep; display: grid; gap: 18px; }
+  .dep { display: grid; grid-template-columns: 44px 1fr; gap: 18px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow); }
+  .dep .no {
+    counter-increment: dep; width: 44px; height: 44px; border-radius: 50%;
+    background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 19px;
+  }
+  .dep .no::before { content: counter(dep); }
+  .dep h3 { margin: 0 0 6px; font-size: 17px; font-weight: 700; }
+  .dep p { margin: 0 0 10px; font-size: 14.5px; color: var(--muted); }
+  .dep pre { margin: 0; }
+  .code-block { background: #0f1420; color: #d7e2f4; border-radius: 10px; overflow: hidden; }
+  .code-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #18202f; border-bottom: 1px solid #232c3f; }
+  .code-head span { font-size: 12px; color: #8ba0bf; }
+  .code-block pre { margin: 0; padding: 15px 16px; font-size: 13.5px; line-height: 1.6; overflow-x: auto; }
+  .code-block pre .cm { color: #5f7bb0; }
+  .copy-btn { font: 12px/1 "Noto Sans SC", sans-serif; cursor: pointer; color: #c5d3ea; background: #26324a; border: 1px solid #34405c; border-radius: 6px; padding: 4px 10px; }
+  .copy-btn:hover { background: #2f3d5a; color: #fff; }
+
+  /* ===== Footer ===== */
+  footer { background: #0f1420; color: #9fb0c8; padding: 40px 0 30px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+  footer .brand { color: #fff; }
+  footer p { margin: 0; font-size: 13px; }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 900px) {
+    .hero-grid, .privacy-grid { grid-template-columns: 1fr; }
+    .cap-grid, .ex-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 560px) {
+    .hero h1 { font-size: 30px; }
+    section { padding: 48px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部导航 ===== -->
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="返回顶部">
+      <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#2563eb"/><path d="M20 16h18l8 8v26a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M27 34h16M27 41h11" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+      OffOCR · 离线文档解析工具
+    </a>
+    <div class="nav-links">
+      <a href="#privacy">离线工作</a>
+      <a href="#caps">核心能力</a>
+      <a href="#app">桌面应用</a>
+      <a href="#examples">识别示例</a>
+      <a href="#deploy">部署方式</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>涉密行业 · 离线工作 · 数据主权</span>
+      <h1>把涉密扫描件与 PDF，<br><span class="accent">变成可归档的结构化数据</span></h1>
+      <p class="lead"><b>OffOCR · 离线文档解析工具</b> ｜ <b>离线 OCR，隐私无忧</b><br>面向涉密与敏感行业、离线与内网工作环境：版面分析与识别在你的设备上完成，文档不出内网，输出带层级、表格、公式、图片的 Markdown / Word，数据完全由你掌控。</p>
+      <div class="hero-stats">
+        <div class="stat"><b>图片 + PDF</b><span>双输入，可按页码范围</span></div>
+        <div class="stat"><b>Markdown / Word</b><span>双输出，格式还原</span></div>
+        <div class="stat"><b>离线</b><span>本地运行，数据不出机</span></div>
+        <div class="stat"><b>CUDA / CPU</b><span>设备自动择优</span></div>
+      </div>
+      <div class="hero-cta">
+        <button class="btn primary" data-scroll="#deploy">部署方式</button>
+        <button class="btn" data-scroll="#caps">核心能力</button>
+      </div>
+    </div>
+    <div class="browser" role="img" aria-label="识别后导出的 Word 文档效果">
+      <div class="browser-bar">
+        <i></i><i></i><i></i>
+        <span class="browser-addr">本地服务运行中</span>
+      </div>
+      <img src="assets/sample-docx-p1.png" alt="识别后导出的 Word 文档效果">
+    </div>
+  </div>
+</header>
+
+<!-- ===== 产品视频 ===== -->
+<section id="video">
+  <div class="wrap">
+    <div class="video-shell">
+      <div class="video-frame">
+        <video controls preload="none" poster="assets/video-poster.jpg" width="1920" height="1080">
+          <source src="OffOCR-intro.mp4" type="video/mp4">
+          你的浏览器不支持视频播放，可直接 <a href="OffOCR-intro.mp4">下载观看</a>。
+        </video>
+      </div>
+      <p class="video-note">时长 19 秒 · 含背景音乐 · 各项能力详见下方版块介绍</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 数据主权 ===== -->
+<section id="privacy">
+  <div class="wrap">
+    <div class="privacy-grid">
+      <div class="privacy-points">
+        <span class="kicker">Data Sovereignty</span>
+        <div class="point">
+          <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+          <div>
+            <h3>数据主权，完全自主可控</h3>
+            <p>识别在本机完成，文档不出设备、不上云，数据归你所有、由你掌控，无第三方留存。</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <div>
+            <h3>断网可用，适配离线工作</h3>
+            <p>推理全程离线，内网隔离、断网或野外环境均可运行，不依赖任何外部 API 与账号。</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div>
+            <h3>授权可控，License 合规</h3>
+            <p>按设备绑定与有效期管理的授权校验，未授权启动即提示，适配采购与合规审计。</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="point-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h13v13H7z" stroke-linejoin="round"/><path d="M7 8l-3 3v9h13" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>
+            <h3>面向涉密与敏感行业</h3>
+            <p>政务、军工、金融、司法、海关等行业的涉密与敏感文档，可在不接触外网的前提下完成结构化。</p>
+          </div>
+        </div>
+      </div>
+      <div class="diagram" role="img" aria-label="本地离线文档解析流程示意图">
+        <svg viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans SC',sans-serif">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2563eb"/></marker>
+          </defs>
+          <rect x="18" y="120" width="110" height="84" rx="12" fill="#ffffff" stroke="#e3e6ea" stroke-width="1.5"/>
+          <text x="73" y="152" text-anchor="middle" font-size="14" fill="#1f2328" font-weight="600">你的文档</text>
+          <text x="73" y="174" text-anchor="middle" font-size="12" fill="#64748b">涉密扫描件 / PDF</text>
+          <text x="73" y="190" text-anchor="middle" font-size="12" fill="#0f9d58">私密数据</text>
+          <line x1="130" y1="162" x2="170" y2="162" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="172" y="88" width="126" height="148" rx="14" fill="#eff4ff" stroke="#2563eb" stroke-width="2"/>
+          <text x="235" y="122" text-anchor="middle" font-size="14" fill="#1d4ed8" font-weight="700">本地解析引擎</text>
+          <text x="235" y="144" text-anchor="middle" font-size="12" fill="#2563eb">PaddleOCR-VL</text>
+          <text x="235" y="160" text-anchor="middle" font-size="12" fill="#2563eb">+ PP-DocLayout</text>
+          <text x="235" y="180" text-anchor="middle" font-size="12" fill="#64748b">CUDA / CPU</text>
+          <text x="235" y="196" text-anchor="middle" font-size="12" fill="#64748b">版面分析 + 识别</text>
+          <text x="235" y="222" text-anchor="middle" font-size="11" fill="#0f9d58" font-weight="600">不出本地</text>
+          <line x1="300" y1="162" x2="340" y2="162" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="342" y="120" width="104" height="84" rx="12" fill="#ffffff" stroke="#e3e6ea" stroke-width="1.5"/>
+          <text x="394" y="152" text-anchor="middle" font-size="14" fill="#1f2328" font-weight="600">结构化输出</text>
+          <text x="394" y="174" text-anchor="middle" font-size="12" fill="#64748b">Markdown / Word</text>
+          <text x="394" y="190" text-anchor="middle" font-size="12" fill="#64748b">表格 · 公式 · 图片</text>
+          <rect x="150" y="252" width="162" height="40" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+          <line x1="160" y1="264" x2="302" y2="280" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="231" y="246" text-anchor="middle" font-size="11.5" fill="#dc2626" font-weight="600">数据主权在握</text>
+          <text x="231" y="280" text-anchor="middle" font-size="11" fill="#dc2626">无外网 · 无上传</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 核心能力 ===== -->
+<section id="caps">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Capabilities</span>
+      <h2>识别、结构化、导出三步一体</h2>
+      <p>把非结构化扫描件加工成可直接归档、入库与检索的文档，全程离线。</p>
+    </div>
+    <div class="cap-grid">
+      <div class="cap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6" stroke-linecap="round"/><circle cx="7.5" cy="15.5" r="1"/></svg>
+        <h3>版面结构化识别</h3>
+        <p>识别标题、副标题、段落、表格、公式、图片与印章，并还原阅读顺序。</p>
+      </div>
+      <div class="cap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 10h16M4 14h10M4 18h7" stroke-linecap="round"/></svg>
+        <h3>图片与 PDF 双输入</h3>
+        <p>支持 PNG、JPG、JPEG、BMP 与多页 PDF，可按页码范围（如 1-5）选择性处理。</p>
+      </div>
+      <div class="cap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h9l5 5v11H5z" stroke-linejoin="round"/><path d="M8 12h8M8 15h6" stroke-linecap="round"/></svg>
+        <h3>Markdown / Word 导出</h3>
+        <p>保留标题层级、段落、表格与分页，并把识别出的图片插入文档，格式尽量还原。</p>
+      </div>
+      <div class="cap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" stroke-linejoin="round"/><path d="M12 8v8M8 12h8" stroke-linecap="round"/></svg>
+        <h3>推理设备自动择优</h3>
+        <p>CUDA 可用时自动走 GPU，否则回退 CPU，无需手动指定设备即可开箱运行。</p>
+      </div>
+      <div class="cap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h13v13H7z" stroke-linejoin="round"/><path d="M7 8l-3 3v9h13" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>本地服务，随开随用</h3>
+        <p>识别在本机服务上完成，命令行与桌面应用开箱即用，断网也能跑。</p>
+      </div>
+      <div class="cap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <h3>授权可控，合规交付</h3>
+        <p>内置许可证校验：设备绑定、有效期管理，未授权启动即提示，适配采购审计。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 桌面应用 ===== -->
+<section id="app">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Desktop App</span>
+      <h2>offocr-ui：把文档拖进来就解析</h2>
+      <p>Windows 桌面应用：把图片 / PDF 拖进窗口即可解析，全程离线，数据不出本机。</p>
+    </div>
+    <div class="app-shot">
+      <div class="ex">
+        <div class="ex-frame"><img src="assets/ui.png" alt="offocr-ui 桌面应用界面截图"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 识别示例 ===== -->
+<section id="examples">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Samples</span>
+      <h2>真实样本：从输入到结构化输出</h2>
+      <p>以一份技术报告为样本，展示图片与 PDF 输入，以及识别后导出的 Word 文档效果。</p>
+    </div>
+    <div class="ex-grid">
+      <div class="ex">
+        <div class="ex-frame"><img src="assets/example-demo.jpg" alt="图片输入示例"></div>
+        <div class="ex-cap"><h3>图片输入</h3><p>A4 扫描/导出图片（PNG）直接上传识别。</p></div>
+      </div>
+      <div class="ex">
+        <div class="ex-frame"><img src="assets/sample-pdf-p1.png" alt="PDF 输入示例"></div>
+        <div class="ex-cap"><h3>PDF 输入</h3><p>多页 PDF 逐页渲染后识别，保留分页与阅读顺序。</p></div>
+      </div>
+      <div class="ex">
+        <div class="ex-frame"><img src="assets/sample-docx-p1.png" alt="Word 输出示例"></div>
+        <div class="ex-cap"><h3>Word 输出</h3><p>识别后导出 Word：标题、表格、图表与图片完整还原。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 部署方式 ===== -->
+<section id="deploy">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Deploy</span>
+      <h2>五步，在内网跑起来</h2>
+      <p>在 Windows 上下载解压软件、准备模型与许可证，一条命令启动服务，客户端即连即用。</p>
+    </div>
+    <div class="dep-steps">
+      <div class="dep">
+        <div class="no"></div>
+        <div>
+          <h3>下载解压软件安装包</h3>
+          <p>发布包解压后保持如下结构：三个可执行文件与 <code>license.dat</code> 同目录，模型放到 <code>/models</code> 目录。</p>
+          <div class="code-block">
+            <div class="code-head"><span>bin/</span><button class="copy-btn" data-copy="layout">复制</button></div>
+            <pre><code>license.dat
+offocr-cli.exe
+offocr-service.exe
+offocr-ui.exe
+/models</code></pre>
+          </div>
+        </div>
+      </div>
+      <div class="dep">
+        <div class="no"></div>
+        <div>
+          <h3>准备模型</h3>
+          <p>运行软件目录自带的下载脚本，自动把文本识别与版面分析两个模型下载到 <code>models/</code> 目录；离线环境也可按 <code>MODELS.md</code> 手动放置。</p>
+          <div class="code-block">
+            <div class="code-head"><span>PowerShell</span><button class="copy-btn" data-copy="models">复制</button></div>
+            <pre><code>powershell -ExecutionPolicy Bypass -File .\models\download.ps1</code></pre>
+          </div>
+        </div>
+      </div>
+      <div class="dep">
+        <div class="no"></div>
+        <div>
+          <h3>放置许可证</h3>
+          <p>把发布者签发的 <code>license.dat</code> 放到软件目录，或用环境变量 <code>OFFOCR_LICENSE</code> 指定路径。未授权时启动会提示「当前使用软件未授权」，请联系发布者获取。</p>
+        </div>
+      </div>
+      <div class="dep">
+        <div class="no"></div>
+        <div>
+          <h3>启动本地服务</h3>
+          <p>一条命令启动本地识别服务：GPU 可用自动用 GPU，否则回退 CPU。</p>
+          <div class="code-block">
+            <div class="code-head"><span>Terminal</span><button class="copy-btn" data-copy="service">复制</button></div>
+            <pre><code>bin\offocr-service.exe --model-path models</code></pre>
+          </div>
+        </div>
+      </div>
+      <div class="dep">
+        <div class="no"></div>
+        <div>
+          <h3>客户端识别</h3>
+          <p>命令行上传图片 / PDF，导出 Markdown 或 Word；或双击 <code>offocr-ui.exe</code>，把文档拖进窗口解析。</p>
+          <div class="code-block">
+            <div class="code-head"><span>Terminal</span><button class="copy-btn" data-copy="cli">复制</button></div>
+            <pre><code>bin\offocr-cli.exe ocr docs\demo.png --format md,docx
+bin\offocr-cli.exe check
+bin\offocr-ui.exe</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="返回顶部">
+      <svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#2563eb"/><path d="M20 16h18l8 8v26a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M27 34h16M27 41h11" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+      OffOCR · 离线文档解析工具
+    </a>
+    <p>离线 OCR，隐私无忧</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // 平滑滚动按钮
+  document.querySelectorAll('[data-scroll]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.querySelector(btn.getAttribute('data-scroll'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // 复制按钮
+  function copyText(text, btn) {
+    function done(ok) {
+      btn.textContent = ok ? '已复制' : '复制失败';
+      setTimeout(function () { btn.textContent = '复制'; }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(true); } catch (e) { done(false); }
+      document.body.removeChild(ta);
+    }
+  }
+  var snippets = {
+    layout: 'license.dat\noffocr-cli.exe\noffocr-service.exe\noffocr-ui.exe\n/models',
+    models: 'powershell -ExecutionPolicy Bypass -File .\\models\\download.ps1',
+    service: 'bin\\offocr-service.exe --model-path models',
+    cli: 'bin\\offocr-cli.exe ocr docs\\demo.png --format md,docx\nbin\\offocr-cli.exe check\nbin\\offocr-ui.exe'
+  };
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { copyText(snippets[btn.getAttribute('data-copy')] || '', btn); });
+  });
+})();
+</script>
+</body>
+</html>

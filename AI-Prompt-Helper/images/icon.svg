@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="10" fill="url(#grad)"/>
+  <!-- 画笔 -->
+  <path d="M32 9L39 16L21 34L13 36L15 28L32 9Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M13 36L15 28L21 34L13 36Z" fill="rgba(255,255,255,0.7)"/>
+  <!-- AI 脑电路 -->
+  <circle cx="36" cy="13" r="3.5" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"/>
+  <circle cx="36" cy="13" r="1.5" fill="rgba(255,255,255,0.8)"/>
+  <path d="M39.5 13L44 13" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M36 9.5L36 5" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 色点 -->
+  <circle cx="9" cy="40" r="2.5" fill="#f472b6"/>
+  <circle cx="15" cy="43" r="2" fill="#34d399"/>
+  <circle cx="22" cy="42" r="1.8" fill="#fbbf24"/>
+</svg>
