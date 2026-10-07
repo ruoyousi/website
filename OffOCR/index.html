@@ -431,7 +431,7 @@
           <h3>下载解压软件安装包</h3>
           <p>发布包解压后保持如下结构：三个可执行文件与 <code>license.dat</code> 同目录，模型放到 <code>/models</code> 目录。</p>
           <div class="code-block">
-            <div class="code-head"><span>bin/</span><button class="copy-btn" data-copy="layout">复制</button></div>
+            <div class="code-head"><span>dist/</span><button class="copy-btn" data-copy="layout">复制</button></div>
             <pre><code>license.dat
 offocr-cli.exe
 offocr-service.exe
@@ -465,7 +465,7 @@ offocr-ui.exe
           <p>一条命令启动本地识别服务：GPU 可用自动用 GPU，否则回退 CPU。</p>
           <div class="code-block">
             <div class="code-head"><span>Terminal</span><button class="copy-btn" data-copy="service">复制</button></div>
-            <pre><code>bin\offocr-service.exe --model-path models</code></pre>
+            <pre><code>dist\offocr-service.exe --model-path models</code></pre>
           </div>
         </div>
       </div>
@@ -476,9 +476,9 @@ offocr-ui.exe
           <p>命令行上传图片 / PDF，导出 Markdown 或 Word；或双击 <code>offocr-ui.exe</code>，把文档拖进窗口解析。</p>
           <div class="code-block">
             <div class="code-head"><span>Terminal</span><button class="copy-btn" data-copy="cli">复制</button></div>
-            <pre><code>bin\offocr-cli.exe ocr docs\demo.png --format md,docx
-bin\offocr-cli.exe check
-bin\offocr-ui.exe</code></pre>
+            <pre><code>dist\offocr-cli.exe ocr test\demo.png --format md,docx
+dist\offocr-cli.exe check
+dist\offocr-ui.exe</code></pre>
           </div>
         </div>
       </div>
@@ -526,8 +526,8 @@ bin\offocr-ui.exe</code></pre>
   var snippets = {
     layout: 'license.dat\noffocr-cli.exe\noffocr-service.exe\noffocr-ui.exe\n/models',
     models: 'powershell -ExecutionPolicy Bypass -File .\\models\\download.ps1',
-    service: 'bin\\offocr-service.exe --model-path models',
-    cli: 'bin\\offocr-cli.exe ocr docs\\demo.png --format md,docx\nbin\\offocr-cli.exe check\nbin\\offocr-ui.exe'
+    service: 'dist\\offocr-service.exe --model-path models',
+    cli: 'dist\\offocr-cli.exe ocr test\\demo.png --format md,docx\ndist\\offocr-cli.exe check\ndist\\offocr-ui.exe'
   };
   document.querySelectorAll('.copy-btn').forEach(function (btn) {
     btn.addEventListener('click', function () { copyText(snippets[btn.getAttribute('data-copy')] || '', btn); });
