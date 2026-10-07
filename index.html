@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>独立开发软件清单</title>
+<meta name="description" content="七款本地优先的独立开发软件：AI 工具、离线、语音处理、文档处理。数据不出设备，断网可用。">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', '"Noto Sans SC"', 'sans-serif'],
+        mono: ['"SF Mono"', '"Cascadia Mono"', 'Consolas', '"JetBrains Mono"', 'monospace']
+      }
+    }
+  }
+}
+</script>
+<style>
+  :root { color-scheme: light; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: #fbfbfc;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* 极淡的背景氛围光，不抢内容 */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(880px 460px at 10% -8%, rgba(37,99,235,.055), transparent 62%),
+      radial-gradient(720px 400px at 92% 2%, rgba(139,92,246,.045), transparent 62%),
+      radial-gradient(760px 460px at 55% 108%, rgba(15,58,107,.04), transparent 62%);
+  }
+  .page { position: relative; z-index: 1; }
+
+  /* ===== 筛选按钮 ===== */
+  .filter-btn {
+    padding: .42rem 1rem;
+    border-radius: 999px;
+    border: 1px solid #e6e9ef;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #64748b;
+    cursor: pointer;
+    transition: color .2s, border-color .2s, background-color .2s, transform .15s;
+  }
+  .filter-btn:hover { border-color: #cbd5e1; color: #0f172a; }
+  .filter-btn:active { transform: scale(.97); }
+  .filter-btn.is-active { background: #0f172a; border-color: #0f172a; color: #fff; }
+
+  /* ===== 卡片 ===== */
+  .product {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid #e8ebf0;
+    background: #fff;
+    transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s, border-color .3s;
+    animation: rise .55s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: var(--d, 0s);
+  }
+  .product:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent) 30%, #e8ebf0);
+    box-shadow: 0 20px 44px -26px rgba(15,23,42,.4), 0 2px 6px -2px rgba(15,23,42,.05);
+  }
+  /* 顶部一条极细的品牌色，hover 时淡入 */
+  .product::after {
+    content: "";
+    position: absolute; top: 0; left: 1.5rem; right: 1.5rem; height: 2px;
+    border-radius: 0 0 3px 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .product:hover::after { opacity: .85; }
+  .product[hidden] { display: none; }
+
+  .icon-box {
+    background: color-mix(in srgb, var(--accent) 9%, #fff);
+    border: 1px solid color-mix(in srgb, var(--accent) 15%, #fff);
+    color: var(--accent);
+    transition: transform .3s cubic-bezier(.16,1,.3,1), background-color .3s;
+  }
+  .product:hover .icon-box {
+    transform: scale(1.06);
+    background: color-mix(in srgb, var(--accent) 13%, #fff);
+  }
+  .icon-box svg { width: 23px; height: 23px; }
+
+  .chip {
+    display: inline-flex; align-items: center;
+    padding: .18rem .6rem;
+    border-radius: 999px;
+    border: 1px solid #eaedf2;
+    background: #fafbfc;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #78859a;
+    cursor: pointer;
+    transition: color .2s, border-color .2s, background-color .2s;
+  }
+  .chip:hover {
+    color: color-mix(in srgb, var(--accent) 82%, #0f172a);
+    border-color: color-mix(in srgb, var(--accent) 34%, #eaedf2);
+    background: color-mix(in srgb, var(--accent) 6%, #fff);
+  }
+
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+    margin-top: .5rem;
+  }
+  .value-box {
+    border-left: 2px solid color-mix(in srgb, var(--accent) 40%, #fff);
+    background: #fafbfc;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ================= HEADER ================= -->
+  <header class="mx-auto w-full max-w-6xl px-6 pt-20 pb-12 sm:pt-28 sm:pb-16">
+    <div class="flex h-[3px] w-40 overflow-hidden rounded-full" aria-hidden="true">
+      <span class="flex-1 bg-[#15508f]"></span>
+      <span class="flex-1 bg-[#c08a2e]"></span>
+      <span class="flex-1 bg-[#2563eb]"></span>
+      <span class="flex-1 bg-[#5E81AC]"></span>
+      <span class="flex-1 bg-[#4f46e5]"></span>
+      <span class="flex-1 bg-[#64748b]"></span>
+      <span class="flex-1 bg-[#8b5cf6]"></span>
+    </div>
+
+    <p class="mt-7 font-mono text-[11px] tracking-[.22em] text-slate-400">INDEPENDENT SOFTWARE</p>
+    <h1 class="mt-3 text-[34px] font-bold leading-tight tracking-tight text-slate-900 sm:text-[46px]">
+      独立开发软件清单
+    </h1>
+    <p class="mt-5 max-w-2xl text-[15px] leading-relaxed text-slate-500 sm:text-base">
+      七款本地优先的成品软件，覆盖文档合稿、离线识别、语音处理与 AI 创作。
+      推理在本机完成，数据不出设备，断网照常可用。
+    </p>
+
+    <div class="mt-9 flex flex-wrap items-center gap-x-9 gap-y-4">
+      <div class="flex items-baseline gap-1.5">
+        <span class="text-2xl font-semibold tracking-tight text-slate-900">7</span>
+        <span class="text-[13px] text-slate-400">款产品</span>
+      </div>
+      <div class="h-8 w-px bg-slate-200/80" aria-hidden="true"></div>
+      <div class="flex items-baseline gap-1.5">
+        <span class="text-2xl font-semibold tracking-tight text-slate-900">4</span>
+        <span class="text-[13px] text-slate-400">个分类</span>
+      </div>
+      <div class="h-8 w-px bg-slate-200/80" aria-hidden="true"></div>
+      <div class="flex items-baseline gap-1.5">
+        <span class="text-2xl font-semibold tracking-tight text-slate-900">100%</span>
+        <span class="text-[13px] text-slate-400">本地优先</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= FILTER ================= -->
+  <div class="mx-auto w-full max-w-6xl px-6">
+    <div class="flex flex-wrap items-center gap-2 border-y border-slate-200/70 py-4">
+      <button class="filter-btn is-active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="ai">AI 工具</button>
+      <button class="filter-btn" data-filter="offline">离线</button>
+      <button class="filter-btn" data-filter="voice">语音处理</button>
+      <button class="filter-btn" data-filter="doc">文档处理</button>
+      <span class="ml-auto text-[12.5px] text-slate-400">
+        <b id="count" class="font-semibold text-slate-600">7</b> 款
+      </span>
+    </div>
+  </div>
+
+  <!-- ================= GRID ================= -->
+  <main id="grid" class="mx-auto w-full max-w-6xl px-6 pt-8 pb-4">
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+
+      <!-- 01 合稿易 DocMerger -->
+      <article class="product" data-tags="doc,offline" style="--accent:#15508f; --d:.02s">
+        <div class="flex items-start gap-4">
+          <div class="icon-box flex h-12 w-12 flex-none items-center justify-center rounded-xl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/>
+              <path d="M6 21V9a9 9 0 0 0 9 9"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">合稿易</h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">DocMerger</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="doc">文档处理</button>
+              <button class="chip" data-chip-filter="offline">离线</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>多人分工写，一键自动合
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          以「Word 模板 + Excel 数据」批量产出文档：模板引擎支持占位符、循环、表格、插入四类指令，另有文档合并、替换、目录抽取与图片提取五个子命令；桌面界面与命令行共用同一套实现。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              把重复排版与合稿从「天」压缩到「分钟」，一份模板对应一批交付文档；文档全程在本机处理，单文件分发、原生编译可免装 JRE。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 心流写作 FlowWrite -->
+      <article class="product" data-tags="ai,offline" style="--accent:#c08a2e; --d:.06s">
+        <div class="flex items-start gap-4">
+          <div class="icon-box flex h-12 w-12 flex-none items-center justify-center rounded-xl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z"/>
+              <path d="M16 8 2 22"/><path d="M17.5 15H9"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">心流写作</h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">FlowWrite</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="ai">AI 工具</button>
+              <button class="chip" data-chip-filter="offline">离线</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>本地优先的 AI 小说创作工作台
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          小说设定、大纲蓝图、逐章正文生成、定稿章节向量化入记忆库，后续写作自动检索前文注入；再配上去 AI 味润色与「AI 味指数」自检，构成完整创作闭环。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              把长篇创作最难的一致性维系交给向量记忆，角色、伏笔与时间线不脱节；小说与设定只留本地，不依赖云端账号。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 OffOCR -->
+      <article class="product" data-tags="doc,offline" style="--accent:#2563eb; --d:.1s">
+        <div class="flex items-start gap-4">
+          <div class="icon-box flex h-12 w-12 flex-none items-center justify-center rounded-xl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+              <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+              <path d="M7 8h8"/><path d="M7 12h10"/><path d="M7 16h6"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">OffOCR</h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">离线文档解析</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="doc">文档处理</button>
+              <button class="chip" data-chip-filter="offline">离线</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>离线 OCR，隐私无忧
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          图片与 PDF 交给本地 OCR 服务，经版面分析与结构化识别，按阅读顺序还原标题、段落、表格、公式、图片与印章，导出 Markdown 与 Word；优先 CUDA，不可用自动回退 CPU。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              让涉密文档的数字化在本地闭环，文档不出设备、不上云，识别结果可直接进入编辑与归档流程；设备绑定授权适配涉密采购与合规审计。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04 Lovo -->
+      <article class="product" data-tags="voice,ai,offline" style="--accent:#5E81AC; --d:.14s">
+        <div class="flex items-start gap-4">
+          <div class="icon-box flex h-12 w-12 flex-none items-center justify-center rounded-xl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/>
+              <path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">Lovo</h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">Voice Toolbox</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="voice">语音处理</button>
+              <button class="chip" data-chip-filter="ai">AI 工具</button>
+              <button class="chip" data-chip-filter="offline">离线</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>本地语音工具，文本不出设备
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          语音合成、声音克隆、音色设计、语音识别四项能力齐备，覆盖 10 种合成语言与 30 种识别语言；命令行、桌面界面与 OpenAI 兼容 HTTP API 三种入口共用同一套本地模型。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              把语音能力做成可离线部署的基础设施：一次部署同时服务脚本、桌面与第三方系统，一句自然语言描述即可定制音色，无需录音棚素材。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 05 Transly -->
+      <article class="product" data-tags="ai,offline" style="--accent:#4f46e5; --d:.18s">
+        <div class="flex items-start gap-4">
+          <div class="icon-box flex h-12 w-12 flex-none items-center justify-center rounded-xl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/>
+              <path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">Transly</h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">lang-translator</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="ai">AI 工具</button>
+              <button class="chip" data-chip-filter="offline">离线</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>数据主权在握的本地翻译
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          本地模型支撑 38 种语言、约 1056 个翻译方向，纯 CPU 推理无需显卡；内置术语库召回、翻译记忆预翻译、去翻译腔润色，以及准确性、术语、流畅性、风格四维质量评估。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              把「能翻译」升级为「译得准、译得一致」——术语与记忆沉淀为可复用资产，译文质量可评分、可追溯；内网、断网与野外环境同样可用。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 06 FocusOn -->
+      <article class="product" data-tags="ai,offline" style="--accent:#64748b; --d:.22s">
+        <div class="flex items-start gap-4">
+          <div class="icon-box flex h-12 w-12 flex-none items-center justify-center rounded-xl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.2"/><circle cx="12" cy="12" r="1.6"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">FocusOn</h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">个人工作台</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="ai">AI 工具</button>
+              <button class="chip" data-chip-filter="offline">离线</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>记录你如何做事的个体工作台
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          四象限待办、个人记账、日历提醒、Markdown 笔记、习惯打卡、番茄专注、每日喝水与本地大模型对话八个模块；AI 可直接执行「新增待办、记一笔账、加日程」等意图。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              不存内容而记录行为，长期积累出可复盘的自我数据，让 AI 基于真实节奏给出方法建议；数据留在本机，离线可用。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 07 画语 -->
+      <article class="product" data-tags="ai" style="--accent:#8b5cf6; --d:.26s">
+        <div class="flex items-start gap-4">
+          <div class="icon-box flex h-12 w-12 flex-none items-center justify-center rounded-xl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13a1.64 1.64 0 0 1 1.23-2.79h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2z"/>
+              <circle cx="13.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
+              <circle cx="17.5" cy="10.5" r=".9" fill="currentColor" stroke="none"/>
+              <circle cx="8.5" cy="7.5" r=".9" fill="currentColor" stroke="none"/>
+              <circle cx="6.5" cy="12.5" r=".9" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900">画语</h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">AI Prompt Helper</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="ai">AI 工具</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>快速构建高质量 AI 绘画提示词
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          8 大类 33 条参考提示词库，配六个维度的可视化标签选择器，实时合成正向与负向提示词并一键复制；内置编写指导原则，支持中英双语与就地编辑。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              把提示词从「背口诀、反复试错」变成「选标签」，显著降低 Stable Diffusion / Midjourney 的入门门槛；配置数据可外部编辑，无需重新编译。
+            </p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <p id="empty" class="hidden py-16 text-center text-sm text-slate-400">该分类下暂无产品</p>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="mx-auto mt-20 w-full max-w-6xl px-6 pb-12">
+    <div class="border-t border-slate-200/70 pt-7">
+      <p class="text-center font-mono text-[11px] tracking-[.14em] text-slate-400">
+        独立开发软件清单 · 全部产品本地优先 · Windows 桌面端 · 2026
+      </p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.product'));
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('.filter-btn'));
+  var chips = Array.prototype.slice.call(document.querySelectorAll('[data-chip-filter]'));
+  var countEl = document.getElementById('count');
+  var emptyEl = document.getElementById('empty');
+  var grid = document.getElementById('grid');
+
+  function apply(filter) {
+    var n = 0;
+    cards.forEach(function (el) {
+      var tags = (el.getAttribute('data-tags') || '').split(',');
+      var show = filter === 'all' || tags.indexOf(filter) > -1;
+      if (show) {
+        el.hidden = false;
+        n++;
+        // 重新触发入场动画，形成依次淡入的节奏
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = '';
+      } else {
+        el.hidden = true;
+      }
+    });
+
+    countEl.textContent = n;
+    emptyEl.classList.toggle('hidden', n > 0);
+
+    buttons.forEach(function (b) {
+      b.classList.toggle('is-active', b.getAttribute('data-filter') === filter);
+    });
+  }
+
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      apply(b.getAttribute('data-filter'));
+    });
+  });
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      apply(c.getAttribute('data-chip-filter'));
+      var top = grid.getBoundingClientRect().top + window.pageYOffset - 72;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+# 工作区本地数据（助手记忆、任务状态等），不纳入版本管理
+.workbuddy/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 预览与调试产物
+_preview*.png
+_debug.html
