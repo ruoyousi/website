@@ -237,6 +237,22 @@ tailwind.config = {
         <span class="text-[13px] text-slate-400">本地优先</span>
       </div>
     </div>
+
+    <!-- 种子用户招募提示 -->
+    <div class="mt-8 flex max-w-2xl items-start gap-3.5 rounded-2xl border border-indigo-100 bg-white/80 px-4 py-4 sm:px-5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
+      <span class="mt-0.5 flex h-8 w-8 flex-none items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white" aria-hidden="true">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="8" width="18" height="4" rx="1"/>
+          <path d="M12 8v13"/>
+          <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
+          <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+        </svg>
+      </span>
+      <p class="text-[13.5px] leading-relaxed text-slate-600">
+        诚邀您下载试用本产品。在试用期间，如您发现任何问题或有任何改进建议，欢迎向我们反馈。对于提出有价值反馈的前 5 名种子用户，我们将赠送
+        <strong class="font-semibold text-indigo-600">单设备永久许可证</strong>，感谢您的支持！
+      </p>
+    </div>
   </header>
 
   <!-- ================= FILTER ================= -->
@@ -624,6 +640,15 @@ tailwind.config = {
         <span class="text-slate-300" aria-hidden="true">·</span>
         <span>发送邮件：</span>
         <a class="contact-mail" href="mailto:contact@cd-ii.com" title="点击给 contact@cd-ii.com 发送邮件">contact@cd-ii.com</a>
+      </div>
+
+      <!-- 邮件二维码 -->
+      <div class="mt-7 flex flex-col items-center gap-2.5">
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-2.5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
+          <img src="contact-mailto.png" alt="扫码发送邮件至 contact@cd-ii.com" width="290" height="290"
+               class="block h-[104px] w-[104px]" loading="lazy">
+        </div>
+        <span class="text-[12px] text-slate-400">扫码给我们发邮件</span>
       </div>
     </div>
   </footer>
