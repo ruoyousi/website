@@ -132,7 +132,7 @@ footer{border-top:1px solid var(--border-soft);padding:44px 0;background:var(--b
   <div class="container hero-grid">
     <div class="rv">
       <h1 class="hero-title">记录你如何做事，<br/>沉淀成<span class="hl">你的方法论</span></h1>
-      <p class="hero-sub">FocusOn 不是知识库，而是个体工作方法论工具：四象限待办、记账、日历、习惯打卡、番茄专注、每日喝水与 AI 对话，记录你做事的真实数据，用来积累与 AI复盘，打磨出只属于你的工作节奏。</p>
+      <p class="hero-sub">FocusOn 不是知识库，而是个体工作方法论工具：四象限待办、记账、日历、习惯打卡、番茄专注、每日喝水、人脉经营、饮食与生理周期管理、宠物日记、资讯简报与 AI 助手——记录你做事的真实数据，用来积累与 AI复盘，打磨出只属于你的工作节奏。</p>
       <div class="hero-feats">
         <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>行为数据自动积累</span>
         <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>周 / 月 AI复盘 · 自我认知</span>
@@ -159,7 +159,7 @@ footer{border-top:1px solid var(--border-soft);padding:44px 0;background:var(--b
     <div class="section-head rv">
       <div class="section-eyebrow">RECORD · ACCUMULATE · REVIEW</div>
       <h2 class="section-title">不存内容，只记你如何做事</h2>
-      <p class="section-sub">专注时长、习惯坚持、收支去向、待办完成、日程与饮水——这些是你自己运转的真实数据。日积月累，就能用 AI复盘出适合自己的方法。</p>
+      <p class="section-sub">专注时长、习惯坚持、收支去向、待办完成、日程与饮水、人脉与健康——这些是你自己运转的真实数据。日积月累，就能用 AI复盘出适合自己的方法。</p>
     </div>
     <div class="features-grid">
       <!-- 待办 -->
@@ -250,18 +250,90 @@ footer{border-top:1px solid var(--border-soft);padding:44px 0;background:var(--b
       <div class="fcard rv">
         <span class="num">08</span>
         <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-        <h3>AI 对话</h3>
+        <h3>AI 助手</h3>
         <p>用自然语言直接办事，本地大模型驱动。</p>
         <ul>
-          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>意图解析：新增待办 / 记账 / 加日历</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>意图解析：待办 / 记账 / 日历 / 人脉 / 饮食</li>
           <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>对话历史入库，可删除问答对</li>
           <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>连接本地 Ollama，离线可用</li>
+        </ul>
+      </div>
+      <!-- 人脉经营 -->
+      <div class="fcard rv">
+        <span class="num">09</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 5.5a3 3 0 0 1 0 5.5"/><path d="M17.5 20a6 6 0 0 0-2.2-4.4"/></svg></div>
+        <h3>人脉经营</h3>
+        <p>维护关系，保持恰到好处的联系节奏。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>联系人档案 + 沟通时间轴</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>沉睡提醒按重要程度生成待办</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>状态自动更新：良好/需跟进/沉睡</li>
+        </ul>
+      </div>
+      <!-- 饮食管理期 -->
+      <div class="fcard rv">
+        <span class="num">10</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg></div>
+        <h3>饮食管理期</h3>
+        <p>设定每日营养目标，用日历图看到达标情况。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>热量/碳水/蛋白/饮水四维目标</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>日历图：达标绿 / 部分黄 / 未记录灰</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>AI 自然语言录入饮食记录</li>
+        </ul>
+      </div>
+      <!-- 女性生理期 -->
+      <div class="fcard rv">
+        <span class="num">11</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3c-4 3-7 5.5-7 9a7 7 0 0 0 14 0c0-3.5-3-6-7-9z"/><path d="M12 3v5"/></svg></div>
+        <h3>女性生理期</h3>
+        <p>以月度日历记录周期，趋势与异常一目了然。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>一键记录开始 / 结束，支持跨月</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>周期趋势折线 + 平均时长统计</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>周期偏短/偏长、经期偏长温和提醒</li>
+        </ul>
+      </div>
+      <!-- 宠物日记 -->
+      <div class="fcard rv">
+        <span class="num">12</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="9" r="1.6"/><circle cx="16" cy="9" r="1.6"/><path d="M12 13c-2.5 0-4 1-4 3 0 1.8 1.5 3 4 3s4-1.2 4-3c0-2-1.5-3-4-3z"/></svg></div>
+        <h3>宠物日记</h3>
+        <p>给毛孩子一份属于它的成长档案。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>宠物档案 + 重要日期入日历</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>喂食/疫苗/驱虫等记录时间轴</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>AI 自然语言录入宠物记录</li>
+        </ul>
+      </div>
+      <!-- 资讯简报 -->
+      <div class="fcard rv">
+        <span class="num">13</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h13a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg></div>
+        <h3>资讯简报</h3>
+        <p>抓取订阅源，AI 帮你筛重点、出简报。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>RSS 订阅源 + 关键词筛选</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>AI 摘要，每日最新一篇</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>历史简报按日期回看</li>
+        </ul>
+      </div>
+      <!-- 应用锁 -->
+      <div class="fcard rv">
+        <span class="num">14</span>
+        <div class="f-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="15" r="1.4"/></svg></div>
+        <h3>应用锁</h3>
+        <p>隐私安全：最小化后重新打开需验证。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>4 位数字解锁密码</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>最小化恢复时锁定遮罩</li>
+          <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>数据仅留在本机</li>
         </ul>
       </div>
       <!-- CTA 占位卡片 -->
       <div class="fcard rv" style="display:flex;flex-direction:column;justify-content:center;gap:12px;background:linear-gradient(150deg,#1c2230,#161a22)">
         <h3 style="font-size:19px">从今天开始积累</h3>
-        <p style="min-height:0;margin:0">八个模块会记下你如何做事，数据积累后用 AI复盘，形成你自己的方法。</p>
+        <p style="min-height:0;margin:0">十四个模块会记下你如何做事，数据积累后用 AI复盘，形成你自己的方法。</p>
       </div>
     </div>
   </div>
