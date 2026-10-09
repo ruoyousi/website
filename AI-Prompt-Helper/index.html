@@ -455,7 +455,7 @@
       <div class="v-card reveal">
         <div class="v-icon ic-2">📚</div>
         <h3>精选参考词库</h3>
-        <p>8 大类、40+ 条高质量参考提示词，覆盖写实人像、古风、3D国漫、二次元、玄幻修仙、广告设计、场景环境等主流风格。</p>
+        <p>8 大类、30+ 条精调参考提示词，覆盖写实人像、古风、3D国漫、二次元、玄幻修仙、广告设计、场景环境等主流风格，还能自由扩展成自己的词库。</p>
       </div>
       <div class="v-card reveal">
         <div class="v-icon ic-3">🏷️</div>
@@ -475,7 +475,7 @@
       <div class="v-card reveal">
         <div class="v-icon ic-6">🔒</div>
         <h3>本地离线运行</h3>
-        <p>基于 Tauri 构建的桌面应用，数据存于本地，无需联网、不上传任何内容，隐私与可用性兼得。</p>
+        <p>纯本地桌面应用，数据全部保存在自己的电脑上，无需联网、无需注册、不上传任何内容，隐私与可用性兼得。</p>
       </div>
     </div>
   </div>
@@ -486,8 +486,8 @@
   <div class="wrap">
     <div class="stats reveal">
       <div class="stat"><div class="num">8</div><div class="lbl">大类参考风格</div></div>
-      <div class="stat"><div class="num">40+</div><div class="lbl">精选参考提示词</div></div>
-      <div class="stat"><div class="num">6</div><div class="lbl">大维度标签体系</div></div>
+      <div class="stat"><div class="num">30+</div><div class="lbl">精选参考提示词</div></div>
+      <div class="stat"><div class="num">200+</div><div class="lbl">维度标签随心组合</div></div>
       <div class="stat"><div class="num">100%</div><div class="lbl">离线可用 · 数据不出本地</div></div>
     </div>
   </div>
@@ -590,24 +590,24 @@
         <h3>提示词编写指导原则</h3>
         <p>新手面对空白输入框无从下手，老手也常忽略权重与语序细节。内置的指导原则用结构化文档讲清提示词工程的关键方法。</p>
         <ul class="f-list">
-          <li><span class="check">✓</span> 权重语法与控制技巧</li>
-          <li><span class="check">✓</span> 语序策略：重要概念前置</li>
-          <li><span class="check">✓</span> 正面陈述代替否定描述</li>
-          <li><span class="check">✓</span> 正向 / 负向提示词的分工</li>
+          <li><span class="check">✓</span> 权重与顺序：重点词前置、合理强调</li>
+          <li><span class="check">✓</span> 正面陈述：说要什么，而不是不要什么</li>
+          <li><span class="check">✓</span> 避免错误、矛盾与画蛇添足</li>
+          <li><span class="check">✓</span> 细节特征与空间关系的描述分寸</li>
         </ul>
       </div>
       <div class="f-visual">
         <div class="code-block">
           <div class="code-head">
             <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-            <span>guidelines.md</span>
+            <span>编写指导原则 · 节选</span>
           </div>
           <div class="code-body">
             <div class="cm"># 提示词编写指导原则</div><br>
-            <div><span class="lbl">1. 权重控制</span> — 使用 (word:1.2) 强调关键概念</div>
-            <div><span class="lbl">2. 语序策略</span> — 主体、风格、质量依次排列</div>
-            <div><span class="lbl">3. 正面陈述</span> — <span class="pos">"清晰的面部"</span> 而非 <span class="neg">"模糊的脸"</span></div>
-            <div><span class="lbl">4. 负向提示</span> — <span class="neg">lowres, bad anatomy, watermark</span></div>
+            <div><span class="lbl">1. 权重与顺序</span> — 主体前置，(word:1.2) 强调关键概念</div>
+            <div><span class="lbl">2. 正面陈述</span> — <span class="pos">"清晰的面部"</span> 而非 <span class="neg">"模糊的脸"</span></div>
+            <div><span class="lbl">3. 避免矛盾</span> — 前后描述不能互相打架</div>
+            <div><span class="lbl">4. 细节与特征</span> — <span class="pos">关键细节决定画面质感</span></div>
           </div>
         </div>
       </div>
@@ -617,7 +617,7 @@
       <div class="f-text">
         <span class="f-tag">Label Selector</span>
         <h3>维度标签选择器</h3>
-        <p>将提示词拆解为 6 大维度 —— 基础与风格、构图与镜头、人物特征、环境与光影、渲染与特效、负向提示，点选标签即可组合。</p>
+        <p>将提示词拆解为 6 大维度、200+ 个标签 —— 基础与风格、构图与镜头、人物特征、环境与光影、渲染与特效、负向提示，点选即组合。</p>
         <ul class="f-list">
           <li><span class="check">✓</span> 基础与风格：画质增强、艺术风格、渲染引擎</li>
           <li><span class="check">✓</span> 构图与镜头：景别、焦距、视角、布局法则</li>
@@ -649,12 +649,12 @@
       <div class="f-text">
         <span class="f-tag">Prompt Library</span>
         <h3>参考提示词库</h3>
-        <p>不知道如何下笔时，从 40+ 条精心调校的范例开始。每条均包含正向、负向提示词与使用要点说明，可直接复制或二次编辑。</p>
+        <p>不知道如何下笔时，从 30+ 条精心调校的范例开始。每条均包含中英正向、负向提示词与使用要点，可直接复制，也能改造成自己的词库。</p>
         <ul class="f-list">
-          <li><span class="check">✓</span> 覆盖写实人像、古风、3D国漫、二次元等风格</li>
-          <li><span class="check">✓</span> 每条附带中文说明与使用要点</li>
+          <li><span class="check">✓</span> 新增 / 编辑 / 删除，分类可改名、标签随意扩展</li>
+          <li><span class="check">✓</span> 每条可附一张示例生成图，边看效果边参考</li>
+          <li><span class="check">✓</span> 点标题收起 / 展开卡片，长列表也清爽</li>
           <li><span class="check">✓</span> 单条复制或整类复制</li>
-          <li><span class="check">✓</span> 点击即可就地编辑，自动保存</li>
         </ul>
       </div>
       <div class="f-visual">
@@ -749,10 +749,10 @@
       <h2>为日常使用打磨的细节</h2>
     </div>
     <div class="value-grid">
-      <div class="v-card reveal"><div class="v-icon ic-1">⌨️</div><h3>键盘快捷键</h3><p>支持 <code style="font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.08);padding:2px 7px;border-radius:5px;font-size:13px;">Ctrl+S</code> 手动保存，编辑流畅不断档。</p></div>
-      <div class="v-card reveal"><div class="v-icon ic-2">✏️</div><h3>就地编辑</h3><p>点击提示词即可直接修改，改完自动保存到本地存储。</p></div>
-      <div class="v-card reveal"><div class="v-icon ic-3">📋</div><h3>分类复制</h3><p>支持复制单条提示词，或一次复制整个分类的全部内容。</p></div>
-      <div class="v-card reveal"><div class="v-icon ic-4">🗂️</div><h3>本地存储</h3><p>所有修改自动保存到浏览器 / 应用本地存储，下次打开即恢复。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-1">✏️</div><h3>完整编辑对话框</h3><p>分类、标签、中英正负向、使用要点，一个对话框全部改完，自动保存。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-2">🖼️</div><h3>示例生成图</h3><p>每条提示词可附一张示例图，卡片显示缩略图、点开看大图，效果一目了然。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-3">📥</div><h3>一键存入词库</h3><p>生成页组合好的提示词，点一下即可存进参考词库，好结果不再丢失。</p></div>
+      <div class="v-card reveal"><div class="v-icon ic-4">🌐</div><h3>平台资源导航</h3><p>内置 LiblibAI、吐司、通义万相、文心一格等 8 个绘画平台入口，一键直达。</p></div>
     </div>
   </div>
 </section>

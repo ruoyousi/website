@@ -316,9 +316,10 @@ tailwind.config = {
       <button class="filter-btn" data-filter="offline">离线</button>
       <button class="filter-btn" data-filter="voice">语音处理</button>
       <button class="filter-btn" data-filter="doc">文档处理</button>
+      <button class="filter-btn" data-filter="free">免费</button>
       <button class="filter-btn" data-filter="win">Windows</button>
       <span class="ml-auto text-[12.5px] text-slate-400">
-        <b id="count" class="font-semibold text-slate-600">7</b> 款
+        <b id="count" class="font-semibold text-slate-600">8</b> 款
       </span>
     </div>
   </div>
@@ -629,14 +630,14 @@ tailwind.config = {
 
         <div class="flex items-start gap-4">
           <div class="icon-box" title="画语 AI Prompt Helper">
-            <!-- 取自画语落地页 images/icon.svg：紫渐变底 + 白色画笔 + AI 电路 + 色点 -->
+            <!-- 应用真实图标（website/images/icon.svg 内嵌矢量）：紫渐变底 + 白色画笔 + AI 电路 + 色点 -->
             <svg viewBox="0 0 48 48" aria-hidden="true">
               <defs>
                 <linearGradient id="brand-hy" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/>
                 </linearGradient>
               </defs>
-              <rect width="48" height="48" fill="url(#brand-hy)"/>
+              <rect width="48" height="48" rx="10" fill="url(#brand-hy)"/>
               <path d="M32 9L39 16L21 34L13 36L15 28L32 9Z" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
               <path d="M13 36L15 28L21 34L13 36Z" fill="rgba(255,255,255,0.7)"/>
               <circle cx="36" cy="13" r="3.5" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5"/>
@@ -664,14 +665,117 @@ tailwind.config = {
           <span class="dot" aria-hidden="true"></span>快速构建高质量 AI 绘画提示词
         </p>
         <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
-          8 大类 33 条参考提示词库，配六个维度的可视化标签选择器，实时合成正向与负向提示词并一键复制；内置编写指导原则，支持中英双语与就地编辑。
+          8 大类 30+ 条精调参考提示词、200+ 维度标签随心组合，配编写指导原则与实时预览，一键生成中英双语的正向 / 负向提示词；纯本地桌面应用，离线可用、数据不出本机。
         </p>
 
         <div class="mt-auto pt-5">
           <div class="value-box rounded-r-lg px-3.5 py-2.5">
             <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
             <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
-              把提示词从「背口诀、反复试错」变成「选标签」，显著降低 Stable Diffusion / Midjourney 的入门门槛；配置数据可外部编辑，无需重新编译。
+              把提示词从「背口诀、反复试错」变成「选标签、按规范」，显著降低 Stable Diffusion / Midjourney 的出图门槛；配置数据可外部编辑，无需重新编译。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 09 DataChart -->
+      <article class="product" data-tags="free,win" style="--accent:#165DFF; --d:.34s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
+        <div class="flex items-start gap-4">
+          <div class="icon-box" title="DataChart">
+            <!-- 应用真实图标（src-tauri/icons/icon.png 矢量化）：蓝底 + 白色上升折线 + 底部横条 -->
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <rect width="64" height="64" rx="14" fill="#165DFF"/>
+              <path d="M14 44 L28 28 L37 33 L50 18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="50" cy="18" r="4.5" fill="#fff"/>
+              <line x1="17" y1="52" x2="49" y2="52" stroke="#fff" stroke-width="4" opacity="0.45" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="DataChart/index.html">DataChart</a></h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">数据可视化工具</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="free">免费</button>
+              <button class="chip" data-chip-filter="win">Windows</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>让数据一目了然
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          上传 Excel 或 CSV，三步生成交互式图表——柱状、折线、饼图、环形、雷达与组合图，支持左右双轴多指标对比；一键导出 PNG / JPG / SVG / PDF / HTML 或复制到剪贴板。免费、本地、双语。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              不写公式、不学专业软件，把表格数据变成能放进报告的图表，覆盖日常办公与汇报的绝大多数场景。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 08 A股板块资金流 -->
+      <article class="product" data-tags="free,win" style="--accent:#e11d48; --d:.3s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
+        <div class="flex items-start gap-4">
+          <div class="icon-box" title="A股板块资金流">
+            <!-- 应用真实图标（src-tauri/icons/icon.svg 内嵌矢量）：红渐变底 + 涨跌双箭头 -->
+            <svg viewBox="0 0 512 512" aria-hidden="true">
+              <defs>
+                <linearGradient id="brand-asff" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#f43f5e"/><stop offset="1" stop-color="#e11d48"/>
+                </linearGradient>
+              </defs>
+              <rect width="512" height="512" rx="96" fill="url(#brand-asff)"/>
+              <g transform="translate(64, 64)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M64 280 L64 120 L100 120 L64 60 L28 120 L64 120" stroke-width="28"/>
+                <path d="M176 60 L176 220 L212 220 L176 280 L140 220 L176 220" stroke-width="28" opacity="0.7"/>
+                <line x1="10" y1="170" x2="266" y2="170" stroke-width="16" opacity="0.4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="A-share-sector-fund-flow/index.html">A股板块资金流</a></h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">Sector Fund Flow</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="free">免费</button>
+              <button class="chip" data-chip-filter="win">Windows</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>看清主力动向，把握板块先机
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          实时监控 A 股行业、概念、地域三大分类共 663 个板块的主力资金流向，每 5 秒自动刷新；折线图呈现 09:30–15:00 全程累计净流入流出，支持搜索与自选板块筛选。数据来自东方财富公开接口，免费使用。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              把「主力在买什么」变成一眼能看清的图表，盘中无需在多个软件间来回切换。仅作信息整理与可视化展示，不构成投资建议。
             </p>
           </div>
         </div>
@@ -770,6 +874,9 @@ tailwind.config = {
       window.scrollTo({ top: top, behavior: 'smooth' });
     });
   });
+
+  // 初始化：按「全部」跑一遍，让 count 与实际产品数一致，避免硬编码写死
+  apply('all');
 })();
 </script>
 

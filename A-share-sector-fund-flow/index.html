@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股板块资金流 · 主力资金实时监控桌面工具</title>
+<meta name="description" content="A股板块资金流 —— 基于 Tauri 2 构建的板块主力资金流向实时监控桌面工具。5 秒刷新，覆盖行业、概念、地域三大板块分类，ECharts 可视化看清主力动向。">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap">
+<style>
+  :root{
+    --bg:#0B0F14;
+    --bg-2:#0E141C;
+    --bg-3:#121A24;
+    --line:rgba(255,255,255,.08);
+    --text:#E9EDF2;
+    --text-2:#A7B0BC;
+    --text-3:#667085;
+    --red:#F04438;
+    --red-soft:rgba(240,68,56,.14);
+    --blue:#3B82F6;
+    --blue-soft:rgba(59,130,246,.12);
+    --accent:#F04438;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans SC',system-ui,-apple-system,'Segoe UI',sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--red-soft);color:#fff}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  a{color:inherit;text-decoration:none}
+
+  /* ===== 顶部导航 ===== */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:rgba(11,15,20,.82);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand svg,.brand img{width:26px;height:26px;border-radius:6px}
+  .brand .name{font-size:16px}
+  .brand .name span{color:var(--text-2);font-weight:500}
+  .nav-links{display:flex;align-items:center;gap:28px;color:var(--text-2);font-size:14px}
+  .nav-links a{transition:color .2s}
+  .nav-links a:hover{color:var(--text)}
+  .btn-download{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--red);color:#fff;font-weight:600;font-size:14px;
+    padding:9px 18px;border-radius:8px;transition:transform .2s,box-shadow .2s;
+    box-shadow:0 0 0 1px rgba(240,68,56,.0);
+  }
+  .btn-download:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(240,68,56,.35)}
+
+  /* ===== Hero ===== */
+  .hero{position:relative;padding:76px 0 88px;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(600px 400px at 12% -10%,rgba(240,68,56,.10),transparent 60%),
+      radial-gradient(700px 480px at 95% 10%,rgba(59,130,246,.10),transparent 60%);
+  }
+  .hero .grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;color:var(--text-2);
+    border:1px solid var(--line);border-radius:999px;padding:6px 14px;
+    background:rgba(255,255,255,.03);
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .hero h1{
+    font-size:44px;line-height:1.22;font-weight:900;letter-spacing:-.5px;
+    margin:20px 0 18px;
+  }
+  .hero h1 .hl{color:var(--red)}
+  .hero p.lead{font-size:17px;color:var(--text-2);max-width:520px}
+  .hero .cta-row{display:flex;gap:16px;align-items:center;margin-top:30px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-weight:600;font-size:15px;padding:13px 26px;border-radius:10px;
+    transition:transform .2s,background .2s;
+  }
+  .btn-primary{background:var(--red);color:#fff}
+  .btn-primary:hover{transform:translateY(-2px);background:#E23A2E}
+  .btn-ghost{
+    color:var(--text);border:1px solid var(--line);background:rgba(255,255,255,.02);
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,.05)}
+  .hero .meta{display:flex;gap:22px;margin-top:26px;color:var(--text-3);font-size:13px;flex-wrap:wrap}
+  .hero .meta b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+
+  /* 截图 */
+  .shot{
+    position:relative;
+    border:1px solid var(--line);border-radius:14px;
+    background:var(--bg-2);padding:10px;
+    box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 60px rgba(240,68,56,.06);
+  }
+  .shot img{display:block;width:100%;height:auto;border-radius:8px}
+  .shot::after{
+    content:"实时 · 09:30 起累计 · 5 秒刷新";
+    position:absolute;left:16px;bottom:14px;
+    font-size:12px;color:#0E141C;font-weight:600;
+    background:rgba(255,255,255,.85);border-radius:6px;padding:4px 10px;
+  }
+
+  /* ===== 区块通用 ===== */
+  section{padding:72px 0}
+  .sec-head{margin-bottom:44px}
+  .kicker{font-size:13px;color:var(--red);font-weight:600;letter-spacing:.04em}
+  .sec-head h2{font-size:30px;font-weight:800;margin:8px 0 10px;letter-spacing:-.3px}
+  .sec-head p{color:var(--text-2);max-width:560px;font-size:15px}
+
+  /* ===== 特性 ===== */
+  #features{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .feat{
+    background:var(--bg-3);border:1px solid var(--line);border-radius:12px;
+    padding:26px 24px;
+    transition:transform .25s,border-color .25s;
+  }
+  .feat:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.16)}
+  .feat .ic{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;margin-bottom:16px}
+  .feat .ic.red{background:var(--red-soft);color:var(--red)}
+  .feat .ic.blue{background:var(--blue-soft);color:var(--blue)}
+  .feat h3{font-size:17px;font-weight:700;margin-bottom:8px}
+  .feat p{font-size:14px;color:var(--text-2)}
+
+  /* ===== 数据 ===== */
+  #data .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:44px}
+  .num{
+    border:1px solid var(--line);border-radius:12px;padding:30px 24px;text-align:center;
+    background:var(--bg-2);
+  }
+  .num .v{font-size:42px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+  .num .v.red{color:var(--red)} .num .v.blue{color:var(--blue)}
+  .num .l{color:var(--text-2);font-size:14px;margin-top:12px}
+
+  /* ===== 展示 / CTA ===== */
+  #showcase{background:var(--bg-2);border-top:1px solid var(--line)}
+  .glance{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+    margin-bottom:30px;
+  }
+  .gl{border:1px solid var(--line);border-radius:12px;padding:22px;background:var(--bg-3)}
+  .gl .gv{font-size:26px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+  .gl .gv.red{color:var(--red)} .gl .gv.blue{color:var(--blue)}
+  .gl .gl-l{display:block;color:var(--text-2);font-size:13px;margin-top:8px}
+  .cta-box{
+    text-align:center;padding:44px 30px;
+    border:1px solid var(--line);border-radius:16px;
+    background:linear-gradient(180deg,var(--bg-3),var(--bg-2));
+  }
+  .cta-box h2{font-size:26px;font-weight:800;margin-bottom:10px}
+  .cta-box p{color:var(--text-2);margin-bottom:26px;font-size:15px}
+
+  /* ===== 页脚 ===== */
+  footer{border-top:1px solid var(--line);padding:32px 0 40px}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+  .disc{font-size:12px;color:var(--text-3);max-width:640px;line-height:1.7}
+  .foot .brand2{color:var(--text-2);font-size:13px}
+
+  @media (max-width:900px){
+    .hero .grid{grid-template-columns:1fr;gap:40px}
+    .hero h1{font-size:34px}
+    .nums{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width:640px){
+    .nav-links{display:none}
+    .hero{padding:56px 0 64px}
+    .feat-grid{grid-template-columns:1fr}
+    .nums{grid-template-columns:1fr}
+    .sec-head h2{font-size:26px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .badge .dot{animation:none}
+    .feat,.btn{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部导航 ===== -->
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <img src="assets/favicon.png" alt="A股板块资金流">
+      <span class="name">A股板块资金流</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">功能特性</a>
+      <a href="#data">覆盖数据</a>
+      <a href="#showcase">产品预览</a>
+    </nav>
+    <a class="btn-download" href="#showcase">下载 Windows 版</a>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="top">
+  <div class="wrap grid">
+    <div>
+      <span class="badge"><span class="dot"></span>盘中实时 · 已接入东方财富公开接口</span>
+      <h1>看清主力动向<br>把握板块<span class="hl">先机</span></h1>
+      <p class="lead">实时监控 A 股各板块主力资金流向，每 5 秒自动刷新，一张图看懂盘中资金从哪来、流去哪。</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://share.weiyun.com/Dt7vOxcm" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+          免费下载桌面版
+        </a>
+        <a class="btn btn-ghost" href="#features">了解功能特性</a>
+      </div>
+      <div class="meta">
+        <span>覆盖板块 <b>663+</b></span>
+        <span>刷新频率 <b>5 秒</b></span>
+        <span>数据来源 <b>东方财富公开接口</b></span>
+      </div>
+    </div>
+    <div class="shot">
+      <img src="screenshot.png" alt="A股板块资金流软件界面截图：板块主力资金流向折线图与行业板块列表">
+    </div>
+  </div>
+</section>
+
+<!-- ===== 功能特性 ===== -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">FEATURES</div>
+      <h2>为盯盘打造，专治资金分散</h2>
+      <p>面向 A 股交易者的板块资金流监控工具，把「主力在买什么」这件事变成一眼能看清的图表。</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="ic red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+        <h3>实时资金流</h3>
+        <p>每 5 秒自动刷新，自 09:30 起累计主力净流入 / 净流出，盘中实时掌握主力动向。</p>
+      </div>
+      <div class="feat">
+        <div class="ic blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="8" width="7" height="13" rx="1"/></svg></div>
+        <h3>三大板块视角</h3>
+        <p>行业、概念、地域三大分类一键切换，663 个板块全景覆盖，横向对比不漏项。</p>
+      </div>
+      <div class="feat">
+        <div class="ic red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l3-4 4 2 5-7"/></svg></div>
+        <h3>可视化趋势图</h3>
+        <p>折线图呈现 09:30–15:00 全程资金流向，累计金额变化一目了然。</p>
+      </div>
+      <div class="feat">
+        <div class="ic blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h3>灵活筛选</h3>
+        <p>搜索板块名称快速定位，点击选择 / 取消关注的板块，只看你在意的。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 覆盖数据 ===== -->
+<section id="data">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">COVERAGE</div>
+      <h2>全景覆盖，不遗漏任何一个方向</h2>
+      <p>内置完整板块配置，行业、概念、地域三类一网打尽。</p>
+    </div>
+    <div class="nums">
+      <div class="num"><div class="v red">128</div><div class="l">行业板块</div></div>
+      <div class="num"><div class="v blue">504</div><div class="l">概念板块</div></div>
+      <div class="num"><div class="v red">31</div><div class="l">地域板块</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 产品展示 / 下载 ===== -->
+<section id="showcase">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">GET STARTED</div>
+      <h2>盘中盘后，主力动向尽在掌握</h2>
+      <p>红色为主力净流入、蓝色为主力净流出，趋势与明细尽收眼底。</p>
+    </div>
+    <div class="glance">
+      <div class="gl"><span class="gv red">实时</span><span class="gl-l">盘中追踪</span></div>
+      <div class="gl"><span class="gv blue">663+</span><span class="gl-l">板块覆盖</span></div>
+      <div class="gl"><span class="gv red">5s</span><span class="gl-l">自动刷新</span></div>
+      <div class="gl"><span class="gv blue">免费</span><span class="gl-l">免费使用</span></div>
+    </div>
+    <div class="cta-box">
+      <h2>现在就看清主力动向</h2>
+      <p>免费下载 Windows 桌面版，装上即可使用，数据来自东方财富公开接口。</p>
+      <a class="btn btn-primary" href="https://share.weiyun.com/Dt7vOxcm" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+        下载 Windows 版
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 页脚 ===== -->
+<footer>
+  <div class="wrap foot">
+    <p class="disc">数据来源：东方财富公开接口。本页仅作信息整理与可视化展示，不构成任何投资建议。投资有风险，入市需谨慎。</p>
+    <span class="brand2">© 2026 A股板块资金流</span>
+  </div>
+</footer>
+
+</body>
+</html>

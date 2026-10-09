@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataChart 数据可视化工具</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23165DFF'/><path d='M12 46 L26 28 L36 34 L52 16' stroke='%23fff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+  :root {
+    --brand: #165DFF;
+    --brand-dark: #0E42D2;
+    --ink: #1D2129;
+    --ink-2: #4E5969;
+    --ink-3: #86909C;
+    --bg: #F5F7FA;
+    --card: #FFFFFF;
+    --line: #E5E6EB;
+    --accent-1: #00BFA5;
+    --accent-2: #722ED1;
+    --accent-3: #F7BA1E;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== 导航 ===== */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; color: var(--ink); }
+  .logo svg { width: 30px; height: 30px; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.2; }
+  .logo-name { font-size: 19px; font-weight: 700; }
+  .logo-sub { font-size: 11px; color: var(--ink-3); font-weight: 400; white-space: nowrap; }
+  .nav-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--brand); color: #fff;
+    font-size: 14px; font-weight: 600;
+    border: none; border-radius: 8px; padding: 10px 18px;
+    cursor: pointer; transition: background .2s;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: var(--brand-dark); }
+
+  /* ===== Hero ===== */
+  .hero { text-align: center; padding: 84px 0 56px; }
+  .badge {
+    display: inline-block;
+    background: #E8F0FF; color: var(--brand);
+    font-size: 13px; font-weight: 600;
+    padding: 6px 14px; border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  .hero h1 { font-size: 46px; line-height: 1.2; font-weight: 700; letter-spacing: -.5px; }
+  .hero .sub {
+    margin: 20px auto 0; max-width: 560px;
+    font-size: 17px; color: var(--ink-2);
+  }
+  .hero-actions { margin-top: 32px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 15px; font-weight: 600;
+    border-radius: 10px; padding: 13px 26px;
+    cursor: pointer; border: 1px solid transparent; transition: all .2s;
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-dark); }
+  .btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+  .btn-ghost:hover { border-color: var(--brand); color: var(--brand); }
+  .btn svg { width: 18px; height: 18px; }
+
+  /* hero 界面截图 */
+  .hero-chart {
+    margin: 56px auto 0; max-width: 860px;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 20px;
+    box-shadow: 0 12px 40px rgba(22,93,255,.08);
+  }
+  .app-shot { width: 100%; height: auto; display: block; border-radius: 10px; }
+
+  /* ===== 特性 ===== */
+  .section { padding: 72px 0; }
+  .section-alt { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .section-head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+  .section-head h2 { font-size: 32px; font-weight: 700; }
+  .section-head p { margin-top: 14px; color: var(--ink-2); font-size: 16px; }
+  .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .feature {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 26px 22px;
+  }
+  .feature .ic {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .feature h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+  .feature p { font-size: 14px; color: var(--ink-2); }
+  .ic-blue { background: #E8F0FF; color: var(--brand); }
+  .ic-teal { background: #E6FAF7; color: var(--accent-1); }
+  .ic-purple { background: #F3EBFB; color: var(--accent-2); }
+  .ic-amber { background: #FEF6E0; color: var(--accent-3); }
+  .feature svg { width: 22px; height: 22px; }
+
+  /* ===== 流程 ===== */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: step; }
+  .step { position: relative; padding: 8px 0 0 64px; }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: 0; top: 8px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--brand); color: #fff;
+    font-size: 18px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .step p { font-size: 14px; color: var(--ink-2); }
+
+  /* ===== 图表类型 ===== */
+  .chart-types { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+  .type {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 18px 10px; text-align: center;
+  }
+  .type svg { width: 30px; height: 30px; color: var(--brand); margin-bottom: 10px; }
+  .type span { display: block; font-size: 13px; color: var(--ink-2); }
+
+  /* ===== 底部 CTA ===== */
+  .cta-band {
+    background: linear-gradient(135deg, var(--brand) 0%, #0E42D2 100%);
+    color: #fff; text-align: center; padding: 72px 0;
+  }
+  .cta-band h2 { font-size: 34px; font-weight: 700; }
+  .cta-band p { margin: 14px auto 30px; max-width: 520px; color: rgba(255,255,255,.85); font-size: 16px; }
+  .btn-white { background: #fff; color: var(--brand); }
+  .btn-white:hover { background: #EDF2FF; }
+
+  /* ===== 页脚 ===== */
+  footer { padding: 32px 0; text-align: center; color: var(--ink-3); font-size: 13px; }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 900px) {
+    .features, .steps { grid-template-columns: 1fr 1fr; }
+    .chart-types { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 32px; }
+    .hero { padding: 56px 0 40px; }
+    .section { padding: 52px 0; }
+    .features, .steps { grid-template-columns: 1fr; }
+    .chart-types { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">
+      <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#165DFF"/><path d="M12 46 L26 28 L36 34 L52 16" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="logo-text">
+        <span class="logo-name">DataChart</span>
+        <span class="logo-sub">简单易用的数据可视化工具</span>
+      </span>
+    </div>
+    <a class="nav-cta" href="https://share.weiyun.com/Dt7vOxcm" target="_blank" rel="noopener">下载桌面版</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="badge">免费 · 本地 · 双语</span>
+    <h1>让数据一目了然</h1>
+    <p class="sub">上传 Excel 或 CSV 文件，几步就能生成交互式图表，帮助你把数据讲清楚、看明白。</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://share.weiyun.com/Dt7vOxcm" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+        免费下载
+      </a>
+      <a class="btn btn-ghost" href="#features">看看能做什么</a>
+    </div>
+
+    <div class="hero-chart">
+      <img class="app-shot" src="screenshot.png" alt="DataChart 界面截图">
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>常见的数据需求，一个工具搞定</h2>
+      <p>不写公式、不学软件，专注在数据本身。</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="ic ic-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+        <h3>多种图表类型</h3>
+        <p>柱状图、折线图、饼图、环形图、雷达图，按需要自由切换。</p>
+      </div>
+      <div class="feature">
+        <div class="ic ic-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v4h-4"/></svg></div>
+        <h3>多指标对比</h3>
+        <p>多个数据系列同屏展示，量级不同的指标可用左右双轴，趋势和数值互不干扰。</p>
+      </div>
+      <div class="feature">
+        <div class="ic ic-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7M3 12h6"/></svg></div>
+        <h3>每个指标独立成图</h3>
+        <p>饼图、环形图为每个指标单独生成一张图，并自动配不同主色，一目了然。</p>
+      </div>
+      <div class="feature">
+        <div class="ic ic-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M21 3v6h-6"/><path d="M12 7v5l3 3"/></svg></div>
+        <h3>一键导出分享</h3>
+        <p>导出 PNG、JPG、SVG、PDF 或单页 HTML，也能一键复制图表到剪贴板。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>三步生成一张图表</h2>
+      <p>从数据到图表，用不了一分钟。</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>上传数据</h3>
+        <p>把 Excel 或 CSV 文件拖进来，无需任何设置。</p>
+      </div>
+      <div class="step">
+        <h3>选择图表</h3>
+        <p>选图表类型，把数据字段拖到坐标轴上即可。</p>
+      </div>
+      <div class="step">
+        <h3>导出分享</h3>
+        <p>导出图片或 HTML，随时放进报告、发给同事。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>支持的图表</h2>
+      <p>覆盖日常办公与汇报的绝大多数场景。</p>
+    </div>
+    <div class="chart-types">
+      <div class="type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>柱状图</span></div>
+      <div class="type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/></svg><span>折线图</span></div>
+      <div class="type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7M3 12h6"/></svg><span>饼图</span></div>
+      <div class="type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7M3 12h6"/></svg><span>环形图</span></div>
+      <div class="type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l3.5 6 7 2-5 5.5.5 7.5L12 21l-6 3 .5-7.5L1.5 11l7-2z"/></svg><span>雷达图</span></div>
+      <div class="type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/><path d="M3 13l5-5 4 4 8-8"/></svg><span>组合图</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <h2>准备好让数据说话了？</h2>
+    <p>下载 DataChart 桌面版，把 Excel 里的数据变成一眼就能看懂的图表。</p>
+    <a class="btn btn-white" href="https://share.weiyun.com/Dt7vOxcm" target="_blank" rel="noopener">免费下载</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© 2025 DataChart. 保留所有权利。</div>
+</footer>
+
+</body>
+</html>
