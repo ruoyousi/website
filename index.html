@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>拥抱AI变革 · 数据主权 · 本地优先</title>
 <meta name="description" content="拥抱 AI 变革，数据主权，本地优先：AI 工具、离线、语音处理、文档处理。数据不出设备，断网可用。">
+<link rel="shortcut icon" href="favicon.ico">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
 <script>
 tailwind.config = {
@@ -729,7 +730,7 @@ tailwind.config = {
       </article>
 
       <!-- 08 A股板块资金流 -->
-      <article class="product" data-tags="free,offline,win" style="--accent:#e11d48; --d:.3s">
+      <article class="product" data-tags="free,win" style="--accent:#e11d48; --d:.3s">
         <!-- 整卡链接：点击进入产品页 -->
         <span class="card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -761,7 +762,6 @@ tailwind.config = {
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
               <button class="chip" data-chip-filter="free">免费</button>
-              <button class="chip" data-chip-filter="offline">离线</button>
               <button class="chip" data-chip-filter="win">Windows</button>
             </div>
           </div>
@@ -811,13 +811,23 @@ tailwind.config = {
         <a class="contact-mail" href="mailto:contact@cd-ii.com" title="点击给 contact@cd-ii.com 发送邮件">contact@cd-ii.com</a>
       </div>
 
-      <!-- 邮件二维码 -->
-      <div class="mt-7 flex flex-col items-center gap-2.5">
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-2.5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
-          <img src="contact-mailto.png" alt="扫码发送邮件至 contact@cd-ii.com" width="290" height="290"
-               class="block h-[104px] w-[104px]" loading="lazy">
+      <!-- 二维码：邮件 + 抖音 -->
+      <div class="mt-7 flex flex-wrap items-start justify-center gap-x-6 gap-y-5">
+        <div class="flex flex-col items-center gap-2.5">
+          <div class="rounded-2xl border border-slate-200/80 bg-white p-2.5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
+            <img src="images/contact-mailto.png" alt="扫码发送邮件至 contact@cd-ii.com" width="290" height="290"
+                 class="block h-[158px] w-[158px]" loading="lazy">
+          </div>
+          <span class="text-[12px] text-slate-400">扫码给我们发邮件</span>
         </div>
-        <span class="text-[12px] text-slate-400">扫码给我们发邮件</span>
+
+        <div class="flex flex-col items-center gap-2.5">
+          <div class="rounded-2xl border border-slate-200/80 bg-white p-2.5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
+            <img src="images/douyin.jpg" alt="扫码关注抖音私信沟通" width="1125" height="1125"
+                 class="block h-[158px] w-auto rounded-[10px]" loading="lazy">
+          </div>
+          <span class="text-[12px] text-slate-400">扫码关注私信沟通</span>
+        </div>
       </div>
     </div>
   </footer>
@@ -882,6 +892,6 @@ tailwind.config = {
   apply('all');
 })();
 </script>
-
+<script src="https://trtc.io/knocket-sdk/sdk.js?identifier=85ee258306f1472255&v=1791594758890" async></script>
 </body>
 </html>
