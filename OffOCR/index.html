@@ -182,6 +182,43 @@
   .copy-btn { font: 12px/1 "Noto Sans SC", sans-serif; cursor: pointer; color: #c5d3ea; background: #26324a; border: 1px solid #34405c; border-radius: 6px; padding: 4px 10px; }
   .copy-btn:hover { background: #2f3d5a; color: #fff; }
 
+  /* ===== 定价 ===== */
+  #pricing { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .price-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 840px; margin: 0 auto; }
+  .price {
+    position: relative; display: flex; flex-direction: column;
+    background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 26px; box-shadow: var(--shadow);
+  }
+  .price.pro { background: var(--accent-soft); border-color: var(--accent); box-shadow: 0 12px 30px rgba(37,99,235,.14); }
+  .price-badge {
+    position: absolute; top: -12px; right: 22px;
+    background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;
+    padding: 4px 12px; border-radius: 999px;
+  }
+  .price h3 { margin: 0; font-size: 18px; font-weight: 700; }
+  .price-sub { margin: 4px 0 0; font-size: 13.5px; color: var(--muted); }
+  .price-amount { margin: 18px 0 0; }
+  .price-amount b { font-size: 34px; font-weight: 800; letter-spacing: -0.5px; }
+  .price.pro .price-amount b { color: var(--accent); }
+  .price-amount span { margin-left: 6px; font-size: 13.5px; color: var(--muted); }
+  .price-list { list-style: none; margin: 20px 0 24px; padding: 0; display: flex; flex-direction: column; gap: 11px; font-size: 14.5px; }
+  .price-list li { display: flex; align-items: flex-start; gap: 9px; }
+  .price-list svg { flex: none; width: 17px; height: 17px; margin-top: 3px; }
+  .price-list .ok svg { color: var(--green); }
+  .price.pro .price-list .ok svg { color: var(--accent); }
+  .price-list .off { color: var(--muted); }
+  .price-list .off svg { color: #c2c8d0; }
+  .price-cta {
+    margin-top: auto; display: flex; align-items: center; justify-content: center;
+    font: 500 15px/1 "Noto Sans SC", sans-serif; border-radius: 10px; padding: 12px 20px;
+    border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer;
+  }
+  .price-cta:hover { border-color: #c9ced6; color: var(--text); }
+  .price-cta.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .price-cta.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+  .price-note { text-align: center; font-size: 13px; color: var(--muted); margin: 24px 0 0; }
+
   /* ===== Footer ===== */
   footer { background: #0f1420; color: #9fb0c8; padding: 40px 0 30px; }
   footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -191,7 +228,7 @@
   /* ===== 响应式 ===== */
   @media (max-width: 900px) {
     .hero-grid, .privacy-grid { grid-template-columns: 1fr; }
-    .cap-grid, .ex-grid { grid-template-columns: 1fr; }
+    .cap-grid, .ex-grid, .price-grid { grid-template-columns: 1fr; }
     .nav-links { display: none; }
   }
   @media (max-width: 560px) {
@@ -217,6 +254,7 @@
       <a href="#caps">核心能力</a>
       <a href="#app">桌面应用</a>
       <a href="#examples">识别示例</a>
+      <a href="#pricing">定价</a>
       <a href="#deploy">部署方式</a>
     </div>
   </div>
@@ -416,6 +454,64 @@
   </div>
 </section>
 
+<!-- ===== 定价 ===== -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Pricing</span>
+      <h2>简单透明的定价</h2>
+      <p>免费版可下载体验，Pro 版一次性买断、无订阅、无年度续费。</p>
+    </div>
+    <div class="price-grid">
+      <!-- 免费版 -->
+      <div class="price">
+        <h3>免费版</h3>
+        <p class="price-sub">适合试用体验</p>
+        <p class="price-amount"><b>￥0</b><span>/ 永久</span></p>
+        <ul class="price-list">
+          <li class="ok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            下载发布包，解压即用，无需安装
+          </li>
+          <li class="ok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            命令行与桌面应用均可启动，查看本机设备 ID
+          </li>
+          <li class="off">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            解析服务不可用（核心 OCR 需 Pro 授权）
+          </li>
+        </ul>
+        <a class="price-cta" href="#deploy">免费下载体验</a>
+      </div>
+
+      <!-- Pro 版 -->
+      <div class="price pro">
+        <span class="price-badge">推荐</span>
+        <h3>Pro 版</h3>
+        <p class="price-sub">一次买断，长期使用</p>
+        <p class="price-amount"><b>￥299</b><span>/ 一次性买断</span></p>
+        <ul class="price-list">
+          <li class="ok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            无功能限制：图片 / PDF 解析全部解锁
+          </li>
+          <li class="ok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            包含后续软件升级
+          </li>
+          <li class="ok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            授权文件离线校验，无需联网
+          </li>
+        </ul>
+        <a class="price-cta primary" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%20OffOCR%20Pro%20%E8%AE%B8%E5%8F%AF%E8%AF%81">购买 Pro 版</a>
+      </div>
+    </div>
+    <p class="price-note">授权与设备绑定，购买后把 <code>license.dat</code> 放到程序目录（或用 <code>--license</code> 指定路径）即可激活。</p>
+  </div>
+</section>
+
 <!-- ===== 部署方式 ===== -->
 <section id="deploy">
   <div class="wrap">
@@ -455,7 +551,7 @@ offocr-ui.exe
         <div class="no"></div>
         <div>
           <h3>放置许可证</h3>
-          <p>把发布者签发的 <code>license.dat</code> 放到软件目录，或用环境变量 <code>OFFOCR_LICENSE</code> 指定路径。未授权时启动会提示「当前使用软件未授权」，请联系发布者获取。</p>
+          <p>把发布者签发的 <code>license.dat</code> 放到软件目录，或用启动参数 <code>--license &lt;路径&gt;</code>、环境变量 <code>OFFOCR_LICENSE</code> 指定路径。未授权时启动会提示「当前使用软件未授权」，请联系发布者获取。</p>
         </div>
       </div>
       <div class="dep">

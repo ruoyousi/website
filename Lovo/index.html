@@ -145,6 +145,27 @@ h2{font-size:clamp(26px,3.6vw,38px);line-height:1.25;letter-spacing:.5px;margin-
 .video-frame video{display:block;width:100%;height:auto;background:#1e222b}
 .video-note{text-align:center;color:var(--text-dim);font-size:13.5px;margin-top:14px}
 
+/* ===== 定价 ===== */
+.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin:44px auto 0;max-width:840px}
+.plan{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:34px 30px;
+  display:flex;flex-direction:column;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:.3s}
+.plan:hover{transform:translateY(-5px);border-color:var(--border-strong)}
+.plan.featured{border-color:rgba(136,192,208,.5);background:rgba(59,66,82,.8);box-shadow:0 26px 56px -26px rgba(129,161,193,.6)}
+.plan .ribbon{position:absolute;top:-12px;right:24px;font-family:var(--mono);font-size:11.5px;letter-spacing:1.5px;font-weight:600;
+  color:#1d222b;background:var(--grad);padding:4px 13px;border-radius:999px}
+.plan h3{font-size:19.5px;letter-spacing:.5px}
+.plan .plan-sub{color:var(--text-dim);font-size:13.5px;margin-top:6px}
+.plan .price{margin-top:24px;display:flex;align-items:baseline;gap:9px}
+.plan .price .amount{font-size:42px;font-weight:800;letter-spacing:.5px}
+.plan .price .unit{color:var(--text-dim);font-size:13.5px}
+.plan ul{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.plan li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.55}
+.plan li svg{flex:none;margin-top:3px}
+.plan li.dim{color:var(--text-dim)}
+.plan .plan-cta{margin-top:30px;width:100%;justify-content:center}
+.price-note{text-align:center;color:var(--text-dim);font-size:13px;margin-top:26px}
+.price-note .mono{color:var(--nord8)}
+
 /* ===== CTA ===== */
 .final-cta{margin-top:90px;text-align:center;padding:64px 32px;border-radius:22px;position:relative;overflow:hidden;
   background:linear-gradient(135deg,rgba(59,66,82,.85),rgba(46,52,64,.9));border:1px solid var(--border-strong)}
@@ -169,10 +190,12 @@ footer{margin-top:90px;border-top:1px solid var(--border);padding:36px 24px 44px
   .value-grid{grid-template-columns:1fr}
   .nav-links a:not(.nav-cta){display:none}
   section{padding-top:64px}
+  .price-grid{grid-template-columns:1fr;max-width:520px}
 }
 @media (max-width:560px){
   .feat-grid{grid-template-columns:1fr}
   .compare table{font-size:13px}.compare th,.compare td{padding:11px 12px}
+  .plan{padding:28px 22px}
 }
 </style>
 <noscript><style>[data-reveal]{opacity:1 !important;transform:none !important}</style></noscript>
@@ -191,7 +214,8 @@ footer{margin-top:90px;border-top:1px solid var(--border);padding:36px 24px 44px
       <a href="#value">离线工作</a>
       <a href="#features">功能特性</a>
       <a href="#skill">AI 技能</a>
-      <a class="nav-cta" href="#features">开始使用</a>
+      <a href="#pricing">定价</a>
+      <a class="nav-cta" href="#pricing">查看定价</a>
     </div>
   </nav>
 </header>
@@ -331,6 +355,70 @@ voices/    &lt;voice-name&gt;/voice-ref.wav + voice-ref.txt</pre></div>
     </div>
   </section>
 
+  <!-- ================= 定价 ================= -->
+  <section id="pricing">
+    <span class="kicker" data-reveal>Pricing</span>
+    <h2 data-reveal>简单透明的<span class="grad-text">定价</span></h2>
+    <p class="sub" data-reveal>免费版永久可用，先试用再决定；Pro 一次性买断，无订阅、无年度续费。</p>
+
+    <div class="price-grid">
+      <!-- 免费版 -->
+      <div class="plan" data-reveal>
+        <h3>免费版</h3>
+        <p class="plan-sub">适合试用体验</p>
+        <div class="price"><span class="amount">￥0</span><span class="unit">/ 永久</span></div>
+        <ul>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3BE8C" stroke-width="2.6" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            合成 / 克隆 / 音色设计 / 识别 全功能可用
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3BE8C" stroke-width="2.6" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            输入或输出文本长度不超过 <b>50 个字符</b>
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3BE8C" stroke-width="2.6" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            全程本地推理，数据不出设备
+          </li>
+          <li class="dim">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(154,165,184,.5)" stroke-width="2.6" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            不支持长文本与后续软件升级（升级 Pro 解锁）
+          </li>
+        </ul>
+        <a class="btn btn-ghost plan-cta" href="#skill">免费使用</a>
+      </div>
+
+      <!-- Pro 版 -->
+      <div class="plan featured" data-reveal style="transition-delay:.1s">
+        <span class="ribbon">推荐</span>
+        <h3>Pro 版</h3>
+        <p class="plan-sub">一次买断，长期使用</p>
+        <div class="price"><span class="amount">￥299</span><span class="unit">/ 一次性买断</span></div>
+        <ul>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EBCB8B" stroke-width="2.6" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <b>无功能限制</b>，文本长度不限
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EBCB8B" stroke-width="2.6" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            包含后续软件升级
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EBCB8B" stroke-width="2.6" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            CLI / HTTP API / 桌面 UI 全形态解锁
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EBCB8B" stroke-width="2.6" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            激活文件离线校验，无需联网
+          </li>
+        </ul>
+        <a class="btn btn-primary plan-cta" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%20Lovo%20Pro%20%E8%AE%B8%E5%8F%AF%E8%AF%81">购买 Pro 版</a>
+      </div>
+    </div>
+
+    <p class="price-note" data-reveal>免费版无需激活即可使用；购买 Pro 后把 <span class="mono">license.dat</span> 放到程序目录即可解锁全部功能。</p>
+  </section>
+
   <!-- ================= 收尾 CTA ================= -->
   <div class="final-cta" data-reveal>
     <h2>把语音能力<span class="grad-text">装进自己的机器</span></h2>
@@ -348,6 +436,7 @@ voices/    &lt;voice-name&gt;/voice-ref.wav + voice-ref.txt</pre></div>
       <a href="#features">功能特性</a>
       <a href="#video">产品视频</a>
       <a href="#skill">AI 技能</a>
+      <a href="#pricing">定价</a>
     </div>
     <div class="mono">本页零外部请求 · 完全离线可打开</div>
   </div>

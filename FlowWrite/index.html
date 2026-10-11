@@ -118,6 +118,26 @@ img{display:block}
 .privacy p{color:var(--dim);font-size:14px}
 .privacy .pills{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 .pill{font-size:12.5px;color:var(--dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px}
+/* pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:780px;margin:0 auto}
+.plan{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;transition:border-color .2s,transform .2s}
+.plan:hover{transform:translateY(-3px)}
+.plan-pro{border-color:rgba(217,164,65,.45);box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.plan-badge{position:absolute;top:-11px;right:24px;background:var(--accent);color:#1b1608;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.02em}
+.plan h3{font-size:19px}
+.plan .plan-sub{margin-top:6px;font-size:13px;color:var(--faint)}
+.plan .plan-price{margin-top:22px;display:flex;align-items:baseline;gap:8px}
+.plan .plan-price b{font-family:'Noto Serif SC',Georgia,serif;font-size:40px;font-weight:700;line-height:1}
+.plan-pro .plan-price b{color:var(--accent)}
+.plan .plan-price span{font-size:13px;color:var(--faint)}
+.plan ul{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:11px}
+.plan li{display:flex;gap:10px;font-size:13.5px;color:var(--dim);line-height:1.6}
+.plan li svg{width:16px;height:16px;flex-shrink:0;margin-top:4px;stroke:var(--ok)}
+.plan li.off{color:var(--faint)}
+.plan li.off svg{stroke:var(--faint)}
+.plan .btn{justify-content:center;width:100%;margin-top:28px}
+.sec-head.center{max-width:640px;margin:0 auto 44px;text-align:center}
+.plan-note{margin-top:26px;text-align:center;font-size:12.5px;color:var(--faint)}
 /* contact */
 .contact-section{padding-top:0}
 .contact{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px 44px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}
@@ -126,7 +146,7 @@ img{display:block}
 .contact-mail{display:inline-block;margin-top:16px;color:var(--accent);font-size:16px;font-weight:500;border-bottom:1px dashed var(--accent);padding-bottom:2px}
 .contact-mail:hover{opacity:.85}
 .contact-qr{display:flex;flex-direction:column;align-items:center;gap:10px}
-.qr-\boxed{background:#fff;padding:10px;border-radius:12px;line-height:0}
+.qr-box{background:#fff;padding:10px;border-radius:12px;line-height:0}
 .qr-box img{width:132px;height:auto;display:block}
 .contact-qr span{font-size:12.5px;color:var(--faint)}
 /* CTA band */
@@ -153,6 +173,9 @@ img{display:block}
   .hero{padding:64px 0 32px}
   .hero h1{font-size:30px}
   .grid4,.grid2{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .plan{padding:26px 22px}
+  .plan .plan-price b{font-size:34px}
   .privacy{grid-template-columns:1fr;padding:28px 24px;text-align:center;justify-items:center}
   .contact{grid-template-columns:1fr;padding:28px 24px;text-align:center;justify-items:center}
   .contact-mail{margin-top:12px}
@@ -176,6 +199,7 @@ img{display:block}
       <a href="#core">核心闭环</a>
       <a href="#features">能力</a>
       <a href="#privacy">隐私</a>
+      <a href="#pricing">定价</a>
       <a href="#contact">联系我</a>
       <a href="https://share.weiyun.com/Dt7vOxcm" target="_blank" rel="noopener">文档</a>
     </div>
@@ -342,6 +366,69 @@ img{display:block}
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">PRICING</div>
+      <h2>简单透明的定价</h2>
+      <p>免费版永久可用，够用再升级。Pro 一次买断，无订阅、无年度续费。</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- 免费版 -->
+      <div class="plan" data-reveal>
+        <h3>免费版</h3>
+        <p class="plan-sub">适合试用体验</p>
+        <p class="plan-price"><b>￥0</b><span>/ 永久</span></p>
+        <ul>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            打开作品，生成 / 润色 / 自检 / 记忆全流程可用
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            数据仅存本地，离线可用，不上传原文
+          </li>
+          <li class="off">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            不可新建、删除小说或章节
+          </li>
+          <li class="off">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            不可导出小说或章节
+          </li>
+        </ul>
+        <a class="btn btn-ghost" href="https://share.weiyun.com/Dt7vOxcm" target="_blank" rel="noopener">免费下载</a>
+      </div>
+
+      <!-- Pro 版 -->
+      <div class="plan plan-pro" data-reveal>
+        <span class="plan-badge">推荐</span>
+        <h3>Pro 版</h3>
+        <p class="plan-sub">一次买断，长期使用</p>
+        <p class="plan-price"><b>￥299</b><span>/ 一次性买断</span></p>
+        <ul>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            无功能限制：新建、删除、导出全部解锁
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            包含后续软件升级
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            本地激活，无需注册账号
+          </li>
+        </ul>
+        <a class="btn btn-primary" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%20FlowWrite%20Pro%20%E8%AE%B8%E5%8F%AF%E8%AF%81">购买 Pro 版</a>
+      </div>
+    </div>
+
+    <p class="plan-note" data-reveal>已有作品、设定与记忆无缝保留，购买后解锁全部功能，无需重新导入。</p>
   </div>
 </section>
 

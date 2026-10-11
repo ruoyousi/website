@@ -248,6 +248,48 @@
   .qr-box img { width: 132px; height: auto; display: block; }
   .contact-qr span { font-size: 12.5px; color: var(--muted); }
 
+  /* ===== 定价 ===== */
+  #pricing { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; max-width: 780px; margin: 0 auto; }
+  .price-card {
+    position: relative; display: flex; flex-direction: column;
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 30px 28px;
+  }
+  .price-card.pro {
+    background: var(--card); border-color: var(--accent);
+    box-shadow: 0 18px 44px -18px rgba(37,99,235,.45);
+  }
+  .price-badge {
+    position: absolute; top: -12px; right: 24px;
+    background: var(--accent); color: #fff; font-size: 12.5px; font-weight: 600;
+    padding: 4px 12px; border-radius: 999px;
+  }
+  .price-card h3 { margin: 0 0 4px; font-size: 19px; font-weight: 700; }
+  .price-sub { margin: 0; color: var(--muted); font-size: 14px; }
+  .price-amount { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 0; }
+  .price-amount b { font-size: 38px; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+  .price-amount span { color: var(--muted); font-size: 13.5px; }
+  .price-list { list-style: none; margin: 22px 0 26px; padding: 0; display: grid; gap: 11px; }
+  .price-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14.5px; line-height: 1.5; }
+  .price-list li.off { color: var(--muted); }
+  .price-list svg { flex: none; margin-top: 3px; }
+  .price-list .yes { color: var(--green); }
+  .price-list .no { color: #b7bcc4; }
+  .price-btn {
+    margin-top: auto; display: inline-flex; align-items: center; justify-content: center;
+    font: 500 15px/1 "Noto Sans SC", sans-serif; cursor: pointer;
+    padding: 13px 20px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  .price-btn:hover { border-color: #c9ced6; }
+  .price-btn.primary {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+    box-shadow: 0 12px 26px -12px rgba(37,99,235,.6);
+  }
+  .price-btn.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+  .pricing-note { text-align: center; color: var(--muted); font-size: 13.5px; margin: 24px 0 0; }
+
   /* ===== Footer ===== */
   footer { background: #0f1420; color: #9fb0c8; padding: 40px 0 30px; }
   footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -261,7 +303,7 @@
     .privacy-grid, .tab-panel.active { grid-template-columns: 1fr; }
     .lang-stats { grid-template-columns: 1fr; }
     .skill-grid { grid-template-columns: 1fr; }
-    .flow-steps, .feature-grid { grid-template-columns: 1fr; }
+    .flow-steps, .feature-grid, .pricing-grid { grid-template-columns: 1fr; }
     .contact { grid-template-columns: 1fr; padding: 28px 24px; text-align: center; justify-items: center; }
     .contact-mail { margin-top: 12px; }
     .nav-links { display: none; }
@@ -291,6 +333,7 @@
       <a href="#services">三种服务</a>
       <a href="#languages">多语言互译</a>
       <a href="#skill">技能</a>
+      <a href="#pricing">定价</a>
       <a href="#contact">联系我们</a>
     </div>
   </div>
@@ -661,6 +704,74 @@ Hello, world.
 python scripts/translate.py --text "你好，世界"
 python scripts/translate.py --text "你好，世界" --target ja</code></pre>
     </div>
+  </div>
+</section>
+
+<!-- ===== 定价 ===== -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Pricing</span>
+      <h2>简单透明的定价</h2>
+      <p>免费版可长期试用；解锁全部翻译与润色能力，Pro 版一次买断，无订阅、无年度续费。</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- 免费版 -->
+      <div class="price-card">
+        <h3>免费版</h3>
+        <p class="price-sub">适合试用体验</p>
+        <div class="price-amount"><b>￥0</b><span>/ 永久</span></div>
+        <ul class="price-list">
+          <li class="off">
+            <svg class="no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            翻译服务不可用
+          </li>
+          <li class="off">
+            <svg class="no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            润色服务不可用
+          </li>
+          <li>
+            <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            可自由试用桌面应用界面
+          </li>
+          <li>
+            <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            本地运行，数据不出设备
+          </li>
+        </ul>
+        <a class="price-btn" href="https://share.weiyun.com/Dt7vOxcm" target="_blank" rel="noopener">免费下载</a>
+      </div>
+
+      <!-- Pro 版 -->
+      <div class="price-card pro">
+        <span class="price-badge">推荐</span>
+        <h3>Pro 版</h3>
+        <p class="price-sub">一次买断，长期使用</p>
+        <div class="price-amount"><b>￥299</b><span>/ 一次性买断</span></div>
+        <ul class="price-list">
+          <li>
+            <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            翻译与润色全部功能无限制
+          </li>
+          <li>
+            <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            包含后续软件升级
+          </li>
+          <li>
+            <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            一次性买断，永久使用
+          </li>
+          <li>
+            <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            激活文件离线校验，无需联网
+          </li>
+        </ul>
+        <a class="price-btn primary" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%E5%A4%9A%E8%AF%AD%E8%A8%80%E4%BA%92%E8%AF%91-Transly%20Pro%20%E8%AE%B8%E5%8F%AF%E8%AF%81">购买 Pro 版</a>
+      </div>
+    </div>
+
+    <p class="pricing-note">购买后把 license.dat 放到程序目录即可离线激活，已有本地数据无缝保留。</p>
   </div>
 </section>
 
