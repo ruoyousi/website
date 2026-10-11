@@ -221,21 +221,6 @@
   }
   .chip.ethnic { background: var(--green-soft); border-color: #b9e5cd; color: #0c6b3d; }
 
-  /* ===== 技能 ===== */
-  #skill { background: var(--bg); border-top: 1px solid var(--line); }
-  .skill-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
-  .skill-text h3 { font-size: 26px; font-weight: 800; margin: 6px 0 14px; letter-spacing: -0.3px; }
-  .skill-text > p { color: var(--muted); margin: 0 0 22px; }
-  .skill-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .skill-feature {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 16px 14px;
-  }
-  .skill-feature svg { color: var(--accent); display: block; margin-bottom: 10px; }
-  .skill-feature h4 { margin: 0 0 4px; font-size: 15px; font-weight: 700; }
-  .skill-feature p { margin: 0; font-size: 13.5px; color: var(--muted); }
-  #skill .code-block pre { font-size: 13px; }
-  #skill .code-block pre .dim { color: #8ba0bf; }
-
   /* ===== 联系我们 ===== */
   #contact { background: var(--bg-soft); border-top: 1px solid var(--line); }
   .contact { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 40px 44px; display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: center; }
@@ -302,7 +287,6 @@
     .hero-grid { grid-template-columns: 1fr; }
     .privacy-grid, .tab-panel.active { grid-template-columns: 1fr; }
     .lang-stats { grid-template-columns: 1fr; }
-    .skill-grid { grid-template-columns: 1fr; }
     .flow-steps, .feature-grid, .pricing-grid { grid-template-columns: 1fr; }
     .contact { grid-template-columns: 1fr; padding: 28px 24px; text-align: center; justify-items: center; }
     .contact-mail { margin-top: 12px; }
@@ -332,7 +316,6 @@
       <a href="#features">核心能力</a>
       <a href="#services">三种服务</a>
       <a href="#languages">多语言互译</a>
-      <a href="#skill">技能</a>
       <a href="#pricing">定价</a>
       <a href="#contact">联系我们</a>
     </div>
@@ -663,57 +646,13 @@ Hello, world.
   </div>
 </section>
 
-<!-- ===== 技能 ===== -->
-<section id="skill">
-  <div class="wrap skill-grid">
-    <div class="skill-text">
-      <span class="kicker">Reusable Skill</span>
-      <h3>可复用的「技能」能力</h3>
-        <p>除了命令行、API、桌面应用三种接入方式，项目还附带一个预置技能：把本地翻译 API 封装成语义化调用，让 AI 助手也能直接翻译，无需重新接线。</p>
-      <div class="skill-features">
-        <div class="skill-feature">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6M15 2v6M7 8h10v4a5 5 0 0 1-5 5h0a5 5 0 0 1-5-5V8zM12 17v5"/></svg>
-          <h4>即插即用</h4>
-          <p>装进智能体即可翻译，一句指令完成中英或多语言互译。</p>
-        </div>
-        <div class="skill-feature">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <h4>与本地服务同源</h4>
-          <p>调用的是同一个本地 API，离线运行、数据不出本地。</p>
-        </div>
-        <div class="skill-feature">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
-          <h4>覆盖 38 种语言</h4>
-          <p>支持 <code>--target</code> 指定任意目标语言，缺省中英互译。</p>
-        </div>
-        <div class="skill-feature">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-          <h4>内置错误处理</h4>
-          <p>服务未启动、参数非法或翻译失败时给出明确提示。</p>
-        </div>
-      </div>
-    </div>
-    <div class="code-block">
-      <div class="code-head"><span>lang-translator-skill/</span><button class="copy-btn" data-copy="skill">复制</button></div>
-      <pre><code>lang-translator-skill/
-├── SKILL.md             <span class="dim"># 能力说明与触发条件</span>
-└── scripts/
-    └── translate.py     <span class="dim"># 调用本地翻译 API</span>
-
-<span class="cm"># 使用</span>
-python scripts/translate.py --text "你好，世界"
-python scripts/translate.py --text "你好，世界" --target ja</code></pre>
-    </div>
-  </div>
-</section>
-
 <!-- ===== 定价 ===== -->
 <section id="pricing">
   <div class="wrap">
     <div class="sec-head">
       <span class="kicker">Pricing</span>
       <h2>简单透明的定价</h2>
-      <p>免费版可长期试用；解锁全部翻译与润色能力，Pro 版一次买断，无订阅、无年度续费。</p>
+      <p>免费版可长期试用（单次原文最长 50 字）；Pro 版解锁不限长度的翻译与润色，一次买断，无订阅、无年度续费。</p>
     </div>
 
     <div class="pricing-grid">
@@ -723,13 +662,9 @@ python scripts/translate.py --text "你好，世界" --target ja</code></pre>
         <p class="price-sub">适合试用体验</p>
         <div class="price-amount"><b>￥0</b><span>/ 永久</span></div>
         <ul class="price-list">
-          <li class="off">
-            <svg class="no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            翻译服务不可用
-          </li>
-          <li class="off">
-            <svg class="no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            润色服务不可用
+          <li>
+            <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            翻译与润色可用，单次原文最长 50 字
           </li>
           <li>
             <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -752,7 +687,7 @@ python scripts/translate.py --text "你好，世界" --target ja</code></pre>
         <ul class="price-list">
           <li>
             <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            翻译与润色全部功能无限制
+            翻译与润色不限长度，无功能限制
           </li>
           <li>
             <svg class="yes" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -847,8 +782,7 @@ python scripts/translate.py --text "你好，世界" --target ja</code></pre>
   }
   var snippets = {
     cli: 'echo "你好！" | transly-cli --target ja\ntransly-cli --target en < notes.txt > out.txt\n# 连续会话\ntransly-cli it',
-    api: 'curl -X POST http://127.0.0.1:8080/api/v1/translate \\\n  -H "Content-Type: application/json" \\\n  -d \'{"text":"你好，世界","target":"ja"}\'',
-    skill: 'python scripts/translate.py --text "你好，世界"\npython scripts/translate.py --text "你好，世界" --target ja'
+    api: 'curl -X POST http://127.0.0.1:8080/api/v1/translate \\\n  -H "Content-Type: application/json" \\\n  -d \'{"text":"你好，世界","target":"ja"}\''
   };
   document.querySelectorAll('.copy-btn').forEach(function (btn) {
     btn.addEventListener('click', function () { copyText(snippets[btn.getAttribute('data-copy')] || '', btn); });
