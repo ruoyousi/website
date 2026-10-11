@@ -352,6 +352,52 @@
   .why-card h4 { font-size: 17.5px; font-weight: 700; margin-bottom: 9px; }
   .why-card p { color: var(--muted); font-size: 14.5px; line-height: 1.7; }
 
+  /* ---- pricing ---- */
+  .price-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px; max-width: 860px; margin: 0 auto;
+  }
+  .price-card {
+    display: flex; flex-direction: column;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 20px; padding: 38px 32px;
+    position: relative; transition: transform .25s, border-color .25s;
+  }
+  .price-card:hover { transform: translateY(-4px); border-color: rgba(34,211,238,.35); }
+  .price-card h3 { font-size: 19px; font-weight: 700; }
+  .price-card .plan-sub { color: var(--muted); font-size: 14.5px; margin-top: 7px; }
+  .price-amt { display: flex; align-items: baseline; gap: 8px; margin-top: 26px; }
+  .price-amt .num { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; }
+  .price-amt .unit { color: var(--muted); font-size: 14.5px; }
+  .p-list { list-style: none; margin: 28px 0 32px; display: flex; flex-direction: column; gap: 13px; font-size: 15px; }
+  .p-list li { display: flex; gap: 11px; align-items: flex-start; line-height: 1.6; }
+  .p-list li.off { color: var(--muted); }
+  .p-list .check {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(52,211,153,.16); color: #34d399;
+    display: grid; place-items: center; font-size: 11px; font-weight: 800; margin-top: 2px;
+  }
+  .p-list .cross {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.32);
+    display: grid; place-items: center; font-size: 13px; font-weight: 700; margin-top: 2px;
+  }
+  .price-cta { margin-top: auto; width: 100%; justify-content: center; }
+  .price-card.pro {
+    border-color: rgba(139,92,246,.45);
+    background: linear-gradient(160deg, rgba(139,92,246,.12), rgba(34,211,238,.06));
+    box-shadow: 0 24px 70px rgba(139,92,246,.18);
+  }
+  .price-card.pro .p-list .check { background: rgba(251,191,36,.16); color: #fbbf24; }
+  .price-tag {
+    position: absolute; top: -13px; right: 28px;
+    background: var(--grad); color: #060913;
+    font-size: 12.5px; font-weight: 800; letter-spacing: .3px;
+    padding: 6px 14px; border-radius: 99px;
+    box-shadow: 0 6px 20px rgba(139,92,246,.45);
+  }
+  .price-note { text-align: center; color: var(--muted); font-size: 14px; margin-top: 32px; line-height: 1.7; }
+
   /* ---- CTA ---- */
   .cta-box {
     text-align: center;
@@ -410,6 +456,7 @@
       <a href="#features">核心功能</a>
       <a href="#labels">维度标签</a>
       <a href="#why">产品价值</a>
+      <a href="#pricing">定价</a>
     </div>
     <div class="nav-cta">
       <a class="btn btn-ghost" href="#features">了解更多</a>
@@ -754,6 +801,49 @@
       <div class="v-card reveal"><div class="v-icon ic-3">📥</div><h3>一键存入词库</h3><p>生成页组合好的提示词，点一下即可存进参考词库，好结果不再丢失。</p></div>
       <div class="v-card reveal"><div class="v-icon ic-4">🌐</div><h3>平台资源导航</h3><p>内置 LiblibAI、吐司、通义万相、文心一格等 8 个绘画平台入口，一键直达。</p></div>
     </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="padding-top:0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Pricing</span>
+      <h2>简单透明的定价</h2>
+      <p class="sec-sub">免费版永久可用，够用再升级。Pro 一次性买断，无订阅、无年度续费。</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card reveal">
+        <h3>免费版</h3>
+        <p class="plan-sub">适合试用体验</p>
+        <p class="price-amt"><span class="num">￥0</span><span class="unit">/ 永久</span></p>
+        <ul class="p-list">
+          <li><span class="check">✓</span>完整浏览维度标签、指导原则与平台导航</li>
+          <li><span class="check">✓</span>自由勾选标签，生成并复制正负向提示词</li>
+          <li><span class="check">✓</span>离线运行，数据全部保存在本地</li>
+          <li class="off"><span class="cross">×</span>新增 / 编辑 / 删除提示词</li>
+          <li class="off"><span class="cross">×</span>添加到参考提示词库</li>
+          <li class="off"><span class="cross">×</span>上传示例生成图</li>
+        </ul>
+        <a class="btn btn-ghost price-cta" href="#download">免费下载</a>
+      </div>
+
+      <div class="price-card pro reveal">
+        <span class="price-tag">推荐</span>
+        <h3>Pro 版</h3>
+        <p class="plan-sub">一次买断，长期使用</p>
+        <p class="price-amt"><span class="num grad-text">￥299</span><span class="unit">/ 一次性买断</span></p>
+        <ul class="p-list">
+          <li><span class="check">✓</span>解锁全部功能，无任何限制</li>
+          <li><span class="check">✓</span>提示词与分类的新增 / 编辑 / 删除</li>
+          <li><span class="check">✓</span>添加到参考提示词库、上传示例生成图</li>
+          <li><span class="check">✓</span>包含后续软件升级</li>
+          <li><span class="check">✓</span>离线激活，无需联网、无需注册</li>
+        </ul>
+        <a class="btn btn-primary price-cta" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%E7%94%BB%E8%AF%AD%20Pro%20%E7%89%88%E8%AE%B8%E5%8F%AF%E8%AF%81">购买 Pro 版</a>
+      </div>
+    </div>
+    <p class="price-note">免费版与 Pro 版数据完全互通 —— 购买后把 license.dat 放到程序目录即可解锁，无需重装。</p>
   </div>
 </section>
 
