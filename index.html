@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>拥抱AI变革 · 数据主权 · 本地优先</title>
-<meta name="description" content="拥抱 AI 变革，数据主权，本地优先：AI 工具、离线、语音处理、文档处理。数据不出设备，断网可用。">
+<meta name="description" content="拥抱 AI 变革，数据主权，本地优先：AI 工具、离线、内容创作、文档处理。数据不出设备，断网可用。">
 <link rel="shortcut icon" href="favicon.ico">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
 <script>
@@ -222,6 +222,41 @@ tailwind.config = {
     border-radius: 2px;
   }
 
+  /* ===== 软件更新历史链接（页脚） ===== */
+  .update-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .5rem 1.05rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, .45);
+    background: #fff;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: border-color .2s, color .2s, box-shadow .25s, transform .2s cubic-bezier(.16,1,.3,1);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+  }
+  .update-link:hover {
+    color: #15508f;
+    border-color: rgba(21, 80, 143, .5);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px -16px rgba(21, 80, 143, .6);
+  }
+  .update-link:active { transform: scale(.98); }
+  .update-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(21, 80, 143, .22);
+  }
+  .update-link .update-link-go {
+    width: 12px; height: 12px;
+    opacity: .55;
+    transition: transform .25s cubic-bezier(.16,1,.3,1), opacity .2s;
+  }
+  .update-link:hover .update-link-go { transform: translate(2px, -2px); opacity: .85; }
+
   @keyframes rise {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: none; }
@@ -253,7 +288,7 @@ tailwind.config = {
       拥抱AI变革 · 数据主权 · 本地优先
     </h1>
     <p class="mt-5 max-w-2xl text-[15px] leading-relaxed text-slate-500 sm:text-base">
-      本地优先的成品软件，覆盖文档合稿、离线识别、语音处理与 AI 创作。
+      本地优先的成品软件，覆盖文档合稿、离线识别、内容创作与 AI 工具。
       推理在本机完成，数据不出设备，断网照常可用。
     </p>
 
@@ -315,7 +350,7 @@ tailwind.config = {
       <button class="filter-btn is-active" data-filter="all">全部</button>
       <button class="filter-btn" data-filter="ai">AI 工具</button>
       <button class="filter-btn" data-filter="offline">离线</button>
-      <button class="filter-btn" data-filter="voice">语音处理</button>
+      <button class="filter-btn" data-filter="create">内容创作</button>
       <button class="filter-btn" data-filter="doc">文档处理</button>
       <button class="filter-btn" data-filter="free">免费</button>
       <button class="filter-btn" data-filter="win">Windows</button>
@@ -385,7 +420,7 @@ tailwind.config = {
       </article>
 
       <!-- 02 心流写作 FlowWrite -->
-      <article class="product" data-tags="ai,offline,win" style="--accent:#c08a2e; --d:.06s">
+      <article class="product" data-tags="ai,create,offline,win" style="--accent:#c08a2e; --d:.06s">
         <!-- 整卡链接：点击进入产品页 -->
         <span class="card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -405,6 +440,7 @@ tailwind.config = {
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
               <button class="chip" data-chip-filter="ai">AI 工具</button>
+              <button class="chip" data-chip-filter="create">内容创作</button>
               <button class="chip" data-chip-filter="offline">离线</button>
               <button class="chip" data-chip-filter="win">Windows</button>
             </div>
@@ -478,7 +514,7 @@ tailwind.config = {
       </article>
 
       <!-- 04 Lovo -->
-      <article class="product" data-tags="voice,ai,offline,win" style="--accent:#5E81AC; --d:.14s">
+      <article class="product" data-tags="create,ai,offline,win" style="--accent:#5E81AC; --d:.14s">
         <!-- 整卡链接：点击进入产品页 -->
         <span class="card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -500,8 +536,8 @@ tailwind.config = {
               <span class="font-mono text-[11px] tracking-wide text-slate-400">Voice Toolbox</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
-              <button class="chip" data-chip-filter="voice">语音处理</button>
               <button class="chip" data-chip-filter="ai">AI 工具</button>
+              <button class="chip" data-chip-filter="create">内容创作</button>
               <button class="chip" data-chip-filter="offline">离线</button>
               <button class="chip" data-chip-filter="win">Windows</button>
             </div>
@@ -621,7 +657,7 @@ tailwind.config = {
       </article>
 
       <!-- 07 画语 -->
-      <article class="product" data-tags="ai,offline,win" style="--accent:#8b5cf6; --d:.26s">
+      <article class="product" data-tags="ai,create,offline,win" style="--accent:#8b5cf6; --d:.26s">
         <!-- 整卡链接：点击进入产品页 -->
         <span class="card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -657,6 +693,7 @@ tailwind.config = {
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
               <button class="chip" data-chip-filter="ai">AI 工具</button>
+              <button class="chip" data-chip-filter="create">内容创作</button>
               <button class="chip" data-chip-filter="offline">离线</button>
               <button class="chip" data-chip-filter="win">Windows</button>
             </div>
@@ -890,6 +927,26 @@ tailwind.config = {
         <span class="text-slate-300" aria-hidden="true">·</span>
         <span>发送邮件：</span>
         <a class="contact-mail" href="mailto:contact@cd-ii.com" title="点击给 contact@cd-ii.com 发送邮件">contact@cd-ii.com</a>
+      </div>
+
+      <!-- 软件更新历史：飞书文档，新标签打开 -->
+      <div class="mt-6 flex justify-center">
+        <a class="update-link"
+           href="https://test-cyzfl3ad01oc.feishu.cn/wiki/CWN2wYgmbi2PJ3k47hwcZuQMnec"
+           target="_blank" rel="noopener noreferrer"
+           title="在飞书文档中查看各软件的版本更新历史">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3.6 12a8.4 8.4 0 1 0 2.6-6.1"/>
+            <path d="M3.6 4.6V10H9"/>
+            <path d="M12 8.2v4.2l3 1.8"/>
+          </svg>
+          软件更新历史
+          <svg class="update-link-go" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </a>
       </div>
 
       <!-- 二维码：邮件 + 抖音 -->
