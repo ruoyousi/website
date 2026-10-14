@@ -238,8 +238,8 @@ footer{margin-top:90px;border-top:1px solid var(--border);padding:36px 24px 44px
       </div>
       <div data-reveal style="transition-delay:.15s">
         <div class="shot">
-          <img src="images/voice-ui.png" alt="Lovo 桌面界面 —— 声音角色 / 语音合成 / 语音识别" loading="lazy">
-          <div class="cap"><b>Lovo</b> · 桌面端：声音角色 / 语音合成 / 语音识别 / 许可证管理，本地推理一键操作。</div>
+          <img src="images/voice-ui.png" alt="Lovo 桌面界面 —— 声音角色 / 语音合成 / 语音识别 / 音频脚本" loading="lazy">
+          <div class="cap"><b>Lovo</b> · 桌面端：声音角色 / 语音合成 / 语音识别 / 音频脚本 / 设置 / 许可证管理，本地推理一键操作。</div>
         </div>
       </div>
     </div>
@@ -301,7 +301,11 @@ footer{margin-top:90px;border-top:1px solid var(--border);padding:36px 24px 44px
       <div class="feat" data-reveal style="transition-delay:.1s"><span class="f-icon">✨</span><h4>音色设计</h4><p>VoiceDesign 模型用一句话文字描述，即生成全新的目标音色，无需任何参考音频；也可用 CLI 的 design 子命令驱动。</p><span class="kbd">design --instruct</span></div>
       <div class="feat" data-reveal style="transition-delay:.15s"><span class="f-icon">🌐</span><h4>多语言</h4><p>中文、英文多语言输出，并提供日韩特色说话人（sohee / ono_anna），适配出海内容与多语种旁白需求。</p><span class="kbd">--language</span></div>
       <div class="feat" data-reveal><span class="f-icon">📄</span><h4>长文本自动分段</h4><p>超过 max-chars 的文本智能切分逐段合成再拼接，小说级长文、整章旁白直接喂入。</p><span class="kbd">--max-chars 200</span></div>
-      <div class="feat" data-reveal style="transition-delay:.05s"><span class="f-icon">⚡</span><h4>设备自动选择</h4><p>单一二进制，运行时优先 CUDA、不可用自动回退 CPU，无需区分构建版本。</p><span class="kbd">CUDA → CPU</span></div>
+      <div class="feat" data-reveal style="transition-delay:.05s"><span class="f-icon">🎬</span><h4>音频脚本生成</h4><p>桌面端调用大模型把小说文本改写成带 <span class="mono">[角色:情绪]</span> 标记的 TTS 脚本，一键质检格式、角色统一与情绪标注。</p><span class="kbd">AI 脚本 · 检查</span></div>
+      <div class="feat" data-reveal style="transition-delay:.1s"><span class="f-icon">🎭</span><h4>多角色剧本合成</h4><p>识别文本中的角色标记，按行解析、相邻同角色行合并成组，多角色台词拼接进同一个 WAV，有声书制作不再逐段手动切。</p><span class="kbd">[角色:情绪]</span></div>
+      <div class="feat" data-reveal style="transition-delay:.15s"><span class="f-icon">📈</span><h4>实时播放波形</h4><p>朗读试听时 48 频带频谱竖条随声跳动，音频能量与播放状态一目了然，不落盘即听即验。</p><span class="kbd">48-BAND WAVE</span></div>
+      <div class="feat" data-reveal><span class="f-icon">🗂️</span><h4>声音角色库</h4><p>预设 / 设计 / 克隆角色本地统一管理，新增、编辑、删除即点即存；每条角色可配测试文本，一键试听。</p><span class="kbd">SQLite · 本地</span></div>
+      <div class="feat" data-reveal><span class="f-icon">⚡</span><h4>设备自动选择</h4><p>单一二进制，运行时优先 CUDA、不可用自动回退 CPU，无需区分构建版本。</p><span class="kbd">CUDA → CPU</span></div>
       <div class="feat" data-reveal style="transition-delay:.1s"><span class="f-icon">🔌</span><h4>OpenAI 兼容 API</h4><p>POST /v1/audio/speech 请求体与官方一致，现有集成改个 base_url 即可指向本地。</p><span class="kbd">:8000/v1/audio/speech</span></div>
       <div class="feat" data-reveal style="transition-delay:.15s"><span class="f-icon">🎛️</span><h4>采样与输出可控</h4><p>贪心 / temperature 采样调节，WAV 输出；API 支持 8–96 kHz 采样率重采样。</p><span class="kbd">--greedy / --temperature</span></div>
       <div class="feat" data-reveal><span class="f-icon">🎧</span><h4>语音识别 (ASR)</h4><p>Qwen3-ASR 将音频转写为文本，自动检测语言，也可强制指定语言与自定义最大 token。</p><span class="kbd">asr --audio</span></div>
