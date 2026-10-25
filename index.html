@@ -140,12 +140,12 @@ tailwind.config = {
 
   .chip {
     display: inline-flex; align-items: center;
-    padding: .18rem .6rem;
+    padding: .16rem .5rem;
     border-radius: 999px;
     border: 1px solid #eaedf2;
     background: #fafbfc;
-    font-size: 11px;
-    line-height: 1.6;
+    font-size: 10px;
+    line-height: 1.55;
     color: #78859a;
     cursor: pointer;
     /* 浮在整卡链接覆盖层之上，点标签仍是筛选而不是跳转 */
@@ -205,6 +205,90 @@ tailwind.config = {
   }
   .download-btn:hover .download-btn-go { transform: translate(2px, -2px); }
 
+  /* ===== 命令行安装：代码块 ===== */
+  .code-block {
+    position: relative;
+    overflow-x: auto;
+    border-radius: .75rem;
+    background: #0F172A;
+    border: 1px solid rgba(15, 23, 42, .12);
+    padding: 1.15rem 1rem .85rem;
+    color: #E2E8F0;
+    font-family: "Cascadia Code", Consolas, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    line-height: 1.72;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .06);
+  }
+  .code-block code {
+    font: inherit;
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+  .code-block .cmd-flag { color: #7DD3FC; }
+  .code-block .cmd-str { color: #86EFAC; }
+  .code-block .cmd-punct { color: #64748B; }
+
+  /* 复制按钮：浮在代码块右上角 */
+  .copy-btn {
+    position: absolute;
+    top: .35rem; right: .35rem;
+    width: 26px; height: 26px;
+    display: grid; place-items: center;
+    border-radius: .5rem;
+    border: 1px solid rgba(148, 163, 184, .26);
+    background: rgba(15, 23, 42, .5);
+    color: #94A3B8;
+    cursor: pointer;
+    transition: color .18s, background-color .18s, border-color .18s, transform .18s;
+  }
+  .copy-btn:hover {
+    color: #E2E8F0;
+    background: rgba(15, 23, 42, .78);
+    border-color: rgba(148, 163, 184, .45);
+  }
+  .copy-btn:active { transform: scale(.94); }
+  .copy-btn:focus-visible { outline: 2px solid #38BDF8; outline-offset: 2px; }
+  .copy-btn.is-done {
+    color: #4ADE80;
+    border-color: rgba(74, 222, 128, .5);
+    background: rgba(22, 101, 52, .6);
+  }
+  .copy-btn svg { width: 14px; height: 14px; display: block; }
+
+  /* ===== 控制台截图外框 ===== */
+  .panel-shot {
+    position: relative;
+    border-radius: 0;
+    padding: 0;
+    background: none;
+    box-shadow:
+      0 14px 30px -18px rgba(15, 23, 42, .38),
+      0 46px 88px -46px rgba(15, 23, 42, .55);
+  }
+  /* 背后柔光：用发光代替生硬的描边框 */
+  .panel-shot::before {
+    content: "";
+    position: absolute;
+    inset: 10% -4% -6%;
+    border-radius: 50%;
+    background: radial-gradient(58% 58% at 50% 42%,
+                rgba(21, 80, 143, .16), rgba(79, 142, 247, .08) 55%, transparent 72%);
+    filter: blur(26px);
+    z-index: 0;
+  }
+  .panel-shot img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    box-shadow: 0 12px 28px -18px rgba(15, 23, 42, .42);
+  }
+
   /* ===== 底部联系状态栏 ===== */
   .contact-mail {
     color: #334155;
@@ -256,6 +340,21 @@ tailwind.config = {
     transition: transform .25s cubic-bezier(.16,1,.3,1), opacity .2s;
   }
   .update-link:hover .update-link-go { transform: translate(2px, -2px); opacity: .85; }
+
+  /* 仓库图标：GitHub 近黑、Gitee 品牌红 */
+  .update-link .repo-ico {
+    width: 15px; height: 15px;
+    flex: none;
+    transition: transform .25s cubic-bezier(.16,1,.3,1);
+  }
+  .update-link:hover .repo-ico { transform: scale(1.12); }
+  .update-link .repo-gh { color: #1F2328; }
+  .update-link .repo-gitee { color: #C71D23; }
+  .repo-label {
+    font-size: 13px;
+    color: #64748B;
+    letter-spacing: .02em;
+  }
 
   @keyframes rise {
     from { opacity: 0; transform: translateY(14px); }
@@ -309,22 +408,29 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- 软件下载入口：指向微云分享页，新标签打开 -->
-    <div class="mt-8">
-      <a class="download-btn" href="https://share.weiyun.com/Dt7vOxcm"
-         target="_blank" rel="noopener noreferrer" title="前往微云下载全部软件安装包">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3v12"/>
-          <path d="m7.5 10.5 4.5 4.5 4.5-4.5"/>
-          <path d="M4 17.5V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5"/>
-        </svg>
-        软件下载
-        <svg class="download-btn-go" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
-        </svg>
-      </a>
+    <!-- 控制台截图 + 命令行安装说明（左图右说明） -->
+    <div class="mt-10 grid gap-8 lg:grid-cols-2 lg:items-center">
+      <figure class="panel-shot">
+        <img src="images/control-panel.png" width="1624" height="1368" loading="lazy"
+             alt="本地优先软件控制面板：应用、服务、下载与模型统一管理，底部输出扫描日志">
+      </figure>
+
+      <div>
+        <h2 class="text-[19px] font-semibold tracking-tight text-slate-900">命令行一键安装</h2>
+        <p class="mt-2 text-[13.5px] leading-relaxed text-slate-500">
+          在 PowerShell 中粘贴下面任意一行命令即可完成安装；装好后用控制面板统一管理应用、服务与模型。
+        </p>
+
+        <p class="mt-5 font-mono text-[11px] tracking-[.14em] text-slate-400">默认安装目录</p>
+        <pre class="code-block mt-2"><button class="copy-btn" type="button" title="复制命令" aria-label="复制这条安装命令"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.2"/><path d="M5 15V5.6A1.6 1.6 0 0 1 6.6 4H15"/></svg></button><code>powershell -NoProfile -ExecutionPolicy Bypass -Command "<span class="cmd-flag">iwr</span> -Uri <span class="cmd-str">'https://gh-proxy.org/https://raw.githubusercontent.com/ruoyousi/localfirst-apps/master/install-localfirst-apps.ps1'</span> -OutFile <span class="cmd-str">'.\install-localfirst-apps.ps1'</span><span class="cmd-punct">;</span> .\install-localfirst-apps.ps1"</code></pre>
+
+        <p class="mt-4 font-mono text-[11px] tracking-[.14em] text-slate-400">指定安装目录（示例 E:\）</p>
+        <pre class="code-block mt-2"><button class="copy-btn" type="button" title="复制命令" aria-label="复制这条安装命令"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.2"/><path d="M5 15V5.6A1.6 1.6 0 0 1 6.6 4H15"/></svg></button><code>powershell -NoProfile -ExecutionPolicy Bypass -Command "<span class="cmd-flag">iwr</span> -Uri <span class="cmd-str">'https://gh-proxy.org/https://raw.githubusercontent.com/ruoyousi/localfirst-apps/master/install-localfirst-apps.ps1'</span> -OutFile <span class="cmd-str">'.\install-localfirst-apps.ps1'</span><span class="cmd-punct">;</span> .\install-localfirst-apps.ps1 <span class="cmd-str">E:\</span>"</code></pre>
+
+        <p class="mt-4 text-[13px] leading-relaxed text-slate-600">
+          安装完成后进入安装目录，双击 <span class="font-mono font-semibold text-slate-900">localfirst-apps\control-panel.exe</span> 打开控制面板，按需下载软件包或模型、启停服务。
+        </p>
+      </div>
     </div>
 
     <!-- 种子用户招募提示 -->
@@ -549,8 +655,8 @@ tailwind.config = {
           <span class="dot" aria-hidden="true"></span>小说与剧本，一键转多角色有声书
         </p>
         <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
-          语音合成、声音克隆、音色设计、语音识别（支持逐句时间轴强制对齐）四项基础能力，覆盖 10 种合成语言与 30 种识别语言；新增音频脚本生成（小说文本自动改写成带
-          <span class="font-mono">[角色:情绪]</span> 标记的 TTS 脚本并质检）与多角色剧本合成（台词按角色分组拼进同一音频），并支持朗读文本插入 <span class="font-mono">&lt;音效:名称&gt;</span> / <span class="font-mono">&lt;停顿:秒数&gt;</span> 标记、合成时自动拼接音效音频；配 48 频带实时波形与本地声音角色库；命令行、桌面界面与 OpenAI 兼容 HTTP API 三种入口共用同一套本地模型。
+          语音合成、声音克隆、音色设计、语音识别四项能力齐备，覆盖 10 种合成语言与 30 种识别语言；新增音频脚本生成（小说文本自动改写成带
+          <span class="font-mono">[角色:情绪]</span> 标记的 TTS 脚本）与多角色剧本合成，支持 <span class="font-mono">&lt;音效&gt;</span>、<span class="font-mono">&lt;停顿&gt;</span> 标记与逐句时间轴对齐；命令行、桌面与 OpenAI 兼容 API 三入口共用同一套本地模型。
         </p>
 
         <div class="mt-auto pt-5">
@@ -755,7 +861,7 @@ tailwind.config = {
           <span class="dot" aria-hidden="true"></span>让数据一目了然
         </p>
         <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
-          上传 Excel 或 CSV，三步生成交互式图表——柱状、折线、饼图、环形、雷达与组合图，支持左右双轴多指标对比；一键导出 PNG / JPG / SVG / PDF / HTML 或复制到剪贴板。免费、本地、双语。
+          上传 Excel 或 CSV，三步生成交互式图表——柱状、折线、饼图、环形、雷达与组合图，支持左右双轴多指标对比；一键导出 PNG / JPG / SVG / PDF / HTML。免费 · 本地 · 双语。
         </p>
 
         <div class="mt-auto pt-5">
@@ -763,61 +869,6 @@ tailwind.config = {
             <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
             <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
               不写公式、不学专业软件，把表格数据变成能放进报告的图表，覆盖日常办公与汇报的绝大多数场景。
-            </p>
-          </div>
-        </div>
-      </article>
-
-      <!-- 08 A股板块资金流 -->
-      <article class="product" data-tags="free,win" style="--accent:#e11d48; --d:.3s">
-        <!-- 整卡链接：点击进入产品页 -->
-        <span class="card-go" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
-          </svg>
-        </span>
-
-        <div class="flex items-start gap-4">
-          <div class="icon-box" title="A股板块资金流">
-            <!-- 应用真实图标（src-tauri/icons/icon.svg 内嵌矢量）：红渐变底 + 涨跌双箭头 -->
-            <svg viewBox="0 0 512 512" aria-hidden="true">
-              <defs>
-                <linearGradient id="brand-asff" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#f43f5e"/><stop offset="1" stop-color="#e11d48"/>
-                </linearGradient>
-              </defs>
-              <rect width="512" height="512" rx="96" fill="url(#brand-asff)"/>
-              <g transform="translate(64, 64)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M64 280 L64 120 L100 120 L64 60 L28 120 L64 120" stroke-width="28"/>
-                <path d="M176 60 L176 220 L212 220 L176 280 L140 220 L176 220" stroke-width="28" opacity="0.7"/>
-                <line x1="10" y1="170" x2="266" y2="170" stroke-width="16" opacity="0.4"/>
-              </g>
-            </svg>
-          </div>
-          <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="A-share-sector-fund-flow/index.html">A股板块资金流</a></h3>
-              <span class="font-mono text-[11px] tracking-wide text-slate-400">Sector Fund Flow</span>
-            </div>
-            <div class="mt-2 flex flex-wrap gap-1.5">
-              <button class="chip" data-chip-filter="free">免费</button>
-              <button class="chip" data-chip-filter="win">Windows</button>
-            </div>
-          </div>
-        </div>
-
-        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
-          <span class="dot" aria-hidden="true"></span>看清主力动向，把握板块先机
-        </p>
-        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
-          实时监控 A 股行业、概念、地域三大分类共 663 个板块的主力资金流向，每 5 秒自动刷新；折线图呈现 09:30–15:00 全程累计净流入流出，支持搜索与自选板块筛选。数据来自东方财富公开接口，免费使用。
-        </p>
-
-        <div class="mt-auto pt-5">
-          <div class="value-box rounded-r-lg px-3.5 py-2.5">
-            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
-            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
-              把「主力在买什么」变成一眼能看清的图表，盘中无需在多个软件间来回切换。仅作信息整理与可视化展示，不构成投资建议。
             </p>
           </div>
         </div>
@@ -863,7 +914,7 @@ tailwind.config = {
           <span class="dot" aria-hidden="true"></span>把散落的 AI 提示词，收进随身「纳戒」
         </p>
         <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
-          本地提示词库管理器：全文搜索、标签归类，<span class="font-mono">{{变量}}</span> 自动识别成表单、填完一键复制；数据只存本机 SQLite，不上传、不同步、断网可用；关闭即收进系统托盘，全局快捷键随时唤出，支持中英双语。
+          本地提示词库管理器：全文搜索、标签归类，<span class="font-mono">{{变量}}</span> 自动识别成表单、填完一键复制；数据只存本机 SQLite，不上传、断网可用；关闭即收进系统托盘，全局快捷键随时唤出，支持中英双语。
         </p>
 
         <div class="mt-auto pt-5">
@@ -876,58 +927,7 @@ tailwind.config = {
         </div>
       </article>
 
-      <!-- 11 字帖生成器 Copybook -->
-      <article class="product" data-tags="free,offline,win" style="--accent:#c53d2e; --d:.42s">
-        <!-- 整卡链接：点击进入产品页 -->
-        <span class="card-go" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
-          </svg>
-        </span>
-
-        <div class="flex items-start gap-4">
-          <div class="icon-box" title="字帖生成器 Copybook">
-            <!-- 品牌图标（落地页 logo-mark 同款）：红底 + 白色「字」 -->
-            <svg viewBox="0 0 64 64" aria-hidden="true">
-              <defs>
-                <linearGradient id="brand-cb" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#d4503f"/><stop offset="1" stop-color="#ae2e20"/>
-                </linearGradient>
-              </defs>
-              <rect width="64" height="64" rx="14" fill="url(#brand-cb)"/>
-              <text x="32" y="46" text-anchor="middle" font-size="38" fill="#fff"
-                    font-family="KaiTi, STKaiti, 'Songti SC', 'Microsoft YaHei', serif">字</text>
-            </svg>
-          </div>
-          <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="Copybook/index.html">字帖生成器</a></h3>
-              <span class="font-mono text-[11px] tracking-wide text-slate-400">Copybook</span>
-            </div>
-            <div class="mt-2 flex flex-wrap gap-1.5">
-              <button class="chip" data-chip-filter="free">免费</button>
-              <button class="chip" data-chip-filter="offline">离线</button>
-              <button class="chip" data-chip-filter="win">Windows</button>
-            </div>
-          </div>
-        </div>
-
-        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
-          <span class="dot" aria-hidden="true"></span>想练哪个字，一键生成练字帖
-        </p>
-        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
-          输入想练的汉字，几秒钟排出一份 A4 字帖：<strong>汉字贴</strong>（示范 + 描红，越写越淡）与<strong>笔顺贴</strong>（一笔一笔分解，标序号与笔画名）两种模式，内置九千多常用字标准笔顺；田字格 / 米字格 / 方格 / 空白格四种格子，描红颜色与浓度、字号格距、行列边距、拼音标注均可调，实时 SVG 预览所见即打印所得，可导出矢量 PDF 或直接打印；全程离线，输入内容不出本机。
-        </p>
-
-        <div class="mt-auto pt-5">
-          <div class="value-box rounded-r-lg px-3.5 py-2.5">
-            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
-            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
-              孩子学到哪课就练哪课的字，不必再四处搜「生字表字帖」，家长辅导、老师备课、书法练习一套搞定；免费且无广告，安装包约 10 MB，无需注册。
-            </p>
-          </div>
-        </div>
-      </article>
+      <!-- 08 A股板块资金流、11 字帖生成器 Copybook 已于 2026-10-25 下架，编号保留便于日后恢复 -->
 
       <!-- 12 表伴 TableBuddy -->
       <article class="product" data-tags="data,offline,win" style="--accent:#1D4ED8; --d:.46s">
@@ -975,7 +975,7 @@ tailwind.config = {
           <span class="dot" aria-hidden="true"></span>把 Excel 变成程序能直接调用的本地数据表
         </p>
         <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
-          本地数据工作台：拖入 CSV / Excel 即自动识别编码、推断列类型，建为 SQLite 物理数据表；组合筛选、行级增删改、逐列字段约束（必填 / 枚举 / 范围 / 正则 / 参照），并与源文件<strong>双向同步</strong>。开启数据服务后，内置 Web 服务把数据表开放为 <span class="font-mono">REST</span> 接口，也能把 HTML 存成看板应用托管访问，数据不出本机。
+          本地数据工作台：拖入 CSV / Excel 即自动识别编码、推断列类型，建为 SQLite 数据表；组合筛选、行级增删改、逐列字段约束，并与源文件<strong>双向同步</strong>。开启数据服务后，内置 Web 服务把数据表开放为 <span class="font-mono">REST</span> 接口，也能把 HTML 存成看板应用，数据不出本机。
         </p>
 
         <div class="mt-auto pt-5">
@@ -1043,19 +1043,30 @@ tailwind.config = {
         <a class="contact-mail" href="mailto:contact@cd-ii.com" title="点击给 contact@cd-ii.com 发送邮件">contact@cd-ii.com</a>
       </div>
 
-      <!-- 软件更新历史：飞书文档，新标签打开 -->
-      <div class="mt-6 flex justify-center">
+      <!-- 软件更新历史：开源仓库（GitHub / Gitee），新标签打开 -->
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <span class="repo-label">软件更新历史</span>
         <a class="update-link"
-           href="https://test-cyzfl3ad01oc.feishu.cn/wiki/CWN2wYgmbi2PJ3k47hwcZuQMnec"
+           href="https://github.com/ruoyousi/localfirst-apps"
            target="_blank" rel="noopener noreferrer"
-           title="在飞书文档中查看各软件的版本更新历史">
-          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M3.6 12a8.4 8.4 0 1 0 2.6-6.1"/>
-            <path d="M3.6 4.6V10H9"/>
-            <path d="M12 8.2v4.2l3 1.8"/>
+           title="在 GitHub 仓库中查看各软件的版本更新历史">
+          <svg class="repo-ico repo-gh" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
           </svg>
-          软件更新历史
+          GitHub
+          <svg class="update-link-go" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </a>
+        <a class="update-link"
+           href="https://gitee.com/yxming99/localfirst-apps"
+           target="_blank" rel="noopener noreferrer"
+           title="在 Gitee 仓库中查看各软件的版本更新历史">
+          <svg class="repo-ico repo-gitee" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.63c0 .327.266.592.593.592h5.63c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-4.15a.592.592 0 0 1-.592-.592v-1.482a.593.593 0 0 1 .593-.592h6.815c.327 0 .593.265.593.592v3.408a4 4 0 0 1-4 4H5.926a.593.593 0 0 1-.593-.593V9.778a4.444 4.444 0 0 1 4.445-4.444h8.296Z"/>
+          </svg>
+          Gitee
           <svg class="update-link-go" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
@@ -1063,24 +1074,6 @@ tailwind.config = {
         </a>
       </div>
 
-      <!-- 二维码：邮件 + 抖音 -->
-      <div class="mt-7 flex flex-wrap items-start justify-center gap-x-6 gap-y-5">
-        <div class="flex flex-col items-center gap-2.5">
-          <div class="rounded-2xl border border-slate-200/80 bg-white p-2.5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
-            <img src="images/contact-mailto.png" alt="扫码发送邮件至 contact@cd-ii.com" width="290" height="290"
-                 class="block h-[158px] w-[158px]" loading="lazy">
-          </div>
-          <span class="text-[12px] text-slate-400">扫码给我们发邮件</span>
-        </div>
-
-        <div class="flex flex-col items-center gap-2.5">
-          <div class="rounded-2xl border border-slate-200/80 bg-white p-2.5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
-            <img src="images/douyin.jpg" alt="扫码关注抖音私信沟通" width="1125" height="1125"
-                 class="block h-[158px] w-auto rounded-[10px]" loading="lazy">
-          </div>
-          <span class="text-[12px] text-slate-400">扫码关注私信沟通</span>
-        </div>
-      </div>
     </div>
   </footer>
 
@@ -1142,6 +1135,57 @@ tailwind.config = {
 
   // 初始化：按「全部」跑一遍，让 count 与实际产品数一致，避免硬编码写死
   apply('all');
+})();
+
+// ---- 命令行复制按钮 ----
+(function () {
+  var COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.2"/><path d="M5 15V5.6A1.6 1.6 0 0 1 6.6 4H15"/></svg>';
+  var DONE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>';
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    // 兜底：非安全上下文（如本地 file:// 预览）用 execCommand
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      if (ok) { resolve(); } else { reject(new Error('copy failed')); }
+    });
+  }
+
+  document.querySelectorAll('.code-block').forEach(function (pre) {
+    var btn = pre.querySelector('.copy-btn');
+    var code = pre.querySelector('code');
+    if (!btn || !code) { return; }
+
+    btn.addEventListener('click', function () {
+      // 取 code 的纯文本，剥掉高亮 span，还原成可直接粘贴的命令
+      var text = code.textContent.replace(/\s+/g, ' ').trim();
+      copyText(text).then(function () {
+        btn.classList.add('is-done');
+        btn.innerHTML = DONE_ICON;
+        btn.title = '已复制';
+        setTimeout(function () {
+          btn.classList.remove('is-done');
+          btn.innerHTML = COPY_ICON;
+          btn.title = '复制命令';
+        }, 1800);
+      }).catch(function () {
+        btn.title = '复制失败，请手动选中命令';
+      });
+    });
+  });
 })();
 </script>
 <!-- contact-me 提交表单按钮：位于右下角 knocket「联系我们」按钮上方

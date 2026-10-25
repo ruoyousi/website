@@ -460,7 +460,7 @@
     <div class="sec-head">
       <span class="kicker">Pricing</span>
       <h2>简单透明的定价</h2>
-      <p>免费版可下载体验，Pro 版一次性买断、无订阅、无年度续费。</p>
+      <p>免费版可先在官网安装体验，Pro 版一次性买断、无订阅、无年度续费。</p>
     </div>
     <div class="price-grid">
       <!-- 免费版 -->
@@ -482,7 +482,7 @@
             解析服务不可用（核心 OCR 需 Pro 授权）
           </li>
         </ul>
-        <a class="price-cta" href="#deploy">免费下载体验</a>
+        <a class="price-cta" href="https://cd-ii.com/" target="_blank" rel="noopener">官网安装说明</a>
       </div>
 
       <!-- Pro 版 -->
@@ -527,7 +527,7 @@
           <h3>下载解压软件安装包</h3>
           <p>发布包解压后保持如下结构：三个可执行文件与 <code>license.dat</code> 同目录，模型放到 <code>/models</code> 目录。</p>
           <div class="code-block">
-            <div class="code-head"><span>dist/</span><button class="copy-btn" data-copy="layout">复制</button></div>
+            <div class="code-head"><span>out/</span><button class="copy-btn" data-copy="layout">复制</button></div>
             <pre><code>license.dat
 offocr-cli.exe
 offocr-service.exe
@@ -561,7 +561,7 @@ offocr-ui.exe
           <p>一条命令启动本地识别服务：GPU 可用自动用 GPU，否则回退 CPU。</p>
           <div class="code-block">
             <div class="code-head"><span>Terminal</span><button class="copy-btn" data-copy="service">复制</button></div>
-            <pre><code>dist\offocr-service.exe --model-path models</code></pre>
+            <pre><code>out\offocr-service.exe --ocr-model-path models\PaddleOCR-VL --doclayout-model-path models\PP-DocLayoutV3_safetensors</code></pre>
           </div>
         </div>
       </div>
@@ -572,9 +572,9 @@ offocr-ui.exe
           <p>命令行上传图片 / PDF，导出 Markdown 或 Word；或双击 <code>offocr-ui.exe</code>，把文档拖进窗口解析。</p>
           <div class="code-block">
             <div class="code-head"><span>Terminal</span><button class="copy-btn" data-copy="cli">复制</button></div>
-            <pre><code>dist\offocr-cli.exe ocr test\demo.png --format md,docx
-dist\offocr-cli.exe check
-dist\offocr-ui.exe</code></pre>
+            <pre><code>out\offocr-cli.exe ocr test\demo.png --format md,docx
+out\offocr-cli.exe check
+out\offocr-ui.exe</code></pre>
           </div>
         </div>
       </div>
@@ -622,8 +622,8 @@ dist\offocr-ui.exe</code></pre>
   var snippets = {
     layout: 'license.dat\noffocr-cli.exe\noffocr-service.exe\noffocr-ui.exe\n/models',
     models: 'powershell -ExecutionPolicy Bypass -File .\\models\\download.ps1',
-    service: 'dist\\offocr-service.exe --model-path models',
-    cli: 'dist\\offocr-cli.exe ocr test\\demo.png --format md,docx\ndist\\offocr-cli.exe check\ndist\\offocr-ui.exe'
+    service: 'out\\offocr-service.exe --ocr-model-path models\\PaddleOCR-VL --doclayout-model-path models\\PP-DocLayoutV3_safetensors',
+    cli: 'out\\offocr-cli.exe ocr test\\demo.png --format md,docx\nout\\offocr-cli.exe check\nout\\offocr-ui.exe'
   };
   document.querySelectorAll('.copy-btn').forEach(function (btn) {
     btn.addEventListener('click', function () { copyText(snippets[btn.getAttribute('data-copy')] || '', btn); });
