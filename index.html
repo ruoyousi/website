@@ -40,6 +40,30 @@ tailwind.config = {
   }
   .page { position: relative; z-index: 1; }
 
+  /* ===== 顶部固定提示条（种子用户招募） ===== */
+  .notice-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(251,251,252,.97);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid rgba(226,232,240,.75);
+  }
+  @media (max-width: 640px) {
+    .notice-sticky .notice-card { padding: .7rem .85rem; gap: .6rem; }
+    .notice-sticky .notice-text { font-size: 12px; }
+  }
+
+  /* ===== 合作伙伴招募条 ===== */
+  .notice-partner {
+    border-color: rgba(217,119,6,.28) !important;
+    background: linear-gradient(180deg, rgba(255,251,235,.96), rgba(255,255,255,.9)) !important;
+  }
+  .notice-partner .notice-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
   /* ===== 筛选按钮 ===== */
   .filter-btn {
     padding: .42rem 1rem;
@@ -215,7 +239,7 @@ tailwind.config = {
     padding: 1.15rem 1rem .85rem;
     color: #E2E8F0;
     font-family: "Cascadia Code", Consolas, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 10.5px;
+    font-size: 9px;
     line-height: 1.72;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -370,8 +394,46 @@ tailwind.config = {
 
 <div class="page">
 
+  <!-- ================= 顶部固定提示条（合作伙伴招募 + 种子用户招募） ================= -->
+  <div class="notice-sticky">
+    <div class="mx-auto w-full max-w-6xl px-6 py-3">
+
+      <!-- 合作伙伴招募 -->
+      <div class="notice-partner notice-card mb-2 flex max-w-2xl items-center gap-3 rounded-xl border px-4 py-2" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
+        <span class="notice-icon flex h-7 w-7 flex-none items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white" aria-hidden="true">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17V7a2 2 0 0 1 2-2h3.2a2 2 0 0 1 1.6.8L11 7.2h4.6a2 2 0 0 1 2 2V17"/>
+            <path d="M3 17a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2"/>
+            <circle cx="8" cy="12" r="1.4"/>
+            <path d="m13 12 1.6 1.8L18 10.6"/>
+          </svg>
+        </span>
+        <p class="notice-text text-[13px] leading-relaxed text-slate-700">
+          邀销售推广软件的合作伙伴，轻松变现，长期收益！
+        </p>
+      </div>
+
+      <!-- 种子用户招募 -->
+      <div class="notice-seed notice-card flex max-w-2xl items-start gap-3.5 rounded-2xl border border-indigo-100 bg-white/80 px-4 py-3 sm:px-5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
+        <span class="notice-icon mt-0.5 flex h-8 w-8 flex-none items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white" aria-hidden="true">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="8" width="18" height="4" rx="1"/>
+            <path d="M12 8v13"/>
+            <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
+            <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+          </svg>
+        </span>
+        <p class="notice-text text-[13.5px] leading-relaxed text-slate-600">
+          诚邀您下载试用本产品。在试用期间，如您发现任何问题或有任何改进建议，欢迎向我们反馈。对于提出有价值反馈的前 5 名种子用户，我们将赠送
+          <strong class="font-semibold text-indigo-600">单设备永久许可证</strong>，感谢您的支持！
+        </p>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ================= HEADER ================= -->
-  <header class="mx-auto w-full max-w-6xl px-6 pt-20 pb-12 sm:pt-28 sm:pb-16">
+  <header class="mx-auto w-full max-w-6xl px-6 pt-8 pb-12 sm:pt-12 sm:pb-16">
     <div class="flex h-[3px] w-40 overflow-hidden rounded-full" aria-hidden="true">
       <span class="flex-1 bg-[#15508f]"></span>
       <span class="flex-1 bg-[#c08a2e]"></span>
@@ -416,7 +478,11 @@ tailwind.config = {
       </figure>
 
       <div>
-        <h2 class="text-[19px] font-semibold tracking-tight text-slate-900">命令行一键安装</h2>
+        <h2 class="text-[19px] font-semibold tracking-tight text-slate-900">本地优先软件控制台</h2>
+        <p class="mt-2 text-[13.5px] leading-relaxed text-slate-500">
+            一键快速下载本地 AI 模型和软件包、统一启停服务、集中管理本地应用、在线自更新。
+            用户无需复杂的技术性配置，开箱即用。
+        </p>
         <p class="mt-2 text-[13.5px] leading-relaxed text-slate-500">
           在 PowerShell 中粘贴下面任意一行命令即可完成安装；装好后用控制面板统一管理应用、服务与模型。
         </p>
@@ -433,22 +499,7 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- 种子用户招募提示 -->
-    <div class="mt-8 flex max-w-2xl items-start gap-3.5 rounded-2xl border border-indigo-100 bg-white/80 px-4 py-4 sm:px-5" style="box-shadow:0 1px 2px rgba(15,23,42,.04)">
-      <span class="mt-0.5 flex h-8 w-8 flex-none items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white" aria-hidden="true">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="8" width="18" height="4" rx="1"/>
-          <path d="M12 8v13"/>
-          <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
-          <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
-        </svg>
-      </span>
-      <p class="text-[13.5px] leading-relaxed text-slate-600">
-        诚邀您下载试用本产品。在试用期间，如您发现任何问题或有任何改进建议，欢迎向我们反馈。对于提出有价值反馈的前 5 名种子用户，我们将赠送
-        <strong class="font-semibold text-indigo-600">单设备永久许可证</strong>，感谢您的支持！
-      </p>
-    </div>
-  </header>
+    </header>
 
   <!-- ================= FILTER ================= -->
   <div class="mx-auto w-full max-w-6xl px-6">
