@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PixelForge — 本地离线的 AI 图像编辑桌面软件</title>
+<meta name="description" content="PixelForge 是本地离线、买断制的 AI 图像编辑/生成桌面软件。断网可用、数据不出本机、消费级显卡可跑，支持 PSD 分层输出。">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        ink: '#0f172a',
+        muted: '#64748b',
+        line: '#e2e8f0',
+        brand: '#2563eb',
+        bg: '#fafbfc'
+      },
+      maxWidth: { '8xl': '88rem' }
+    }
+  }
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+</style>
+</head>
+<body class="bg-bg text-ink antialiased">
+
+<!-- ===== 导航 ===== -->
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-line">
+  <div class="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <img src="icon.svg" alt="PixelForge 图标" class="w-6 h-6 shrink-0" width="24" height="24">
+      <span class="font-semibold text-[15px] tracking-tight">PixelForge</span>
+    </div>
+    <nav class="hidden sm:flex items-center gap-7 text-[13.5px] text-muted">
+      <a href="#pain" class="hover:text-ink transition">痛点</a>
+      <a href="#speed" class="hover:text-ink transition">性能</a>
+      <a href="#features" class="hover:text-ink transition">功能</a>
+    </nav>
+    <span class="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-[13px] font-semibold text-white shadow-sm ring-1 ring-brand/20">
+      买断 <span class="tabular-nums">¥499</span>
+    </span>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="mx-auto max-w-6xl px-6 pt-16 pb-10 sm:pt-24">
+  <div class="text-center max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-3.5 py-1.5 text-[12.5px] text-muted">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+      本地离线 · 买断制 · 数据不出本机
+    </div>
+    <h1 class="mt-6 text-4xl sm:text-5xl font-bold tracking-tight leading-[1.15]">
+      你的图，凭什么<br class="sm:hidden">先传到别人的服务器？
+    </h1>
+    <p class="mt-5 text-[16.5px] leading-relaxed text-muted">
+      PixelForge 是一款<strong class="text-ink font-semibold">本地离线的 AI 图像编辑桌面软件</strong>。
+      断网也能改图出图，原图和成图只存在你自己的电脑里，还能直接输出 PSD 分层文件。
+    </p>
+  </div>
+
+  <div class="mt-10 rounded-xl border border-line bg-white p-2 shadow-sm">
+    <video src="intro.mp4" poster="poster.jpg"
+           class="w-full rounded-lg aspect-video bg-slate-900"
+           autoplay muted loop playsinline controls preload="metadata"
+           aria-label="PixelForge 产品介绍视频：本地离线的 AI 图像编辑桌面软件"></video>
+  </div>
+</section>
+
+<!-- ===== 痛点 ===== -->
+<section id="pain" class="mx-auto max-w-6xl px-6 py-14">
+  <h2 class="text-2xl font-bold tracking-tight">云端 AI 画图的四个问题</h2>
+  <p class="mt-2 text-[15px] text-muted">这些问题，本地软件天然没有。</p>
+  <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[13px] font-semibold text-rose-500">隐私焦虑</div>
+      <p class="mt-2 text-[14px] leading-relaxed text-muted">原图要先上传到别人服务器，商业素材、私密照片都有泄露风险。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[13px] font-semibold text-rose-500">持续烧钱</div>
+      <p class="mt-2 text-[14px] leading-relaxed text-muted">按张计费或月租订阅，高频使用成本滚雪球，断网还用不了。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[13px] font-semibold text-rose-500">部署门槛高</div>
+      <p class="mt-2 text-[14px] leading-relaxed text-muted">自己装开源工具要配环境、管一堆文件，动不动就出错。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[13px] font-semibold text-rose-500">只给一张平图</div>
+      <p class="mt-2 text-[14px] leading-relaxed text-muted">导出的都是死 PNG，想分层精修得自己重画蒙版对位。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 性能 ===== -->
+<section id="speed" class="bg-white border-y border-line">
+  <div class="mx-auto max-w-6xl px-6 py-14">
+    <h2 class="text-2xl font-bold tracking-tight">桌面软件，出图不排队</h2>
+    <p class="mt-2 text-[15px] text-muted">推理全在本机跑，提交任务直接出图——不用等云端排期，也没有并发限制。</p>
+    <div class="mt-8 grid gap-5 sm:grid-cols-3">
+      <div class="rounded-xl border border-line bg-bg p-6">
+        <div class="text-4xl font-bold tracking-tight text-brand">约 70 秒</div>
+        <div class="mt-2 text-[14px] text-muted">4 步快速出图，一张图的完整耗时。本地直出，不排队。</div>
+      </div>
+      <div class="rounded-xl border border-line bg-bg p-6">
+        <div class="text-4xl font-bold tracking-tight text-brand">16 GB</div>
+        <div class="mt-2 text-[14px] text-muted">消费级显卡即可流畅运行，低显存优化不爆显存。</div>
+      </div>
+      <div class="rounded-xl border border-line bg-bg p-6">
+        <div class="text-4xl font-bold tracking-tight text-brand">¥499</div>
+        <div class="mt-2 text-[14px] text-muted">一次买断，永久使用。没有订阅，没有按张计费。</div>
+      </div>
+    </div>
+    <div class="mt-8 rounded-xl border border-line bg-bg p-6 flex flex-wrap items-center gap-x-10 gap-y-4 text-[14.5px]">
+      <div><span class="font-semibold">完全离线</span><span class="text-muted"> · 断网、内网、出差照样出图</span></div>
+      <div><span class="font-semibold">零云成本</span><span class="text-muted"> · 每次出图不花一分钱 API 费</span></div>
+      <div><span class="font-semibold">数据私有</span><span class="text-muted"> · 原图与成图不出本机</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 功能 ===== -->
+<section id="features" class="mx-auto max-w-6xl px-6 py-14">
+  <h2 class="text-2xl font-bold tracking-tight">功能一览</h2>
+  <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[14px] font-semibold">图生图编辑</div>
+      <p class="mt-1.5 text-[13.5px] leading-relaxed text-muted">输入图 + 提示词，风格化、指令式改图。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[14px] font-semibold">文生图</div>
+      <p class="mt-1.5 text-[13.5px] leading-relaxed text-muted">按提示词与分辨率直接生成。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[14px] font-semibold">PSD 分层输出</div>
+      <p class="mt-1.5 text-[13.5px] leading-relaxed text-muted">带图层树的 PSD，直接进 Photoshop 精修。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[14px] font-semibold">桌面软件</div>
+      <p class="mt-1.5 text-[13.5px] leading-relaxed text-muted">图库、任务队列、参数面板三栏布局，可视化操作。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[14px] font-semibold">任务队列</div>
+      <p class="mt-1.5 text-[13.5px] leading-relaxed text-muted">多任务排队管理、实时进度，不是黑窗命令行。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[14px] font-semibold">低显存优化</div>
+      <p class="mt-1.5 text-[13.5px] leading-relaxed text-muted">16GB 消费级显卡可跑，不爆显存。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[14px] font-semibold">极速出图</div>
+      <p class="mt-1.5 text-[13.5px] leading-relaxed text-muted">4 步约 70 秒，本地直出不排队。</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white p-5">
+      <div class="text-[14px] font-semibold">完全离线</div>
+      <p class="mt-1.5 text-[13.5px] leading-relaxed text-muted">不联网也能用，数据不出本机。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 定价 ===== -->
+<section id="pricing" class="bg-white border-t border-line">
+  <div class="mx-auto max-w-6xl px-6 py-14">
+    <div class="text-center max-w-2xl mx-auto">
+      <div class="text-[12px] font-semibold tracking-[0.18em] text-brand">PRICING</div>
+      <h2 class="mt-2.5 text-2xl font-bold tracking-tight">先免费试用，喜欢再买断</h2>
+      <p class="mt-2 text-[15px] text-muted">免费试用版永久可用；正式版一次买断、免费更新，无订阅、无年度续费。</p>
+    </div>
+
+    <div class="mt-9 grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+      <!-- 免费试用版 -->
+      <div class="rounded-2xl border border-line bg-bg p-7">
+        <h3 class="text-[16.5px] font-semibold">免费试用版</h3>
+        <p class="mt-1 text-[13.5px] text-muted">先玩起来，够喜欢再升级</p>
+        <p class="mt-4"><b class="text-4xl font-bold tracking-tight tabular-nums">¥0</b><span class="text-[14px] text-muted"> / 永久免费</span></p>
+        <ul class="mt-5 space-y-3 text-[14px]">
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-brand/10 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-brand" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg></span><span>三个功能各含一条示例提示词，可完整体验出图流程</span></li>
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-brand/10 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-brand" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg></span><span>本地离线推理，原图与成图不出本机</span></li>
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-brand/10 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-brand" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg></span><span>无订阅、无按张计费，装完即用</span></li>
+        </ul>
+      </div>
+
+      <!-- 正式版 -->
+      <div class="relative rounded-2xl border-2 border-brand bg-white p-7 shadow-sm">
+        <span class="absolute -top-3 right-6 rounded-full bg-brand px-3 py-1 text-[12px] font-semibold text-white shadow-sm">推荐</span>
+        <h3 class="text-[16.5px] font-semibold">正式版</h3>
+        <p class="mt-1 text-[13.5px] text-muted">一次买断，长期使用</p>
+        <p class="mt-4"><b class="text-4xl font-bold tracking-tight tabular-nums text-brand">¥499</b><span class="text-[14px] text-muted"> / 一次性买断</span></p>
+        <ul class="mt-5 space-y-3 text-[14px]">
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-brand/10 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-brand" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg></span><span>包含试用版全部功能，提示词不再受限</span></li>
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-brand/10 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-brand" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg></span><span>单台设备授权绑定，离线激活，无需注册账号</span></li>
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-brand/10 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-brand" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg></span><span>免费更新，后续小版本升级不再收费</span></li>
+          <li class="flex items-start gap-2.5"><span class="mt-0.5 w-4 h-4 shrink-0 rounded-full bg-brand/10 flex items-center justify-center"><svg class="w-2.5 h-2.5 text-brand" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.5 2.5L10 3.5"/></svg></span><span>断网、内网、出差照样出图，零云成本</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="mt-8 max-w-3xl mx-auto text-center text-[13.5px] leading-relaxed text-muted">
+      试用版与正式版数据通用，购买后无缝升级。
+    </p>
+    <p class="mt-4 text-center text-[13.5px] text-muted">下载与购买请前往软件商店首页。</p>
+  </div>
+</section>
+
+<!-- ===== 页脚（信息性） ===== -->
+<footer class="border-t border-line">
+  <div class="mx-auto max-w-6xl px-6 py-10 text-[13px] text-muted">
+    <div class="grid gap-8 sm:grid-cols-3">
+      <div>
+        <div class="font-semibold text-ink text-[14px] mb-2">系统要求</div>
+        <p>Windows 10/11 x64 · 16GB 显存消费级显卡 · 约 25GB 磁盘空间（含模型）</p>
+      </div>
+      <div>
+        <div class="font-semibold text-ink text-[14px] mb-2">运行方式</div>
+        <p>本地离线推理，无需联网，不依赖 Python 运行时。</p>
+      </div>
+      <div>
+        <div class="font-semibold text-ink text-[14px] mb-2">许可</div>
+        <p>软件本体按商业授权分发，采用买断制许可。</p>
+      </div>
+    </div>
+    <div class="mt-8 pt-6 border-t border-line flex flex-wrap items-center justify-between gap-3">
+      <span>PixelForge · 本地离线的 AI 图像编辑桌面软件</span>
+      <span>© 2026 PixelForge</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
