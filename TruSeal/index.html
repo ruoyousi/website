@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>印真 TruSeal · 给数字资产留下印记</title>
+<meta name="description" content="印真（TruSeal）是一款完全离线的数字资产签名工具：为图片和视频写入由你私钥生成的 C2PA 内容凭证，任何人拿到公钥都能离线验证内容是否被改动。" />
+<meta name="theme-color" content="#f7f9fc" />
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+<style>
+:root{
+  --bg:#f7f9fc;
+  --surface:#ffffff;
+  --ink:#0b1220;
+  --ink-soft:#273147;
+  --muted:#5b6478;
+  --line:rgba(15,23,42,.09);
+  --line-strong:rgba(15,23,42,.14);
+  --cyan:#06b6d4;
+  --violet:#8b5cf6;
+  --ok:#059669;
+  --bad:#e11d48;
+  --grad:linear-gradient(135deg,#06b6d4 0%,#6366f1 52%,#8b5cf6 100%);
+  --radius:22px;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.05),0 8px 24px -12px rgba(15,23,42,.12);
+  --shadow-lg:0 2px 4px rgba(15,23,42,.04),0 30px 70px -30px rgba(30,41,89,.28);
+  --max:1180px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Inter","Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+::selection{background:rgba(99,102,241,.18)}
+a{color:inherit}
+img{max-width:100%;display:block}
+h1,h2,h3,h4{margin:0;letter-spacing:-.02em;line-height:1.18}
+p{margin:0}
+
+/* ---------- ambient background ---------- */
+.aura{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.aura::before,.aura::after{content:"";position:absolute;border-radius:50%;filter:blur(90px)}
+.aura::before{width:760px;height:760px;left:-240px;top:-260px;background:radial-gradient(circle,rgba(6,182,212,.30),transparent 68%)}
+.aura::after{width:820px;height:820px;right:-300px;top:120px;background:radial-gradient(circle,rgba(139,92,246,.26),transparent 68%)}
+.aura .glow-3{position:absolute;width:620px;height:620px;left:38%;top:62%;border-radius:50%;filter:blur(110px);background:radial-gradient(circle,rgba(99,102,241,.16),transparent 70%)}
+
+/* ---------- nav ---------- */
+.nav{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  background:rgba(247,249,252,.72);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  max-width:var(--max);margin:0 auto;padding:12px 24px;
+  display:flex;align-items:center;gap:28px;
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:17px;letter-spacing:-.02em;flex:none}
+.brand img{width:30px;height:30px;border-radius:9px;box-shadow:0 6px 16px -6px rgba(99,102,241,.55)}
+.brand .en{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.02em}
+.brand .slogan{
+  margin-left:6px;padding-left:14px;border-left:1px solid var(--line);
+  font-size:12.5px;font-weight:400;letter-spacing:0;color:var(--muted);white-space:nowrap;
+}
+.nav-links{display:flex;gap:26px;margin-left:auto;font-size:14px;color:var(--muted)}
+.nav-links a{text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{
+  display:inline-flex;align-items:center;gap:8px;flex:none;white-space:nowrap;
+  padding:9px 16px;border-radius:11px;text-decoration:none;
+  font-size:14px;font-weight:600;color:#fff;background:var(--grad);
+  box-shadow:0 10px 24px -12px rgba(99,102,241,.75);
+  transition:transform .2s, box-shadow .2s;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 16px 30px -14px rgba(99,102,241,.85)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+section{padding:96px 0}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:#4f46e5;
+}
+.eyebrow::before{content:"";width:18px;height:2px;border-radius:2px;background:var(--grad)}
+.h2{font-size:clamp(28px,3.4vw,42px);margin-top:14px}
+.lead{margin-top:16px;max-width:640px;color:var(--muted);font-size:17px}
+.center{text-align:center}
+.center .lead{margin-left:auto;margin-right:auto}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 88px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1.18fr);gap:56px;align-items:center}
+h1{
+  font-size:clamp(38px,5.4vw,64px);font-weight:800;letter-spacing:-.035em;line-height:1.06;
+}
+h1 .grad{
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{margin-top:22px;font-size:16.5px;color:var(--muted);max-width:520px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;
+  background:rgba(255,255,255,.86);border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--ink-soft);
+  box-shadow:var(--shadow-sm);
+}
+.badge svg{width:14px;height:14px;color:#4f46e5}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  padding:13px 22px;border-radius:13px;text-decoration:none;font-size:15px;font-weight:650;
+  transition:transform .2s,box-shadow .2s,background .2s,border-color .2s;
+}
+.btn-primary{color:#fff;background:var(--grad);box-shadow:0 16px 34px -16px rgba(79,70,229,.8)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 22px 40px -18px rgba(79,70,229,.9)}
+.btn-ghost{color:var(--ink);background:rgba(255,255,255,.9);border:1px solid var(--line-strong);box-shadow:var(--shadow-sm)}
+.btn-ghost:hover{transform:translateY(-2px);border-color:rgba(99,102,241,.5);background:#fff}
+.btn svg{width:17px;height:17px}
+.hero-note{margin-top:18px;font-size:13px;color:var(--muted)}
+
+.video-card{
+  position:relative;border-radius:26px;overflow:hidden;background:#0b1220;
+  box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.14);
+  isolation:isolate;
+}
+.video-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:26px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
+}
+.video-card video{width:100%;aspect-ratio:16/9;display:block;object-fit:cover}
+.video-caption{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px 14px;background:#0b1220;color:rgba(255,255,255,.76);font-size:12.5px;
+}
+.video-caption .live{display:inline-flex;align-items:center;gap:7px}
+.video-caption .dot{width:7px;height:7px;border-radius:50%;background:#22d3ee;box-shadow:0 0 0 4px rgba(34,211,238,.16)}
+.video-caption .muted{color:rgba(255,255,255,.42)}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);
+}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+
+/* ---------- problem / steps ---------- */
+.step{padding:28px}
+.step .num{
+  display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;
+  background:rgba(99,102,241,.10);color:#4f46e5;font-weight:800;font-size:14px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.step h3{margin-top:18px;font-size:19px}
+.step p{margin-top:9px;color:var(--muted);font-size:14.5px}
+
+/* ---------- screenshots ---------- */
+.shots-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.shot{padding:18px 18px 20px}
+.shot-head{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:700;margin-bottom:14px}
+.shot-head .tag{
+  margin-left:auto;font-size:11.5px;font-weight:700;letter-spacing:.06em;padding:4px 9px;border-radius:999px;
+}
+.tag.ok{color:var(--ok);background:rgba(5,150,105,.10)}
+.tag.bad{color:var(--bad);background:rgba(225,29,72,.10)}
+.tag.mute{color:#4f46e5;background:rgba(99,102,241,.10)}
+.shot img{width:100%;border-radius:12px;border:1px solid var(--line);background:#f3f5f9}
+.shot figcaption{margin-top:12px;font-size:12.5px;color:var(--muted)}
+.shot-tall img{max-height:520px;width:auto;margin:0 auto;object-fit:contain}
+
+/* ---------- features ---------- */
+.features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.feature{padding:24px 22px}
+.feature .icon{
+  display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(6,182,212,.14),rgba(139,92,246,.14));color:#4338ca;
+}
+.feature .icon svg{width:19px;height:19px}
+.feature h3{margin-top:16px;font-size:16px}
+.feature p{margin-top:8px;font-size:13.5px;color:var(--muted);line-height:1.62}
+
+/* ---------- scenarios ---------- */
+.scenarios{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.scene{
+  padding:26px;border-radius:var(--radius);border:1px solid var(--line);
+  background:linear-gradient(165deg,#fff 0%,rgba(247,249,252,.9) 100%);box-shadow:var(--shadow-sm);
+}
+.scene .k{font-size:12px;font-weight:700;letter-spacing:.12em;color:#0891b2;text-transform:uppercase}
+.scene h3{margin-top:10px;font-size:18px}
+.scene p{margin-top:8px;color:var(--muted);font-size:14px}
+
+/* ---------- pricing ---------- */
+.pricing{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:40px}
+.plan{padding:32px;position:relative;display:flex;flex-direction:column}
+.plan.pro{border-color:rgba(99,102,241,.42);box-shadow:0 24px 60px -34px rgba(79,70,229,.5)}
+.plan.pro::before{
+  content:"";position:absolute;inset:-1px;border-radius:var(--radius);padding:1px;
+  background:var(--grad);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55;
+}
+.plan .name{font-size:15px;font-weight:700;color:var(--ink-soft);display:flex;align-items:center;gap:9px}
+.plan .rec{font-size:11px;font-weight:700;letter-spacing:.08em;color:#fff;background:var(--grad);padding:4px 9px;border-radius:999px}
+.price{display:flex;align-items:flex-end;gap:8px;margin-top:16px}
+.price b{font-size:52px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.price b.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.price span{padding-bottom:7px;color:var(--muted);font-size:13.5px}
+.plan .desc{margin-top:12px;color:var(--muted);font-size:14px;min-height:44px}
+.plan ul{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:11px;font-size:14px}
+.plan li{display:flex;gap:9px;align-items:flex-start;color:var(--ink-soft)}
+.plan li svg{width:16px;height:16px;flex:none;margin-top:3px;color:#4f46e5}
+.plan .cta{margin-top:26px}
+.pricing-note{margin-top:24px;font-size:13px;color:var(--muted);text-align:center}
+
+/* ---------- download ---------- */
+.download{
+  margin-top:0;border-radius:28px;overflow:hidden;position:relative;
+  background:linear-gradient(140deg,#0b1220 0%,#141b33 58%,#1d1440 100%);
+  color:#fff;padding:56px;box-shadow:var(--shadow-lg);
+}
+.download::before{
+  content:"";position:absolute;width:620px;height:620px;right:-200px;top:-260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(6,182,212,.30),transparent 66%);filter:blur(50px);
+}
+.download::after{
+  content:"";position:absolute;width:560px;height:560px;left:-180px;bottom:-300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(139,92,246,.32),transparent 66%);filter:blur(50px);
+}
+.download-inner{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center}
+.download h2{font-size:clamp(26px,3vw,36px)}
+.download p{margin-top:14px;color:rgba(255,255,255,.66);font-size:15px;max-width:520px}
+.download .hero-actions{margin-top:26px}
+.btn-light{background:#fff;color:#0b1220;box-shadow:0 16px 34px -18px rgba(0,0,0,.6)}
+.btn-light:hover{transform:translateY(-2px)}
+.btn-outline{color:#fff;border:1px solid rgba(255,255,255,.26);background:rgba(255,255,255,.06)}
+.btn-outline:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+.sys{
+  border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px 24px;
+  background:rgba(255,255,255,.05);backdrop-filter:blur(6px);
+}
+.sys h3{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.sys dl{margin:14px 0 0;display:grid;gap:13px}
+.sys div{display:flex;justify-content:space-between;gap:16px;font-size:13.5px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:13px}
+.sys div:last-child{border-bottom:0;padding-bottom:0}
+.sys dt{color:rgba(255,255,255,.46);flex:none}
+.sys dd{margin:0;text-align:right;color:rgba(255,255,255,.9);font-weight:500}
+
+/* ---------- footer ---------- */
+footer{padding:56px 0 44px;border-top:1px solid var(--line);margin-top:24px}
+.footer-inner{display:flex;flex-wrap:wrap;align-items:center;gap:22px;justify-content:space-between;font-size:13px;color:var(--muted)}
+.footer-brand{display:flex;align-items:center;gap:9px;font-weight:700;color:var(--ink)}
+.footer-brand img{width:24px;height:24px;border-radius:7px}
+.footer-links{display:flex;flex-wrap:wrap;gap:20px}
+.footer-links a{text-decoration:none;color:var(--muted);transition:color .2s}
+.footer-links a:hover{color:var(--ink)}
+
+/* ---------- reveal ---------- */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .65s cubic-bezier(.2,.65,.2,1),transform .65s cubic-bezier(.2,.65,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none;transition:none}
+  .btn,.nav-cta{transition:none}
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:1020px){
+  .brand .slogan{display:none}
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero-sub{max-width:none}
+  .features{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .download-inner{grid-template-columns:1fr;gap:32px}
+  .download{padding:40px}
+  .shots-grid{grid-template-columns:1fr}
+  .shot-tall img{max-height:none}
+}
+@media (max-width:820px){
+  .nav-links{display:none}
+  section{padding:72px 0}
+  .grid-3,.scenarios,.pricing{grid-template-columns:1fr}
+  .features{grid-template-columns:1fr}
+  h1{font-size:clamp(34px,9vw,48px)}
+}
+@media (max-width:560px){
+  .wrap,.nav-inner{padding-left:18px;padding-right:18px}
+  .hero{padding:48px 0 56px}
+  .video-caption{flex-direction:column;align-items:flex-start;gap:4px}
+  .plan{padding:26px}
+  .download{padding:30px}
+}
+</style>
+</head>
+<body>
+
+<div class="aura" aria-hidden="true"><span class="glow-3"></span></div>
+
+<!-- ================= NAV ================= -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top" aria-label="印真 TruSeal 首页">
+      <img src="assets/logo.svg" alt="" />
+      <span>印真 <span class="en">TruSeal</span></span>
+      <span class="slogan">给数字资产留下印记</span>
+    </a>
+    <nav class="nav-links" aria-label="主导航">
+      <a href="#how">工作原理</a>
+      <a href="#features">功能</a>
+      <a href="#scenes">适用场景</a>
+      <a href="#pricing">定价</a>
+      <a href="#get">获取</a>
+    </nav>
+    <a class="nav-cta" href="#get">
+      免费试用
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">C2PA · 离线签名</span>
+        <h1>给数字资产<br /><span class="grad">留下你的印记</span></h1>
+        <p class="hero-sub">
+          印真把一份由你私钥生成的内容凭证写进图片和视频。任何拿到公钥的人，
+          都能离线验证它有没有被改动过一个像素——不联网、不上传、不依赖第三方账号。
+        </p>
+        <div class="badges">
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>全程离线</span>
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.85 12.15 19 4l2 2-2 2 2 2-2 2-2-2"/></svg>密钥自持</span>
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M8 7h8M8 17h8"/></svg>像素级防篡改</span>
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.2"/><circle cx="15" cy="17" r="2.2"/></svg>C2PA 兼容</span>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="mailto:contact@cd-ii.com?subject=%E7%94%B3%E8%AF%B7%20TruSeal%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8&amp;body=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E7%94%B3%E8%AF%B7%20TruSeal%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8%E7%89%88%E3%80%82">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+            免费试用 5 次签名
+          </a>
+          <a class="btn btn-ghost" href="#pricing">查看定价</a>
+        </div>
+        <p class="hero-note">Windows 10 1803+ / 11 · 便携 ZIP 免安装 · 无需注册账号</p>
+      </div>
+
+      <div class="video-card">
+        <video src="intro.mp4" poster="assets/poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="印真 20 秒产品短片"></video>
+        <div class="video-caption">
+          <span class="live"><span class="dot" aria-hidden="true"></span>20 秒看懂印真</span>
+          <span class="muted">签名 → 验签 → 篡改即失败</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW ================= -->
+  <section id="how">
+    <div class="wrap">
+      <div class="center">
+        <span class="eyebrow">工作原理</span>
+        <h2 class="h2">三步，把「原件」变成可核验的事实</h2>
+        <p class="lead">
+          签名是写入一份与内容哈希绑定的凭证，验签是重新计算哈希并核对签名。改动一个字节，结论就会翻转。
+        </p>
+      </div>
+      <div class="grid-3" style="margin-top:44px">
+        <article class="card step">
+          <span class="num">01</span>
+          <h3>本地生成密钥</h3>
+          <p>Ed25519 或 ECDSA P-256，私钥加密存放在你自己的电脑上，可导出公钥与证书交给合作方核对。</p>
+        </article>
+        <article class="card step">
+          <span class="num">02</span>
+          <h3>拖入文件，开始签名</h3>
+          <p>支持 JPEG / PNG / MP4 / MOV。签名结果输出为副本，原文件保持不动，签名耗时通常在几毫秒。</p>
+        </article>
+        <article class="card step">
+          <span class="num">03</span>
+          <h3>任何人可离线验签</h3>
+          <p>校验内容完整性、签名有效性与证书有效期，给出「可信 / 未知签名者 / 已篡改 / 无效」四态结论。</p>
+        </article>
+      </div>
+
+      <div class="shots-grid" style="margin-top:28px">
+        <figure class="card shot reveal">
+          <div class="shot-head">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            签名
+            <span class="tag mute">4 ms</span>
+          </div>
+          <img src="assets/sign-panel.png" alt="印真签名界面：选择文件、选择密钥、开始签名" loading="lazy" />
+          <figcaption>选择文件 → 选择密钥 → 开始签名。签名成功后生成 <code>-signed</code> 副本。</figcaption>
+        </figure>
+
+        <figure class="card shot reveal">
+          <div class="shot-head">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9 12l2 2 4-4"/></svg>
+            验签
+            <span class="tag ok">可信</span>
+          </div>
+          <img src="assets/verify-ok.png" alt="印真验签结果：可信，展示签名者证书主体与公钥指纹" loading="lazy" />
+          <figcaption>原文未改动：内容完整、签名有效，并展示签名者主体与公钥指纹。</figcaption>
+        </figure>
+
+        <figure class="card shot reveal">
+          <div class="shot-head">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+            验签
+            <span class="tag bad">已篡改</span>
+          </div>
+          <img src="assets/verify-tampered.png" alt="印真验签结果：已篡改，内容哈希与清单不匹配" loading="lazy" />
+          <figcaption>改动一个字节：内容哈希与清单不匹配，结论立即变为「已篡改」。</figcaption>
+        </figure>
+
+        <figure class="card shot reveal">
+          <div class="shot-head">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+            审计日志
+            <span class="tag mute">本地留痕</span>
+          </div>
+          <img src="assets/ui-audit-filled.png" alt="印真审计日志页面，记录签名与验签结果" loading="lazy" />
+          <figcaption>签名、验签与密钥操作自动记录在本机，可按动作、结果与时间筛选并导出 CSV。</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FEATURES ================= -->
+  <section id="features">
+    <div class="wrap">
+      <div class="center">
+        <span class="eyebrow">核心能力</span>
+        <h2 class="h2">不联网的签名工具，也能给出可核对的结论</h2>
+      </div>
+      <div class="features" style="margin-top:44px">
+        <article class="card feature reveal">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg></span>
+          <h3>全程离线</h3>
+          <p>签名、验签、密钥与日志都在本机完成，不联网、不上传原文件、无遥测。</p>
+        </article>
+        <article class="card feature reveal">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.6 6.6L21 9.3l-5 4.6 1.3 6.9L12 17.6 6.7 20.8 8 13.9 3 9.3l6.4-.7z"/></svg></span>
+          <h3>像素级硬绑定</h3>
+          <p>内容哈希写入清单，文件被改动哪怕一个像素，验签立即失败。</p>
+        </article>
+        <article class="card feature reveal">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.85 12.15 19 4l2 2-2 2 2 2-2 2-2-2"/></svg></span>
+          <h3>密钥自持</h3>
+          <p>密钥在你自己的电脑上生成并加密存储，不依赖第三方账号或平台。</p>
+        </article>
+        <article class="card feature reveal">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.2"/><circle cx="15" cy="17" r="2.2"/></svg></span>
+          <h3>标准可迁移</h3>
+          <p>输出 C2PA 兼容清单，支持 C2PA 的软件可直接读取其中的签名信息。</p>
+        </article>
+        <article class="card feature reveal">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H5a2 2 0 0 0-2 2v5M14 3h5a2 2 0 0 1 2 2v5M21 14v5a2 2 0 0 1-2 2h-5M3 14v5a2 2 0 0 0 2 2h5"/><circle cx="12" cy="12" r="3.2"/></svg></span>
+          <h3>结论直白</h3>
+          <p>四态结论配合图标与颜色，展示签名者指纹与证书信息，便于线下核对。</p>
+        </article>
+        <article class="card feature reveal">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
+          <h3>自动留痕</h3>
+          <p>本地审计日志记录签名、验签与密钥操作，可筛选、可导出，不写入云端。</p>
+        </article>
+        <article class="card feature reveal">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6 4 4 6-7"/><path d="M4 21h16"/></svg></span>
+          <h3>命令行验签免费</h3>
+          <p><code>truseal-cli verify &lt;文件&gt; --key &lt;公钥&gt;</code>，任何人、任何版本均可免费核验。</p>
+        </article>
+        <article class="card feature reveal">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span>
+          <h3>便携免安装</h3>
+          <p>解压即用，不写系统目录、不改注册表、不留后台服务与开机启动项。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCENES ================= -->
+  <section id="scenes">
+    <div class="wrap">
+      <div class="center">
+        <span class="eyebrow">适用场景</span>
+        <h2 class="h2">作品、证据、AI 内容，同一套凭证</h2>
+      </div>
+      <div class="scenarios" style="margin-top:44px">
+        <article class="scene reveal">
+          <span class="k">作品交付</span>
+          <h3>摄影师与设计师</h3>
+          <p>交付作品集时附带签名副本，客户与平台可核对哪一份是最初交付的原始文件。</p>
+        </article>
+        <article class="scene reveal">
+          <span class="k">证据归档</span>
+          <h3>合同与影像存证</h3>
+          <p>合同照片、现场视频在归档时签名，后续核验只需公钥，无需再信任存储环境。</p>
+        </article>
+        <article class="scene reveal">
+          <span class="k">内容标识</span>
+          <h3>AI 生成内容</h3>
+          <p>为生成内容写入可核验的来源记录，满足对透明标识与来源追溯的要求。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRICING ================= -->
+  <section id="pricing">
+    <div class="wrap">
+      <div class="center">
+        <span class="eyebrow">版本与定价</span>
+        <h2 class="h2">先用 5 次，确认好用再买断</h2>
+        <p class="lead">验签、密钥管理、审计日志与命令行核验始终可用；付费只影响新增签名的次数。</p>
+      </div>
+
+      <div class="pricing">
+        <article class="card plan reveal">
+          <div class="name">免费试用版</div>
+          <div class="price"><b>￥0</b><span>无需许可证</span></div>
+          <p class="desc">适合先验证流程是否满足你的交付与归档方式。</p>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>累计 5 次文件签名（失败不计入）</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>离线验签不限次数</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>密钥管理与公钥、证书导出</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>审计日志与 CSV 导出</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>命令行验签免费、无限制</li>
+          </ul>
+          <a class="btn btn-ghost cta" href="mailto:contact@cd-ii.com?subject=%E7%94%B3%E8%AF%B7%20TruSeal%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8">申请免费试用</a>
+        </article>
+
+        <article class="card plan pro reveal">
+          <div class="name">Pro<span class="rec">一次买断</span></div>
+          <div class="price"><b class="grad">￥299</b><span>不按年订阅</span></div>
+          <p class="desc">为持续产出与交付准备，签名次数不再受限。</p>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>文件签名不限次数</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>离线验签不限次数</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>设备绑定的离线许可证</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>无需联网激活，不采集使用数据</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>命令行验签继续免费开放</li>
+          </ul>
+          <a class="btn btn-primary cta" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%20TruSeal%20Pro%20%C2%A5299&amp;body=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E8%B4%AD%E4%B9%B0%20TruSeal%20Pro%20%E7%89%88%EF%BC%88%C2%A5299%20%E4%B8%80%E6%AC%A1%E4%B9%B0%E6%96%AD%EF%BC%89%E3%80%82">购买 Pro ￥299</a>
+        </article>
+      </div>
+
+      <p class="pricing-note">
+        许可证过期后不允许新增签名，但不影响验签、查看审计、导出公钥与证书及设置。Pro 为一次买断，不按年订阅。
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= GET ================= -->
+  <section id="get">
+    <div class="wrap">
+      <div class="download">
+        <div class="download-inner">
+          <div>
+            <span class="eyebrow" style="color:#67e8f9">获取印真</span>
+            <h2 style="margin-top:14px">解压即用，<br />不写系统、不留后台</h2>
+            <p>
+              分发为便携 ZIP，无需安装器。填写邮件申请免费试用版或购买 Pro，
+              我们会回复下载地址与对应的离线许可证。
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-light" href="mailto:contact@cd-ii.com?subject=%E7%94%B3%E8%AF%B7%20TruSeal%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8&amp;body=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E7%94%B3%E8%AF%B7%20TruSeal%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8%E7%89%88%EF%BC%88Windows 10%2F11%EF%BC%89%E3%80%82">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/></svg>
+                申请免费试用
+              </a>
+              <a class="btn btn-outline" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%20TruSeal%20Pro%20%C2%A5299">
+                购买 Pro 许可证
+              </a>
+            </div>
+          </div>
+
+          <aside class="sys">
+            <h3>运行环境</h3>
+            <dl>
+              <div><dt>操作系统</dt><dd>Windows 10 1803+ / Windows 11</dd></div>
+              <div><dt>运行时</dt><dd>系统已安装的 WebView2</dd></div>
+              <div><dt>分发形式</dt><dd>便携 ZIP，解压即用</dd></div>
+              <div><dt>支持格式</dt><dd>JPEG / PNG / MP4 / MOV</dd></div>
+              <div><dt>网络</dt><dd>签名与验签均不需要联网</dd></div>
+              <div><dt>命令行</dt><dd>truseal-cli verify</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </div>
+
+      <div style="margin-top:36px;text-align:center;font-size:13.5px;color:var(--muted)">
+        需要合作、批量授权或定制支持？<a href="mailto:contact@cd-ii.com" style="color:#4f46e5;text-decoration:none;font-weight:600">contact@cd-ii.com</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <img src="assets/logo.svg" alt="" />
+      印真 TruSeal
+      <span style="font-weight:400;color:var(--muted)">· 给数字资产留下印记</span>
+    </div>
+    <nav class="footer-links" aria-label="页脚链接">
+      <a href="mailto:contact@cd-ii.com">contact@cd-ii.com</a>
+      <a href="https://www.cd-ii.com" target="_blank" rel="noopener">www.cd-ii.com</a>
+      <span>© 2026 印真 TruSeal</span>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var nodes = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    nodes.forEach(function (n) { n.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+  nodes.forEach(function (n) { io.observe(n); });
+})();
+</script>
+
+</body>
+</html>
