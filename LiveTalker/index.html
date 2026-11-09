@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>口播数字人 LiveTalker — 本地生成的口播视频工作台</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml" />
+<meta name="description" content="口播数字人 LiveTalker：一张照片加一段录音，本地生成口播视频的 Windows 桌面工作台。三种生成引擎适配照片口播、视频换口型、生动口播；批量任务、实时进度、随停随取；完全离线，数据不出本机。免费试用，￥299 一次买断。" />
+<style>
+:root{
+  --bg:#f5f9ff; --surface:#ffffff; --surface2:#eef5ff;
+  --border:#e2e8f0; --fg:#0f172a; --dim:#64748b; --faint:#94a3b8;
+  --brand:#0078d4; --brand-soft:rgba(0,120,212,.12);
+  --accent:#0a3f8f; --accent-soft:rgba(10,63,143,.10);
+  --grad:linear-gradient(120deg,#0a3f8f,#0078d4 55%,#0e93e2);
+  --ok:#16a34a; --radius:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  line-height:1.7; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-weight:700;letter-spacing:.3px}
+img{display:block;max-width:100%}
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(245,249,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;gap:24px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.brand .logo{width:30px;height:30px;border-radius:8px;overflow:hidden;display:block;box-shadow:0 2px 8px rgba(0,120,212,.25)}
+.brand .en{font-size:13px;color:var(--dim);font-weight:400;letter-spacing:.02em}
+.nav-links{display:flex;gap:22px;margin-left:auto;font-size:14px;color:var(--dim)}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:var(--brand)}
+/* ---------- hero ---------- */
+.hero{position:relative;padding:92px 0 40px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-20%;background:
+  radial-gradient(600px 360px at 18% 8%,rgba(0,120,212,.10),transparent 70%),
+  radial-gradient(520px 320px at 85% 30%,rgba(14,147,226,.08),transparent 70%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center;position:relative}
+.hero h1{font-size:46px;line-height:1.25;letter-spacing:.5px}
+.hero h1 .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{margin:22px 0 6px;font-size:17px;color:var(--dim)}
+.hero .lead b{color:var(--fg);font-weight:600}
+.hero .tagline{margin-top:8px;font-size:14px;color:var(--faint);max-width:520px}
+.cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:12px;font-size:15px;font-weight:500;transition:transform .15s,box-shadow .2s;border:none;cursor:pointer}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--grad);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(0,120,212,.35)}
+.btn-ghost{background:var(--surface);color:var(--fg);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+/* window mock frame */
+.prod-shot{max-width:1000px;margin:0 auto}
+.shot-clean{border-radius:var(--radius);overflow:hidden;background:var(--surface);box-shadow:0 24px 60px rgba(10,63,143,.14)}
+.shot-clean img{width:100%;display:block}
+.mock{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);overflow:hidden;box-shadow:0 24px 60px rgba(10,63,143,.14)}
+.mock-top{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--border);background:var(--surface)}
+.mock-top .dots{display:flex;gap:6px}
+.mock-top .dots i{width:9px;height:9px;border-radius:50%;background:var(--border)}
+.mock-top .dots i:first-child{background:#7cc4f4}
+.mock-top .dots i:nth-child(2){background:#fcd34d}
+.mock-top .dots i:nth-child(3){background:#86efac}
+.mock-top span{margin-left:8px;font-size:12px;color:var(--faint)}
+.mock img,.mock video{width:100%;display:block}
+.mock video{aspect-ratio:16/9;background:#eef5ff}
+/* ---------- sections ---------- */
+.section{padding:84px 0}
+.sec-head{margin-bottom:44px;max-width:660px}
+.sec-head .eyebrow{color:var(--brand);font-size:13px;letter-spacing:.14em;margin-bottom:10px;font-weight:600}
+.sec-head h2{font-size:30px;line-height:1.35}
+.sec-head p{margin-top:12px;color:var(--dim);font-size:15px}
+.sec-head.center{max-width:660px;margin:0 auto 44px;text-align:center}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 22px;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--brand);transform:translateY(-3px)}
+.card .ico{width:44px;height:44px;border-radius:12px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.card .ico svg{width:22px;height:22px;stroke:var(--brand)}
+.card h3{font-size:18px;margin-bottom:8px}
+.card p{font-size:13.5px;color:var(--dim)}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.feature{display:flex;gap:16px;padding:22px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);transition:border-color .2s}
+.feature:hover{border-color:var(--accent)}
+.feature .ico{width:40px;height:40px;flex-shrink:0;border-radius:11px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}
+.feature .ico svg{width:20px;height:20px;stroke:var(--accent)}
+.feature h3{font-size:16.5px;margin-bottom:6px}
+.feature p{font-size:13.5px;color:var(--dim)}
+/* engines */
+.eng-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.eng-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:30px 26px;transition:border-color .2s,transform .2s}
+.eng-card:hover{border-color:var(--brand);transform:translateY(-3px)}
+.eng-card .ico{width:48px;height:48px;border-radius:13px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.eng-card .ico svg{width:24px;height:24px;stroke:var(--brand)}
+.eng-card h3{font-size:18px;margin-bottom:10px}
+.eng-card p{font-size:13.5px;color:var(--dim)}
+.eng-card .tag{display:inline-block;margin-top:16px;font-size:12px;color:var(--brand);background:var(--brand-soft);padding:4px 14px;border-radius:16px}
+/* privacy */
+.privacy{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px 44px;display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center}
+.privacy .shield{width:56px;height:56px;border-radius:15px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center}
+.privacy .shield svg{width:28px;height:28px;stroke:var(--brand)}
+.privacy h3{font-size:20px;margin-bottom:8px}
+.privacy p{color:var(--dim);font-size:14px}
+.privacy .pills{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.pill{font-size:12.5px;color:var(--dim);border:1px solid var(--border);background:var(--surface2);padding:4px 12px;border-radius:20px}
+/* pricing */
+.pricing{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:880px;margin:0 auto}
+.plan{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:34px 30px;display:flex;flex-direction:column;transition:border-color .2s}
+.plan:hover{border-color:var(--brand)}
+.plan.pro{border-color:var(--brand);box-shadow:0 20px 60px rgba(0,120,212,.14)}
+.plan .name{font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px}
+.plan .name .rec{font-size:12px;color:#fff;background:var(--grad);padding:3px 12px;border-radius:14px;font-weight:600}
+.plan .price{margin:18px 0 6px;font-size:40px;font-weight:800;letter-spacing:.5px}
+.plan .price b.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.plan .price span{font-size:14px;color:var(--faint);font-weight:400;margin-left:10px}
+.plan .desc{font-size:13.5px;color:var(--dim);margin-bottom:18px}
+.plan ul{list-style:none;display:grid;gap:11px;margin-bottom:26px}
+.plan li{display:flex;gap:10px;font-size:13.5px;color:var(--fg)}
+.plan li svg{width:17px;height:17px;stroke:var(--ok);flex-shrink:0;margin-top:3px}
+.plan .btn{margin-top:auto;justify-content:center}
+.pricing-note{margin-top:24px;text-align:center;font-size:13px;color:var(--faint)}
+/* get */
+.get{background:var(--grad);border-radius:var(--radius);padding:56px 44px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center;color:#fff}
+.get h2{font-size:30px}
+.get p{margin-top:12px;color:rgba(255,255,255,.85);font-size:14.5px;max-width:560px}
+.get .pills{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.get .pill{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff}
+.get-actions{display:flex;flex-direction:column;gap:12px}
+.btn-light{background:#fff;color:var(--accent)}
+.btn-light:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(0,0,0,.18)}
+.btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.55)}
+.btn-outline:hover{background:rgba(255,255,255,.12)}
+/* contact */
+.contact{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px 44px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}
+.contact h3{font-size:20px;margin-bottom:8px}
+.contact p{color:var(--dim);font-size:14px}
+.contact-mail{display:inline-block;margin-top:16px;color:var(--brand);font-size:16px;font-weight:600;border-bottom:1px dashed var(--brand);padding-bottom:2px}
+.contact-mail:hover{opacity:.85}
+.contact .cta{margin-top:0}
+/* footer */
+.footer{border-top:1px solid var(--border);padding:34px 0;color:var(--faint);font-size:13px}
+.footer-inner{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footer a{color:var(--dim)}
+.footer a:hover{color:var(--brand)}
+/* reveal */
+[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+[data-reveal].shown{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}[data-reveal]{opacity:1;transform:none;transition:none}}
+/* ---------- responsive ---------- */
+@media(max-width:980px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero h1{font-size:36px}
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .eng-grid{grid-template-columns:1fr}
+  .pricing{grid-template-columns:1fr}
+  .get{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .nav-links{display:none}
+  .brand .en{display:none}
+  .hero{padding:64px 0 32px}
+  .hero h1{font-size:30px}
+  .grid4,.grid2{grid-template-columns:1fr}
+  .privacy{grid-template-columns:1fr;padding:28px 24px;text-align:center;justify-items:center}
+  .contact{grid-template-columns:1fr;padding:28px 24px;text-align:center;justify-items:center}
+  .contact .cta{justify-content:center}
+  .get{padding:40px 24px}
+  .section{padding:60px 0}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#top">
+      <img class="logo" src="logo.svg" alt="LiveTalker" />
+      <span>口播数字人 LiveTalker <span class="en">本地生成的口播视频工作台</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#core">核心能力</a>
+      <a href="#engines">三种引擎</a>
+      <a href="#features">功能清单</a>
+      <a href="#local">本地优先</a>
+      <a href="#pricing">版本与定价</a>
+      <a href="#contact">联系</a>
+    </div>
+  </div>
+</nav>
+
+<section class="section" id="product" style="padding-top:36px">
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">PRODUCT</div>
+      <h2>照片、声音、任务队列，一站完成</h2>
+      <p>资产库集中管理素材，三种生成引擎互相独立，批量任务排队出片，生成结果自动归档。</p>
+    </div>
+    <div class="prod-shot" data-reveal>
+      <div class="shot-clean">
+        <img src="screenshot.png" alt="口播数字人 LiveTalker 主界面" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<header class="hero" id="top">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <h1>让照片里的<br /><span class="hl">人，开口说话</span></h1>
+        <p class="lead">一张人物照片，一段录音，<b>本地生成口播视频</b>。新闻播报、产品介绍、课程讲解，不用出镜、不用棚拍，素材和成片都留在你自己的电脑上。</p>
+        <p class="tagline">三种生成引擎适配不同素材与场景；批量任务、实时进度、随停随取；全程离线，数据不出本机。</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="mailto:contact@cd-ii.com?subject=%E7%94%B3%E8%AF%B7%20LiveTalker%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8&amp;body=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E7%94%B3%E8%AF%B7%20LiveTalker%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8%E7%89%88%EF%BC%88Windows%EF%BC%89%E3%80%82">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            申请免费试用
+          </a>
+          <a class="btn btn-ghost" href="#core">了解核心能力</a>
+        </div>
+      </div>
+      <div class="mock" data-reveal>
+        <div class="mock-top">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <span>intro.mp4 · 20s</span>
+        </div>
+        <video controls preload="metadata" playsinline>
+          <source src="intro.mp4" type="video/mp4" />
+          您的浏览器不支持视频播放，请升级后重试。
+        </video>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="core">
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">CORE</div>
+      <h2>四件核心的事，做到极致</h2>
+      <p>不堆功能，只把「一张照片、一段声音，稳定出一条口播视频」这件事做完整。</p>
+    </div>
+    <div class="grid4">
+      <div class="card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M5 19c1.5-3 3.5-4 4-4s2.5 1 4 4"/><path d="M14 10h5M14 13h3"/></svg></div>
+        <h3>照片 + 声音 = 视频</h3>
+        <p>选一张人物照片、配一段驱动录音，一条口播视频直接生成；横版竖版都支持，适配口播与短视频场景。</p>
+      </div>
+      <div class="card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="7" height="16" rx="2"/><rect x="15" y="4" width="7" height="16" rx="2"/><path d="M9.5 12h5"/><path d="m13 9.5 2.5 2.5-2.5 2.5"/></svg></div>
+        <h3>三种生成引擎</h3>
+        <p>照片口播、视频换口型、生动口播三条管线互相独立，按素材与效果自由选择，参数互不串扰。</p>
+      </div>
+      <div class="card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg></div>
+        <h3>批量任务队列</h3>
+        <p>多任务排队自动出片，实时进度与输出日志全程可见；生成中随时停止，不想要的记录一键删除。</p>
+      </div>
+      <div class="card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <h3>完全离线</h3>
+        <p>推理与素材全在本机，不连接任何外部服务器；人像、声音、成片不出电脑，断网照常用。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="engines">
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">ENGINES</div>
+      <h2>三种生成引擎，按素材选管线</h2>
+      <p>同一个工作台里的三条独立管线，参数各自保存，切页签互不串扰。</p>
+    </div>
+    <div class="eng-grid">
+      <div class="eng-card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="2"/><path d="M5 19c1.5-3 3-4 3.5-4s2 1 3.5 4"/><path d="M14 10h5M14 13.5h3"/></svg></div>
+        <h3>照片口播</h3>
+        <p>单张人物照片生成完整口播视频，从面部特写到全身景别都支持；眨眼方式可选不眨眼、随机或固定间隔。</p>
+        <span class="tag">适合新闻播报 · 讲解视频</span>
+      </div>
+      <div class="eng-card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="16" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg></div>
+        <h3>视频换口型</h3>
+        <p>给一段人物视频或一张照片换上录音对应的口型，音画精准同步；支持底图逐帧驱动，长片同样稳定。</p>
+        <span class="tag">适合配音翻译 · 二次创作</span>
+      </div>
+      <div class="eng-card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2"/><path d="M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg></div>
+        <h3>生动口播</h3>
+        <p>表情与头部姿态更自然的口播生成，配合智能插帧让画面更顺滑；语速、情绪等参数都可调。</p>
+        <span class="tag">适合口播博主 · 虚拟主播</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">FEATURES</div>
+      <h2>功能清单</h2>
+      <p>从素材管理到成片归档，全部在本地完成，不需要账号、不需要联网。</p>
+    </div>
+    <div class="grid2">
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div>
+        <div><h3>资产库统一管理</h3><p>人物图片、驱动音频、参考视频、人物资产四类素材集中收纳；支持拖文件进窗口、按类型过滤、多选与右键移入表单。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+        <div><h3>批量任务队列</h3><p>多个任务排队自动生成，五类状态一目了然；生成中耗时实时跳动，完成即可播放或载入参数复用。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 9h8M6 12h5"/></svg></div>
+        <div><h3>实时进度与日志</h3><p>每个任务的阶段、进度、耗时与输出日志逐条呈现，一键复制日志；生成中随时停止，下一个检查点立即退出。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
+        <div><h3>生成结果自动入库</h3><p>生成的视频自动进入资产库并记录所用管线，双击即可播放；历史任务参数一键载入，复用不再重填。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg></div>
+        <div><h3>参数全中文说明</h3><p>所有参数都带中文标签、默认值与范围说明，核心参数直显、高级设置折叠；填错会被自动夹取到合法区间。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8.5 11h5"/></svg></div>
+        <div><h3>独立预览窗口</h3><p>双击素材打开独立图片预览：滚轮缩放、拖拽平移、双击复位，分辨率、大小、格式、路径一目了然。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4m0 4h.01"/></svg></div>
+        <div><h3>试用提示透明</h3><p>试用版单条录音超过 10 秒会自动取前 10 秒生成，并在任务里明确提示；不会拒绝任务，也没有隐藏限制。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></div>
+        <div><h3>历史记录本机保存</h3><p>任务与素材清单保存在本机数据库，历史任务随时翻查；磁盘不可写时自动降级，程序不崩溃。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="local">
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">LOCAL-FIRST</div>
+      <h2>人像和声音，不出你的电脑</h2>
+      <p>数字人生成涉及人脸与声音，这些素材的归属权必须在你自己手里。</p>
+    </div>
+    <div class="privacy" data-reveal>
+      <div class="shield"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7Z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+      <div>
+        <h3>完全离线，推理与素材都在本机</h3>
+        <p>LiveTalker 是纯本地桌面程序：人像照片、驱动录音、生成的视频全部留在你自己的文件夹里，运行时不连接任何外部服务器，无需账号体系。断网也照常出片。</p>
+        <div class="pills">
+          <span class="pill">数据仅存本地</span>
+          <span class="pill">无网络请求</span>
+          <span class="pill">无账号体系</span>
+          <span class="pill">断网可用</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">版本与定价</div>
+      <h2>先免费试用，确认效果再买断</h2>
+      <p>试用版没有使用次数限制；付费解锁的是单条生成时长，一次买断，不按年订阅。</p>
+    </div>
+    <div class="pricing">
+      <article class="plan" data-reveal>
+        <div class="name">免费试用版</div>
+        <div class="price"><b>￥0</b><span>无需许可证</span></div>
+        <p class="desc">适合先确认生成效果是否满足你的使用场景。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>任务次数不限，三种引擎全部可用</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>单条驱动音频取前 10 秒生成</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>批量任务、进度日志、结果入库全功能</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>完全离线，数据不出本机</li>
+        </ul>
+        <a class="btn btn-ghost" href="mailto:contact@cd-ii.com?subject=%E7%94%B3%E8%AF%B7%20LiveTalker%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8">申请免费试用</a>
+      </article>
+
+      <article class="plan pro" data-reveal>
+        <div class="name">完整版<span class="rec">一次买断</span></div>
+        <div class="price"><b class="grad">￥299</b><span>不按年订阅</span></div>
+        <p class="desc">为持续产出准备，单条生成时长不再受限。</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>单条音频时长不限</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>三种生成引擎全部可用</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>设备绑定的离线许可证</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>无需联网激活，不采集使用数据</li>
+        </ul>
+        <a class="btn btn-primary" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%20LiveTalker%20%E5%AE%8C%E6%95%B4%E7%89%88%20%C2%A5299&amp;body=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E8%B4%AD%E4%B9%B0%20LiveTalker%20%E5%AE%8C%E6%95%B4%E7%89%88%EF%BC%88%C2%A5299%20%E4%B8%80%E6%AC%A1%E4%B9%B0%E6%96%AD%EF%BC%89%E3%80%82">购买完整版 ￥299</a>
+      </article>
+    </div>
+    <p class="pricing-note">许可证绑定设备、离线激活；试用与完整版的生成效果一致，付费只解除单条时长限制。</p>
+  </div>
+</section>
+
+<section class="section" id="get" style="padding-top:0">
+  <div class="container">
+    <div class="get" data-reveal>
+      <div>
+        <h2>下载即用，先试后买</h2>
+        <p>填写邮件申请免费试用版或购买完整版，我们会回复下载地址与对应的离线许可证。程序在本机运行，需要一块 NVIDIA 显卡的 Windows 电脑。</p>
+        <div class="pills">
+          <span class="pill">Windows 10 / 11</span>
+          <span class="pill">需 NVIDIA 显卡</span>
+          <span class="pill">离线许可证</span>
+        </div>
+      </div>
+      <div class="get-actions">
+        <a class="btn btn-light" href="mailto:contact@cd-ii.com?subject=%E7%94%B3%E8%AF%B7%20LiveTalker%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8&amp;body=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E7%94%B3%E8%AF%B7%20LiveTalker%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8%E7%89%88%EF%BC%88Windows%EF%BC%89%E3%80%82">申请免费试用</a>
+        <a class="btn btn-outline" href="mailto:contact@cd-ii.com?subject=%E8%B4%AD%E4%B9%B0%20LiveTalker%20%E5%AE%8C%E6%95%B4%E7%89%88%20%C2%A5299">购买完整版 ￥299</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section contact-section" id="contact" style="padding-top:0">
+  <div class="container">
+    <div class="contact" data-reveal>
+      <div>
+        <h3>联系我</h3>
+        <p>功能建议、问题反馈或想聊聊本地数字人工具，都欢迎来信。</p>
+        <a class="contact-mail" href="mailto:contact@cd-ii.com">contact@cd-ii.com</a>
+      </div>
+      <div class="cta" style="margin-top:0">
+        <a class="btn btn-ghost" href="mailto:contact@cd-ii.com">发送邮件</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>口播数字人 LiveTalker · 本地生成的口播视频工作台 · Windows</div>
+    <div><a href="https://cd-ii.com/" target="_blank" rel="noopener">cd-ii.com</a> · <a href="mailto:contact@cd-ii.com">contact@cd-ii.com</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var els=document.querySelectorAll('[data-reveal]');
+  if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){
+    els.forEach(function(e){e.classList.add('shown')});return;
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('shown');io.unobserve(en.target)}});
+  },{threshold:0.12});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+     width="512" height="512" role="img" aria-labelledby="t d">
+  <title id="t">LiveTalker</title>
+  <desc id="d">A speaking digital person: portrait silhouette with sound waves radiating to the right.</desc>
+
+  <defs>
+    <!-- diagonal blue gradient, mid stop is the app accent #0078D4 -->
+    <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A3F8F"/>
+      <stop offset="0.5" stop-color="#0078D4"/>
+      <stop offset="1" stop-color="#0E93E2"/>
+    </linearGradient>
+    <!-- subtle top sheen -->
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.14"/>
+      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- rounded-square plate -->
+  <rect x="24" y="24" width="464" height="464" rx="112" fill="url(#plate)"/>
+  <rect x="24" y="24" width="464" height="464" rx="112" fill="url(#sheen)"/>
+  <rect x="25" y="25" width="462" height="462" rx="111" fill="none"
+        stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="2"/>
+
+  <!-- portrait: head + shoulders -->
+  <circle cx="196" cy="180" r="56" fill="#FFFFFF"/>
+  <path d="M 106 392 C 106 308 144 250 196 250 C 248 250 286 308 286 392 Z" fill="#FFFFFF"/>
+
+  <!-- voice waves -->
+  <g>
+    <path d="M 303.7 204.3 A 58 58 0 0 1 303.7 295.7" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round"/>
+    <path d="M 327.1 174.4 A 96 96 0 0 1 327.1 325.6" fill="none" stroke="#C4F0FF" stroke-width="20" stroke-linecap="round"/>
+    <path d="M 350.5 144.4 A 134 134 0 0 1 350.5 355.6" fill="none" stroke="#7ED6FF" stroke-width="20" stroke-linecap="round"/>
+  </g>
+</svg>
