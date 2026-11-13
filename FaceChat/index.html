@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>语音对话数字人 FaceChat — 和数字人面对面聊天的本地桌面应用</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml" />
+<meta name="description" content="语音对话数字人 FaceChat：点开麦克风即说即聊，说完停顿自动发送；数字人开口回应、口型同步、待机自然，音色用一句话即可设计。对话内容只存本机，断网照常可用。免费试用。" />
+<style>
+:root{
+  --bg:#f4f9fb; --surface:#ffffff; --surface2:#eaf4f7;
+  --border:#e2e8f0; --fg:#0f172a; --dim:#64748b; --faint:#94a3b8;
+  --brand:#3e6be8; --brand-soft:rgba(62,107,232,.12);
+  --accent:#0b3f8f; --accent-soft:rgba(11,63,143,.10);
+  --grad:linear-gradient(120deg,#3e6be8,#22b8c9 55%,#17c39a);
+  --ok:#16a34a; --radius:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  line-height:1.7; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-weight:700;letter-spacing:.3px}
+img{display:block;max-width:100%}
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(244,249,251,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;gap:24px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.brand .logo{width:30px;height:30px;border-radius:8px;overflow:hidden;display:block;box-shadow:0 2px 8px rgba(62,107,232,.25)}
+.brand .en{font-size:13px;color:var(--dim);font-weight:400;letter-spacing:.02em}
+.nav-links{display:flex;gap:22px;margin-left:auto;font-size:14px;color:var(--dim)}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:var(--brand)}
+/* ---------- hero ---------- */
+.hero{position:relative;padding:92px 0 40px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-20%;background:
+  radial-gradient(600px 360px at 18% 8%,rgba(62,107,232,.10),transparent 70%),
+  radial-gradient(520px 320px at 85% 30%,rgba(23,195,154,.09),transparent 70%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center;position:relative}
+.hero h1{font-size:46px;line-height:1.25;letter-spacing:.5px}
+.hero h1 .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{margin:22px 0 6px;font-size:17px;color:var(--dim)}
+.hero .lead b{color:var(--fg);font-weight:600}
+.hero .tagline{margin-top:8px;font-size:14px;color:var(--faint);max-width:520px}
+.cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:12px;font-size:15px;font-weight:500;transition:transform .15s,box-shadow .2s;border:none;cursor:pointer}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--grad);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(62,107,232,.35)}
+.btn-ghost{background:var(--surface);color:var(--fg);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+/* window mock frame */
+.mock{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);overflow:hidden;box-shadow:0 24px 60px rgba(11,63,143,.14)}
+.mock-top{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--border);background:var(--surface)}
+.mock-top .dots{display:flex;gap:6px}
+.mock-top .dots i{width:9px;height:9px;border-radius:50%;background:var(--border)}
+.mock-top .dots i:first-child{background:#8fb4f7}
+.mock-top .dots i:nth-child(2){background:#fcd34d}
+.mock-top .dots i:nth-child(3){background:#86efac}
+.mock-top span{margin-left:8px;font-size:12px;color:var(--faint)}
+.mock img{width:100%;display:block}
+/* ---------- sections ---------- */
+.section{padding:84px 0}
+.sec-head{margin-bottom:44px;max-width:660px}
+.sec-head .eyebrow{color:var(--brand);font-size:13px;letter-spacing:.14em;margin-bottom:10px;font-weight:600}
+.sec-head h2{font-size:30px;line-height:1.35}
+.sec-head p{margin-top:12px;color:var(--dim);font-size:15px}
+.sec-head.center{max-width:660px;margin:0 auto 44px;text-align:center}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 22px;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--brand);transform:translateY(-3px)}
+.card .ico{width:44px;height:44px;border-radius:12px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.card .ico svg{width:22px;height:22px;stroke:var(--brand)}
+.card h3{font-size:18px;margin-bottom:8px}
+.card p{font-size:13.5px;color:var(--dim)}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.feature{display:flex;gap:16px;padding:22px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);transition:border-color .2s}
+.feature:hover{border-color:var(--accent)}
+.feature .ico{width:40px;height:40px;flex-shrink:0;border-radius:11px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}
+.feature .ico svg{width:20px;height:20px;stroke:var(--accent)}
+.feature h3{font-size:16.5px;margin-bottom:6px}
+.feature p{font-size:13.5px;color:var(--dim)}
+/* privacy */
+.privacy{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px 44px;display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center}
+.privacy .shield{width:56px;height:56px;border-radius:15px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center}
+.privacy .shield svg{width:28px;height:28px;stroke:var(--brand)}
+.privacy h3{font-size:20px;margin-bottom:8px}
+.privacy p{color:var(--dim);font-size:14px}
+.privacy .pills{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.pill{font-size:12.5px;color:var(--dim);border:1px solid var(--border);background:var(--surface2);padding:4px 12px;border-radius:20px}
+/* get */
+.get{background:var(--grad);border-radius:var(--radius);padding:56px 44px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center;color:#fff}
+.get h2{font-size:30px}
+.get p{margin-top:12px;color:rgba(255,255,255,.88);font-size:14.5px;max-width:560px}
+.get .pills{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.get .pill{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff}
+.btn-light{background:#fff;color:var(--accent)}
+.btn-light:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(0,0,0,.18)}
+/* contact */
+.contact{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px 44px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}
+.contact h3{font-size:20px;margin-bottom:8px}
+.contact p{color:var(--dim);font-size:14px}
+.contact-mail{display:inline-block;margin-top:16px;color:var(--brand);font-size:16px;font-weight:600;border-bottom:1px dashed var(--brand);padding-bottom:2px}
+.contact-mail:hover{opacity:.85}
+.contact .cta{margin-top:0}
+/* footer */
+.footer{border-top:1px solid var(--border);padding:34px 0;color:var(--faint);font-size:13px}
+.footer-inner{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.footer a{color:var(--dim)}
+.footer a:hover{color:var(--brand)}
+/* reveal */
+[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+[data-reveal].shown{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}[data-reveal]{opacity:1;transform:none;transition:none}}
+/* ---------- responsive ---------- */
+@media(max-width:980px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero h1{font-size:36px}
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .get{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .nav-links{display:none}
+  .brand .en{display:none}
+  .hero{padding:64px 0 32px}
+  .hero h1{font-size:30px}
+  .grid4,.grid2{grid-template-columns:1fr}
+  .privacy{grid-template-columns:1fr;padding:28px 24px;text-align:center;justify-items:center}
+  .contact{grid-template-columns:1fr;padding:28px 24px;text-align:center;justify-items:center}
+  .contact .cta{justify-content:center}
+  .get{padding:40px 24px}
+  .section{padding:60px 0}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#top">
+      <img class="logo" src="logo.svg" alt="FaceChat" />
+      <span>FaceChat <span class="en">和数字人面对面聊天的本地桌面应用</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#core">核心能力</a>
+      <a href="#features">功能清单</a>
+      <a href="#local">本地优先</a>
+      <a href="#contact">联系</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <h1>让屏幕里的<br /><span class="hl">数字人，听你说话、开口回应</span></h1>
+        <p class="lead">打开软件，对面就是一个会听、会说的数字人。点开麦克风即说即聊，<b>说完停顿自动发送</b>，对方开口回应、口型同步，像视频通话一样面对面对话。</p>
+        <p class="tagline">音色用一句话即可设计；待机画面自然在线；对话内容只存本机，断网照常可用。</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="mailto:contact@cd-ii.com?subject=%E7%94%B3%E8%AF%B7%20FaceChat%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8&amp;body=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E7%94%B3%E8%AF%B7%20FaceChat%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8%E7%89%88%EF%BC%88Windows%EF%BC%89%E3%80%82">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            申请免费试用
+          </a>
+          <a class="btn btn-ghost" href="#core">了解核心能力</a>
+        </div>
+      </div>
+      <div class="mock" data-reveal>
+        <div class="mock-top">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <span>FaceChat · 对话中</span>
+        </div>
+        <img src="screenshot.png" alt="语音对话数字人 FaceChat 主界面" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="core">
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">CORE</div>
+      <h2>四件核心的事，做到极致</h2>
+      <p>不堆功能，只把「和数字人自然地面对面聊天」这一件事做完整。</p>
+    </div>
+    <div class="grid4">
+      <div class="card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div>
+        <h3>开口即聊</h3>
+        <p>点开麦克风就能对话，说完稍作停顿自动发送，不用点按钮，聊天像面对面说话一样自然。</p>
+      </div>
+      <div class="card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/><path d="M9 11.5c1 1 2 1.5 3 1.5s2-.5 3-1.5"/></svg></div>
+        <h3>口型同步数字人</h3>
+        <p>对方回应时口型与语音同步，不说话时保持自然待机；打开软件就是「人在对面」的在场感。</p>
+      </div>
+      <div class="card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 3c-4 0-7 3-7 7v2c0 5 3 9 7 9s7-4 7-9v-2c0-4-3-7-7-7z"/><path d="M9 12h2M15 12h-2" opacity="0"/><path d="M8.5 12h7M8.5 12c0 2 1.5 3.5 3.5 3.5s3.5-1.5 3.5-3.5"/></svg></div>
+        <h3>音色一句话设计</h3>
+        <p>想要什么声音，写一句话就行：温柔甜美、沉稳大气、活泼明亮……按你的喜好来，随时可改。</p>
+      </div>
+      <div class="card" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <h3>本地运行</h3>
+        <p>语音与对话全部在本机处理和保存，不连接任何外部服务器；断网也照常聊，数据不出电脑。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features" style="padding-top:0">
+  <div class="container">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">FEATURES</div>
+      <h2>功能清单</h2>
+      <p>从开口说话到翻看历史，全部在本地完成，不需要账号、不需要联网。</p>
+    </div>
+    <div class="grid2">
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div><h3>麦克风一键开关</h3><p>聆听状态清晰可见，正在聆听时点击即可关闭；说什么、何时说，主动权始终在你手里。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12a10 10 0 1 1-4-8"/><polyline points="22 4 12 14 9 11"/></svg></div>
+        <div><h3>停顿自动发送</h3><p>说完话稍作停顿自动发出，不必按发送键；想接着说就继续说，节奏由你掌握。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div><h3>自然待机画面</h3><p>不说话时数字人保持自然的待机状态，随时开口都有「对方就在屏幕里」的临场感。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg></div>
+        <div><h3>会话历史本地保存</h3><p>每段对话自动记录在本机，按时间随时翻看；不想要的内容可一键清空，磁盘不可写时也不崩溃。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div><h3>状态一目了然</h3><p>语音与口型各环节的可用状态实时呈现，哪个环节没准备好一眼定位，排查不用猜。</p></div>
+      </div>
+      <div class="feature" data-reveal>
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg></div>
+        <div><h3>全中文界面</h3><p>界面与提示全中文，设置项带说明、填错自动纠正，不需要看文档就能上手。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="local">
+  <div class="container">
+    <div class="sec-head center" data-reveal>
+      <div class="eyebrow">LOCAL-FIRST</div>
+      <h2>说的话，不出你的电脑</h2>
+      <p>和数字人说的话属于你自己，这些内容理应留在你自己的设备上。</p>
+    </div>
+    <div class="privacy" data-reveal>
+      <div class="shield"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7Z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+      <div>
+        <h3>本地运行，对话只存本机</h3>
+        <p>FaceChat 是纯本地桌面程序：你说的话、对方的回应、会话记录全部留在你自己的电脑里，运行时不连接任何外部服务器，无需账号体系。断网也照常对话。</p>
+        <div class="pills">
+          <span class="pill">数据仅存本地</span>
+          <span class="pill">无网络请求</span>
+          <span class="pill">无账号体系</span>
+          <span class="pill">断网可用</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="get" style="padding-top:0">
+  <div class="container">
+    <div class="get" data-reveal>
+      <div>
+        <h2>申请免费试用，开口聊一聊</h2>
+        <p>填写邮件申请免费试用版，我们会回复下载地址。程序在本机运行，Windows 电脑即可使用。</p>
+        <div class="pills">
+          <span class="pill">Windows 10 / 11</span>
+          <span class="pill">免费试用</span>
+          <span class="pill">全中文界面</span>
+        </div>
+      </div>
+      <div class="cta" style="margin-top:0">
+        <a class="btn btn-light" href="mailto:contact@cd-ii.com?subject=%E7%94%B3%E8%AF%B7%20FaceChat%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8&amp;body=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E7%94%B3%E8%AF%B7%20FaceChat%20%E5%85%8D%E8%B4%B9%E8%AF%95%E7%94%A8%E7%89%88%EF%BC%88Windows%EF%BC%89%E3%80%82">申请免费试用</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section contact-section" id="contact" style="padding-top:0">
+  <div class="container">
+    <div class="contact" data-reveal>
+      <div>
+        <h3>联系我</h3>
+        <p>功能建议、问题反馈或想聊聊本地数字人工具，都欢迎来信。</p>
+        <a class="contact-mail" href="mailto:contact@cd-ii.com">contact@cd-ii.com</a>
+      </div>
+      <div class="cta" style="margin-top:0">
+        <a class="btn btn-ghost" href="mailto:contact@cd-ii.com">发送邮件</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>语音对话数字人 FaceChat · 本地优先 · Windows</div>
+    <div><a href="https://cd-ii.com/" target="_blank" rel="noopener">cd-ii.com</a> · <a href="mailto:contact@cd-ii.com">contact@cd-ii.com</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var els=document.querySelectorAll('[data-reveal]');
+  if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){
+    els.forEach(function(e){e.classList.add('shown')});return;
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('shown');io.unobserve(en.target)}});
+  },{threshold:0.12});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>
