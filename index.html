@@ -435,12 +435,11 @@ tailwind.config = {
   <!-- ================= HEADER ================= -->
   <header class="mx-auto w-full max-w-6xl px-6 pt-8 pb-12 sm:pt-12 sm:pb-16">
     <div class="flex h-[3px] w-40 overflow-hidden rounded-full" aria-hidden="true">
-      <span class="flex-1 bg-[#15508f]"></span>
-      <span class="flex-1 bg-[#c08a2e]"></span>
+      <span class="flex-1 bg-[#5E81AC]"></span>
+      <span class="flex-1 bg-[#06b6d4]"></span>
       <span class="flex-1 bg-[#2563eb]"></span>
-      <span class="flex-1 bg-[#4f46e5]"></span>
-      <span class="flex-1 bg-[#64748b]"></span>
-      <span class="flex-1 bg-[#8b5cf6]"></span>
+      <span class="flex-1 bg-[#0078d4]"></span>
+      <span class="flex-1 bg-[#17c39a]"></span>
     </div>
 
     <p class="mt-7 font-mono text-[11px] tracking-[.22em] text-slate-400">AI · DATA SOVEREIGNTY · LOCAL-FIRST</p>
@@ -519,65 +518,14 @@ tailwind.config = {
 
       <!-- 已下架（落地页目录与 git 跟踪文件一并移除，恢复需从 git 历史取回对应卡片与目录）：
            2026-10-25  A股板块资金流、字帖生成器 Copybook
-           2026-11-22  Lovo、PixelForge
+           2026-11-22  Lovo、PixelForge（Lovo 已于 2026-11-26 恢复上架）
            2026-11-25  合稿易 DocMerger、心流写作 FlowWrite、OffOCR、Transly、画语、纳戒 Storagering、表伴 TableBuddy
-           当前保留 5 款，分类收敛为三类：内容创作 / 数字人 / 数字资产管理 -->
+                      以及无卡片的孤儿目录 DataChart、FocusOn
+           2026-11-26  栖心 Perch
+           当前保留 5 款，分类为三类：内容创作 / 数字人 / 数字资产管理 -->
 
-      <!-- 01 栖心 Perch -->
-      <article class="product" data-tags="companion" style="--accent:#a78bfa; --d:.02s">
-        <!-- 整卡链接：点击进入产品页 -->
-        <span class="card-go" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
-          </svg>
-        </span>
-
-        <div class="flex items-start gap-4">
-          <div class="icon-box" title="栖心 Perch">
-            <!-- 应用真实图标矢量化：粉紫蓝渐变底 + 白色女性侧脸剪影 -->
-            <svg viewBox="0 0 128 128" aria-hidden="true">
-              <defs>
-                <linearGradient id="brand-perch" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#F7A8C4"/><stop offset="0.45" stop-color="#C6BDF6"/><stop offset="1" stop-color="#5FD3F3"/>
-                </linearGradient>
-              </defs>
-              <rect width="128" height="128" fill="url(#brand-perch)"/>
-              <g fill="#ffffff">
-                <path d="M60 22c14 0 25 10 26 25 .4 5 .2 8 1 12l5 10c1 2 0 3-3 3.5l-2 .4c1 3 0 5-3 7-2 6-9 10-17 10-7 0-13-4-16-10-4-8-5-18-3-27 1-6 2-10 3-15 3-9 5-15 9-15z"/>
-                <path d="M58 20C45 22 36 32 35 47c-1 12 2 24 8 33-4-11-4-22-1-31 3-10 10-15 19-14-8-1-14 3-16 11-2 8 0 16 4 22-6 2-12 0-15-6 3 8 11 12 19 12 3 0 6 0 8-1-2 3-6 5-10 6 8 3 17 1 23-4 5-4 8-10 9-17 1-6 0-10 0-14 1-9-4-18-12-21-4-2-8-3-12-3z"/>
-              </g>
-            </svg>
-          </div>
-          <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
-              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="Perch/index.html">栖心</a></h3>
-              <span class="font-mono text-[11px] tracking-wide text-slate-400">Perch</span>
-            </div>
-            <div class="mt-2 flex flex-wrap gap-1.5">
-              <button class="chip" data-chip-filter="companion">数字人</button>
-            </div>
-          </div>
-        </div>
-
-        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
-          <span class="dot" aria-hidden="true"></span>和懂你的 VRM 角色，聊一整晚
-        </p>
-        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
-          本地优先的 VRM 虚拟陪伴桌面应用：3D 角色口型同步对话，说话即转文字、开口即语音回应，音色可用一句自然语言设计。支持导入自己的 VRM 模型，对话自动记忆蒸馏，大模型可接本地 Ollama，全程离线可用。
-        </p>
-
-        <div class="mt-auto pt-5">
-          <div class="value-box rounded-r-lg px-3.5 py-2.5">
-            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
-            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
-              聊天记录与角色数据只存本地 perch.db，不上传任何对话内容，无账号体系、单设备离线激活。免费试用版永久可用，正式版 ¥399 一次买断、后续更新不再收费。
-            </p>
-          </div>
-        </div>
-      </article>
-
-      <!-- 02 印真 TruSeal -->
-      <article class="product" data-tags="dam" style="--accent:#06b6d4; --d:.06s">
+      <!-- 01 印真 TruSeal -->
+      <article class="product" data-tags="dam" style="--accent:#06b6d4; --d:.02s">
         <!-- 整卡链接：点击进入产品页 -->
         <span class="card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -629,8 +577,8 @@ tailwind.config = {
         </div>
       </article>
 
-      <!-- 03 无限画布 InfCanvas -->
-      <article class="product" data-tags="create" style="--accent:#2563eb; --d:.1s">
+      <!-- 02 无限画布 InfCanvas -->
+      <article class="product" data-tags="create" style="--accent:#2563eb; --d:.06s">
         <!-- 整卡链接：点击进入产品页 -->
         <span class="card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -691,8 +639,8 @@ tailwind.config = {
         </div>
       </article>
 
-      <!-- 04 口播数字人 LiveTalker -->
-      <article class="product" data-tags="create" style="--accent:#0078d4; --d:.14s">
+      <!-- 03 口播数字人 LiveTalker -->
+      <article class="product" data-tags="companion" style="--accent:#0078d4; --d:.1s">
         <!-- 整卡链接：点击进入产品页 -->
         <span class="card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -723,7 +671,7 @@ tailwind.config = {
               <span class="font-mono text-[11px] tracking-wide text-slate-400">LiveTalker</span>
             </div>
             <div class="mt-2 flex flex-wrap gap-1.5">
-              <button class="chip" data-chip-filter="create">内容创作</button>
+              <button class="chip" data-chip-filter="companion">数字人</button>
             </div>
           </div>
         </div>
@@ -745,8 +693,8 @@ tailwind.config = {
         </div>
       </article>
 
-      <!-- 05 FaceChat -->
-      <article class="product" data-tags="companion" style="--accent:#17c39a; --d:.18s">
+      <!-- 04 FaceChat -->
+      <article class="product" data-tags="companion" style="--accent:#17c39a; --d:.14s">
         <!-- 整卡链接：点击进入产品页 -->
         <span class="card-go" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -797,6 +745,52 @@ tailwind.config = {
             <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
             <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
               面试陪练、口语练习、问询接待、陪伴聊天都能用；语音与对话内容全在本机处理，不上传任何服务器、无账号体系，断网照常聊。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 05 Lovo -->
+      <article class="product" data-tags="create" style="--accent:#5E81AC; --d:.18s">
+        <!-- 整卡链接：点击进入产品页 -->
+        <span class="card-go" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+          </svg>
+        </span>
+
+        <div class="flex items-start gap-4">
+          <div class="icon-box" title="Lovo">
+            <!-- 取自 Lovo 落地页导航品牌标识：Nord 深灰块 + 冰蓝声波 -->
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <rect width="32" height="32" fill="#2E3440"/>
+              <path d="M6 16h3l2-7 3 14 3-11 2 6 2-3h4" fill="none" stroke="#88C0D0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-baseline gap-x-2 pr-6">
+              <h3 class="text-[17px] font-semibold tracking-tight text-slate-900"><a class="card-link" href="Lovo/index.html">Lovo</a></h3>
+              <span class="font-mono text-[11px] tracking-wide text-slate-400">Voice Toolbox</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <button class="chip" data-chip-filter="create">内容创作</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-5 flex gap-2 text-[13.5px] font-medium text-slate-700">
+          <span class="dot" aria-hidden="true"></span>小说与剧本，一键转多角色有声书
+        </p>
+        <p class="mt-2.5 text-[13px] leading-relaxed text-slate-500">
+          语音合成、声音克隆、音色设计、语音识别四项能力齐备，覆盖 10 种合成语言与 30 种识别语言；新增音频脚本生成（小说文本自动改写成带
+          <span class="font-mono">[角色:情绪]</span> 标记的 TTS 脚本）与多角色剧本合成，支持 <span class="font-mono">&lt;音效&gt;</span>、<span class="font-mono">&lt;停顿&gt;</span> 标记与逐句时间轴对齐；命令行、桌面与 OpenAI 兼容 API 三入口共用同一套本地模型。
+        </p>
+
+        <div class="mt-auto pt-5">
+          <div class="value-box rounded-r-lg px-3.5 py-2.5">
+            <p class="font-mono text-[10px] tracking-[.14em] text-slate-400">业务价值</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">
+              一次部署同时服务脚本、桌面与第三方系统；长篇文本不必再逐段手动配音，音色定制无需录音棚素材，全程离线、内容不出设备。
             </p>
           </div>
         </div>
